@@ -11,6 +11,7 @@
 from __future__ import with_statement
 from __future__ import absolute_import
 from __future__ import print_function
+import argparse
 import re
 import time
 import sqlite3
@@ -21,6 +22,11 @@ from flask import Flask, request, session, url_for, redirect, \
      render_template, abort, g, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 
+# ArgParsing
+parser = argparse.ArgumentParser()
+parser.add_argument('--port', dest='port', nargs='?', const=5000, type=int,
+    help='Specify Port to Run The Flask Application On')
+args = parser.parse_args()
 
 # configuration
 DATABASE = '/tmp/minitwit.db'
@@ -250,4 +256,4 @@ app.debug = DEBUG
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=args.port)
