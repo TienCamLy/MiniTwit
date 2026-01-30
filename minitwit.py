@@ -29,7 +29,7 @@ parser.add_argument('--port', dest='port', nargs='?', const=5000, type=int,
 args = parser.parse_args()
 
 # configuration
-DATABASE = '/tmp/minitwit.db'
+DATABASE = 'minitwit.db'
 PER_PAGE = 30
 DEBUG = True
 SECRET_KEY = 'development key'
