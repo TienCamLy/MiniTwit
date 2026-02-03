@@ -6,3 +6,6 @@ build:
 
 clean:
 	rm flag_tool
+
+install-requirements:
+	pip install -r requirements.txt
