@@ -8,11 +8,8 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
-from __future__ import absolute_import
-from __future__ import print_function
+
 import argparse
-import re
 import time
 import sqlite3
 from hashlib import md5
