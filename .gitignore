@@ -56,3 +56,7 @@ env/
 # Project-specific (MiniTwit)
 *.db
 minitwit.db
+
+# Razor - Pages
+razor-pages/obj
+razor-pages/bin

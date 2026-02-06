@@ -1,0 +1,7 @@
+﻿services:
+  razor-pages:
+    image: razor-pages
+    build:
+      context: .
+      dockerfile: razor-pages/Dockerfile
+
