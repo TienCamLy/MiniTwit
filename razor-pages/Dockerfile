@@ -1,6 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-USER $APP_UID
 WORKDIR /app
+RUN mkdir -p /app/keys && chown -R $APP_UID:$APP_UID /app/keys && chmod 700 /app/keys
+
+USER $APP_UID
 EXPOSE 8080
 EXPOSE 8081
 
@@ -20,4 +22,5 @@ RUN dotnet publish "./razor-pages.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY razor-pages/minitwit.db ./minitwit.db
 ENTRYPOINT ["dotnet", "razor-pages.dll"]

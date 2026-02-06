@@ -8,7 +8,7 @@ public class DBContext : IDBContext
     private const string ConnectionString = "Data Source=minitwit.db";
     
     private SqliteConnection OpenConnection() {
-        using var conn = new SqliteConnection(ConnectionString);
+        var conn = new SqliteConnection(ConnectionString);
         conn.Open();
         return conn;
     }
@@ -45,7 +45,7 @@ public class DBContext : IDBContext
                     FROM message m 
                     JOIN user u ON m.author_id = u.user_id
                     WHERE m.flagged = 0
-                    ORDER BY m.timestamp DESC
+                    ORDER BY m.pub_date DESC
                     LIMIT @perpage
                  
             """;
@@ -78,7 +78,7 @@ public class DBContext : IDBContext
                     FROM message m 
                     JOIN user u ON m.author_id = u.user_id
                     WHERE m.flagged = 0 AND u.username = @username
-                    ORDER BY m.timestamp DESC
+                    ORDER BY m.pub_date DESC
                     LIMIT @perpage
                  
             """;
