@@ -13,6 +13,5 @@ public class LoginModel : PageModel
     
     public void OnGet()
     {
-        Console.WriteLine(_dbcontext.GetPublicTimeline(30));
     }
 }
