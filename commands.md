@@ -15,7 +15,7 @@ Replace all <...>, with correct names/ids
     docker start <container_name>
     ```
 - Docker Compose (composes multiple built containers, defined in `docker-compose.yml`)
-    ```
+    ```bash
     docker compose up
     ```
 
