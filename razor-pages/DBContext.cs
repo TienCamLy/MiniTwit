@@ -102,4 +102,21 @@ public class DBContext : IDBContext
 
         return timeline;
     }
+    public void CreateUser(string username, string email, string passwordHash)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+
+        cmd.CommandText =
+            """
+            INSERT INTO user (username, email, pw_hash)
+            VALUES (@username, @email, @pw_hash)
+            """;
+
+        cmd.Parameters.AddWithValue("@username", username);
+        cmd.Parameters.AddWithValue("@email", email);
+        cmd.Parameters.AddWithValue("@pw_hash", passwordHash);
+
+        cmd.ExecuteNonQuery();
+    }
 }

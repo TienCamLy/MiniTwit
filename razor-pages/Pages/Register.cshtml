@@ -3,4 +3,17 @@
 @{
     ViewData["Title"] = "Register";
 }
-<h2>Register</h2>
+
+<form method="post">
+    <dl>
+        <dt>Username:
+        <dd><input type="text" asp-for="Username" size="30" />
+        <dt>E-Mail:
+        <dd><input type="text" asp-for="Email" size="30" />
+        <dt>Password:
+        <dd><input type="password" asp-for="Password" size="30" />
+        <dt>Confirm Password:
+        <dd><input type="password2" asp-for="Password2" size="30" />
+            <div class="actions"><input type="submit" value="Sign Up"/></div>
+    </dl>
+</form>
