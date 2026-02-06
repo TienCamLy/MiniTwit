@@ -2,7 +2,7 @@
 Replace all <...>, with correct names/ids
 - Build Docker container (from current directory; docker file):
     ```bash
-    docker built -t <your_id>/<container> .
+    docker build -t <your_id>/<container> .
     ```
 - Run Docker container:
     ```bash
