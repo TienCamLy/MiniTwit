@@ -40,7 +40,7 @@ public class RegisterModel : PageModel
             Error = "You have to enter a password";
         else if (Password != Password2)
             Error = "The two passwords do not match";
-        else if (_dbcontext.GetUserById(Username) != null)
+        else if (_dbcontext.GetUserByUsername(Username) != null)
             Error = "The username is already taken";
         else
         {

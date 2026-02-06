@@ -10,6 +10,7 @@
       - ASPNETCORE_URLS=http://0.0.0.0:8080
     volumes:
       - keys-volume:/app/keys
-
+      - ./razor-pages/minitwit.db:/app/minitwit.db
+      
 volumes:
   keys-volume:

@@ -22,5 +22,7 @@ RUN dotnet publish "./razor-pages.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY razor-pages/minitwit.db ./minitwit.db
+USER root
+RUN chown $APP_UID:$APP_UID /app
+USER $APP_UID
 ENTRYPOINT ["dotnet", "razor-pages.dll"]

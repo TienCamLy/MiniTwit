@@ -119,4 +119,24 @@ public class DBContext : IDBContext
 
         cmd.ExecuteNonQuery();
     }
+    public User GetUserByUsername(string username)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+        
+        cmd.CommandText = "SELECT * FROM user WHERE username = @username";
+        cmd.Parameters.AddWithValue("@username", username);
+
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            return new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+        }
+        return null;
+    }
 }
