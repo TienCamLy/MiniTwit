@@ -14,6 +14,10 @@ Replace all <...>, with correct names/ids
     docker stop <container_name>
     docker start <container_name>
     ```
+- Docker Compose (composes multiple built containers, defined in `docker-compose.yml`)
+    ```
+    docker compose up
+    ```
 
 - Check accessible Docker containers:
     ```bash
