@@ -57,11 +57,11 @@ public class DBContext : IDBContext
         {
             timeline.Add(new Message
             {
-                message_id = reader.GetInt32(0),
-                author_id = reader.GetInt32(1),
-                text = reader.GetString(2),
-                pub_date = reader.GetString(3),
-                flagged = reader.GetString(4)
+                message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
+                author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
+                text = reader.GetString(reader.GetOrdinal("text")),
+                pub_date = reader.GetString(reader.GetOrdinal("pub_date")),
+                flagged = reader.GetString(reader.GetOrdinal("flagged"))
             });
         }
 
@@ -77,13 +77,29 @@ public class DBContext : IDBContext
                 SELECT *
                     FROM message m 
                     JOIN user u ON m.author_id = u.user_id
-                    WHERE m.flagged = 0
+                    WHERE m.flagged = 0 AND u.username = @username
                     ORDER BY m.timestamp DESC
                     LIMIT @perpage
                  
             """;
         cmd.Parameters.AddWithValue("@perpage", perPage);
-        var timeline = new List<Message>();
+        cmd.Parameters.AddWithValue("@username", username);
+        
+
+		var timeline = new List<Message>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            timeline.Add(new Message
+            {
+                message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
+                author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
+                text = reader.GetString(reader.GetOrdinal("text")),
+                pub_date = reader.GetString(reader.GetOrdinal("pub_date")),
+                flagged = reader.GetString(reader.GetOrdinal("flagged"))
+            });
+        }
+
         return timeline;
     }
 }
