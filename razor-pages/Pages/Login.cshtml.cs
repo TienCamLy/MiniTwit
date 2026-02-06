@@ -5,7 +5,12 @@ namespace razor_pages.Pages;
 
 public class LoginModel : PageModel
 {
-    public string? error { get; set; }
+    private readonly IDBContext _dbcontext;
+    public LoginModel(IDBContext dbcontext)
+    {
+        _dbcontext = dbcontext;
+    }
+    
     public void OnGet()
     {
     }

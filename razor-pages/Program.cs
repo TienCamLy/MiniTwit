@@ -1,7 +1,11 @@
+using razor_pages.Pages;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddScoped<IDBContext, DBContext>();
 
 var app = builder.Build();
 
