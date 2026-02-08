@@ -9,10 +9,22 @@
     <header>
         <h2> Public Timeline </h2> 
     </header>
-    
+
     <ul class="messages">
-        <li></li>
-        <em>There's no message so far.</em>
+        @if (Model.Messages.Any())
+        {
+            @foreach (var message in Model.Messages)
+            {
+                <li>
+                    <strong><a href="/@message.author.name."> @message.author.name </a></strong>
+                    @message.text
+                    <small>&mdash; @message.pub_date </small>
+                </li>
+            }
+        }
+        else
+        {
+            <li><em>There's no message so far.</em></li>
+        }
     </ul>
-    
 </div>
