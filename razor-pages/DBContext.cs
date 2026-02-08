@@ -41,13 +41,21 @@ public class DBContext : IDBContext
         var cmd = conn.CreateCommand();
         cmd.CommandText =
             """
-                SELECT *
+                SELECT 
+                    m.message_id,
+                    m.author_id,
+                    m.text,
+                    m.pub_date,
+                    m.flagged,
+                    
+                    u.user_id,
+                    u.username,
+                    u.email
                     FROM message m 
                     JOIN user u ON m.author_id = u.user_id
                     WHERE m.flagged = 0
                     ORDER BY m.pub_date DESC
                     LIMIT @perpage
-                 
             """;
         cmd.Parameters.AddWithValue("@perpage", perPage);
 
@@ -55,13 +63,22 @@ public class DBContext : IDBContext
         using var reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            timeline.Add(new Message
+            var user = new User
             {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+            
+            timeline.Add(
+                new Message 
+                {
                 message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
                 author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
                 text = reader.GetString(reader.GetOrdinal("text")),
                 pub_date = reader.GetString(reader.GetOrdinal("pub_date")),
-                flagged = reader.GetString(reader.GetOrdinal("flagged"))
+                flagged = reader.GetString(reader.GetOrdinal("flagged")),
+                author = user
             });
         }
 
@@ -74,7 +91,16 @@ public class DBContext : IDBContext
         var cmd = conn.CreateCommand();
         cmd.CommandText =
             """
-                SELECT *
+                SELECT 
+                    m.message_id,
+                    m.author_id,
+                    m.text,
+                    m.pub_date,
+                    m.flagged,
+                    
+                    u.user_id,
+                    u.username,
+                    u.email
                     FROM message m 
                     JOIN user u ON m.author_id = u.user_id
                     WHERE m.flagged = 0 AND u.username = @username
@@ -90,14 +116,22 @@ public class DBContext : IDBContext
         using var reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            timeline.Add(new Message
+            var user = new User
             {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+            
+            timeline.Add(
+                new Message {
                 message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
                 author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
                 text = reader.GetString(reader.GetOrdinal("text")),
                 pub_date = reader.GetString(reader.GetOrdinal("pub_date")),
-                flagged = reader.GetString(reader.GetOrdinal("flagged"))
-            });
+                flagged = reader.GetString(reader.GetOrdinal("flagged")),
+                author = user
+                });
         }
 
         return timeline;
