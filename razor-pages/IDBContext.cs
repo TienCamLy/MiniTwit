@@ -8,4 +8,5 @@ public interface IDBContext
     List<Message> GetPublicTimeline(int perPage);
     List<Message> GetUserTimeline(int perPage, string username);
     void CreateUser(string username, string email, string passwordHash);
+    User? Login(string username, string passwordHash);
 }

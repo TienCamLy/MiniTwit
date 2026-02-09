@@ -157,6 +157,28 @@ public class DBContext : IDBContext
 
         cmd.ExecuteNonQuery();
     }
+
+    public User? Login(string username, string password)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM user WHERE username = @username";
+        cmd.Parameters.AddWithValue("@username", username);
+        using var reader = cmd.ExecuteReader();
+
+        var hasher = new PasswordHasher<string>();
+        if (reader.Read() && hasher.VerifyHashedPassword(username, reader.GetString(reader.GetOrdinal("pw_hash")), password) == PasswordVerificationResult.Success)
+        {
+            return new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+        }
+        return null;
+    }
+
     public User GetUserByUsername(string username)
     {
         using var conn = OpenConnection();

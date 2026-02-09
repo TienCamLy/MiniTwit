@@ -45,7 +45,7 @@ public class RegisterModel : PageModel
         else
         {
             var hasher = new PasswordHasher<string>();
-            var hash = hasher.HashPassword(null, Password);
+            var hash = hasher.HashPassword(Username, Password);
             _dbcontext.CreateUser(Username, Email, hash);
             return RedirectToPage("/Login");
         }
