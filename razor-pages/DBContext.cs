@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using razor_pages.Structs;
 
@@ -49,6 +50,26 @@ public class DBContext : IDBContext
         return false;
     }
 
+    public void FollowUser(int whoId, int whomId)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "INSERT INTO follower (who_id, whom_id) VALUES (@whoId, @whomId)";
+        cmd.Parameters.AddWithValue("@whoId", whoId);
+        cmd.Parameters.AddWithValue("@whomId", whomId);
+        cmd.ExecuteNonQuery();
+    }
+
+    public void UnfollowUser(int whoId, int whomId)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM follower WHERE who_id = @whoId AND whom_id = @whomId";
+        cmd.Parameters.AddWithValue("@whoId", whoId);
+        cmd.Parameters.AddWithValue("@whomId", whomId);
+        cmd.ExecuteNonQuery();
+    }
+    
     public List<Message> GetPublicTimeline(int perPage)
     {
         using var conn = OpenConnection();
@@ -154,6 +175,7 @@ public class DBContext : IDBContext
 
         return timeline;
     }
+
     public void CreateUser(string username, string email, string passwordHash)
     {
         using var conn = OpenConnection();

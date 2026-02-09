@@ -9,4 +9,6 @@ public interface IDBContext
     List<Message> GetUserTimeline(int perPage, string username);
     void CreateUser(string username, string email, string passwordHash);
     bool IsFollowed(string username, string followedUsername);
+    void FollowUser(int whoId, int whomId);
+    void UnfollowUser(int whoId, int whomId);
 }
