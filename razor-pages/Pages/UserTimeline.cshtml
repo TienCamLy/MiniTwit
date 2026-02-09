@@ -4,51 +4,60 @@
     ViewData["Title"] = "Timeline";
     Layout = "Shared/_Layout";
 }
-<form method="post">
-    <div>
-        <header>
-            <h2> @(Model.Username)'s Timeline </h2> 
-        </header>
-        <div class="followstatus">
-            @if (Model.Username == User.Identity.Name)
-            {
-                <p>This is you!</p>
-            }
-            else if (Model.Followed)
-            {
-                <div>
-                    
-                    <p>You are currently following this user.</p>
+@if (!string.IsNullOrEmpty(Model.Error))
+{
+    <div class="error"><strong>Error:</strong> @Model.Error</div>
+}
+
+<div>
+    <header>
+        <h2> @(Model.Username)'s Timeline </h2> 
+    </header>
+    <div class="followstatus">
+        @if (Model.Username == User.Identity.Name) // TODO: get user name from current session
+        {
+            <p>This is you!</p>
+        }
+        else if (Model.Followed)
+        {
+            <div>
+                
+                <p>You are currently following this user.</p>
+                <form method="post">
+                    <input type="hidden" name="Followed" value="@Model.Followed" />
                     <div class="actions"><input type="submit" value="Unfollow user"/></div>
-                </div>
+                </form>
+            </div>
+            
+        }
+        else
+        {
+            <div>
                 
-            }
-            else
-            {
-                <div>
-                    
-                    <p>You are not yet following this user.</p>
+                <p>You are not yet following this user.</p>
+                <form method="post">
+                    <input type="hidden" name="Followed" value="@Model.Followed" />
                     <div class="actions"><input type="submit" value="Follow user"/></div>
-                </div>
-                
-            }
-        </div>
-        <ul class="messages">
-            @if (Model.Messages.Any())
-            {
-                @foreach (var message in Model.Messages)
-                {
-                    <li>
-                        <strong> @message.author.name </strong>
-                        @message.text
-                        <small>&mdash; @message.pub_date </small>
-                    </li>
-                }
-            }
-            else
-            {
-                <li><em>There's no messages so far.</em></li>
-            }
-        </ul>
+                </form>
+            </div>
+            
+        }
     </div>
-</form>
+    <ul class="messages">
+        @if (Model.Messages.Any())
+        {
+            @foreach (var message in Model.Messages)
+            {
+                <li>
+                    <strong> @message.author.name </strong>
+                    @message.text
+                    <small>&mdash; @message.pub_date </small>
+                </li>
+            }
+        }
+        else
+        {
+            <li><em>There's no messages so far.</em></li>
+        }
+    </ul>
+</div>

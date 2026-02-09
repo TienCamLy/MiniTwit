@@ -12,6 +12,7 @@ public class UserTimelineModel : PageModel
     public bool Followed { get; set; } = false;
 
     private readonly IDBContext _dbcontext;
+    public string Error { get; set; }
     
     public UserTimelineModel(IDBContext dbcontext)
     {
@@ -25,17 +26,27 @@ public class UserTimelineModel : PageModel
         Followed = User.Identity?.Name != null && _dbcontext.IsFollowed(User.Identity.Name, user);
     }
     
-    public IActionResult OnPost()
+    public IActionResult OnPost(string user)
     {
-        if (Followed)
-        {
-            Followed = false;
-        }
+        if (string.IsNullOrEmpty(User.Identity.Name))
+            Error = "You must be logged in to follow users";
+        else if (string.IsNullOrEmpty(user))
+            Error = "You must specify a user to follow";
+        else if (user == User.Identity.Name)
+            Error = "You cannot follow yourself";
         else
         {
-            Followed = true;
+            var who = _dbcontext.GetUserByUsername(User.Identity.Name);
+            var whom = _dbcontext.GetUserByUsername(user);
+            if (who == null || whom == null)
+                return Redirect($"/Public/{user}");
+
+            if (Followed)
+                _dbcontext.UnfollowUser(who.id, whom.id);
+            else
+                _dbcontext.FollowUser(who.id, whom.id);
         }
         
-        return RedirectToPage("/Public", new { username = Username });
+        return Redirect($"/Public/{user}");
     }
 }
