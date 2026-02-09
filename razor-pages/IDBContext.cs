@@ -11,4 +11,5 @@ public interface IDBContext
     bool IsFollowed(string username, string followedUsername);
     void FollowUser(int whoId, int whomId);
     void UnfollowUser(int whoId, int whomId);
+    User? Login(string username, string passwordHash);
 }
