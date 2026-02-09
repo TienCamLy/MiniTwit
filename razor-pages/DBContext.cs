@@ -84,13 +84,15 @@ public class DBContext : IDBContext
                 email = reader.GetString(reader.GetOrdinal("email"))
             };
             
+            var unix = reader.GetInt64(reader.GetOrdinal("pub_date"));
+            
             timeline.Add(
                 new Message 
                 {
                 message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
                 author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
                 text = reader.GetString(reader.GetOrdinal("text")),
-                pub_date = reader.GetString(reader.GetOrdinal("pub_date")),
+                pub_date = DateTimeOffset.FromUnixTimeSeconds(unix).DateTime,
                 flagged = reader.GetString(reader.GetOrdinal("flagged")),
                 author = user
             });
@@ -136,13 +138,15 @@ public class DBContext : IDBContext
                 name = reader.GetString(reader.GetOrdinal("username")),
                 email = reader.GetString(reader.GetOrdinal("email"))
             };
+
+            var unix = reader.GetInt64(reader.GetOrdinal("pub_date"));
             
             timeline.Add(
                 new Message {
                 message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
                 author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
                 text = reader.GetString(reader.GetOrdinal("text")),
-                pub_date = reader.GetString(reader.GetOrdinal("pub_date")),
+                pub_date = DateTimeOffset.FromUnixTimeSeconds(unix).DateTime,
                 flagged = reader.GetString(reader.GetOrdinal("flagged")),
                 author = user
                 });
