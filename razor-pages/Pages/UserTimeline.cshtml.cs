@@ -49,9 +49,9 @@ public class UserTimelineModel : PageModel
                     _dbcontext.UnfollowUser(who.id, whom.id);
                 else
                     _dbcontext.FollowUser(who.id, whom.id);
-                return Redirect($"/Public/{user}");
+                return Redirect($"/{user}");
             }
         }
-        return Redirect($"/Public/{user}/{Error}");
+        return Redirect($"/{user}/{Error}");
     }
 }

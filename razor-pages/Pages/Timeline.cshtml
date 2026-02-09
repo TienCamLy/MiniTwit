@@ -16,7 +16,7 @@
             @foreach (var message in Model.Messages)
             {
                 <li>
-                    <strong><a href="/Public/@message.author.name"> @message.author.name </a></strong>
+                    <strong><a href="/@message.author.name"> @message.author.name </a></strong>
                     @message.text
                     <small>&mdash; @message.pub_date.ToString("yyyy-MM-dd @ HH:mm") </small>
                 </li>
