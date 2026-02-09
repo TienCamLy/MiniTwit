@@ -34,6 +34,20 @@ public class DBContext : IDBContext
         }
         throw new Exception("Invald user_id");
     }
+    
+    public bool IsFollowed(string username, string followedUsername)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM follower WHERE who_id = @whoId AND whom_id = @whomId";
+        cmd.Parameters.AddWithValue("@whoId", username);
+        cmd.Parameters.AddWithValue("@whomId", followedUsername);
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read()){
+            return true;
+        }
+        return false;
+    }
 
     public List<Message> GetPublicTimeline(int perPage)
     {
