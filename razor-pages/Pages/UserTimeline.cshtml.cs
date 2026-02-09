@@ -23,7 +23,9 @@ public class UserTimelineModel : PageModel
     {
         Messages = _dbcontext.GetUserTimeline(30, user);
         Username = user;
-        Followed = User.Identity?.Name != null && _dbcontext.IsFollowed(User.Identity.Name, user);
+        var userObj = _dbcontext.GetUserByUsername(user);
+        var sessionUser = _dbcontext.GetUserByUsername("a"); // TODO: get logged in user id from current session
+        Followed = sessionUser != null && userObj != null && _dbcontext.IsFollowed(sessionUser.id, userObj.id);
         Error = error;
     }
     
@@ -33,11 +35,11 @@ public class UserTimelineModel : PageModel
             Error = "You must be logged in to follow users";
         else if (string.IsNullOrEmpty(user))
             Error = "You must specify a user to follow";
-        else if (user == User.Identity.Name)
+        else if (user == User.Identity.Name) // TODO: get logged in user name from current session
             Error = "You cannot follow yourself";
         else
         {
-            var who = _dbcontext.GetUserByUsername(User.Identity.Name);
+            var who = _dbcontext.GetUserByUsername(User.Identity.Name); // TODO: get logged in user name from current session
             var whom = _dbcontext.GetUserByUsername(user);
             if (who == null || whom == null)
                 Error = "User not found";

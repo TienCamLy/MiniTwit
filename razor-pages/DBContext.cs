@@ -36,13 +36,13 @@ public class DBContext : IDBContext
         throw new Exception("Invald user_id");
     }
     
-    public bool IsFollowed(string username, string followedUsername)
+    public bool IsFollowed(int whoId, int whomId)
     {
         using var conn = OpenConnection();
         var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT * FROM follower WHERE who_id = @whoId AND whom_id = @whomId";
-        cmd.Parameters.AddWithValue("@whoId", username);
-        cmd.Parameters.AddWithValue("@whomId", followedUsername);
+        cmd.Parameters.AddWithValue("@whoId", whoId);
+        cmd.Parameters.AddWithValue("@whomId", whomId);
         using var reader = cmd.ExecuteReader();
         if (reader.Read()){
             return true;
