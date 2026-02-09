@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using razor_pages.Structs;
 
