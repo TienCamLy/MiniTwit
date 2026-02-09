@@ -19,16 +19,17 @@ public class UserTimelineModel : PageModel
         _dbcontext = dbcontext;
     }
     
-    public void OnGet(string user)
+    public void OnGet(string user, string error)
     {
         Messages = _dbcontext.GetUserTimeline(30, user);
         Username = user;
         Followed = User.Identity?.Name != null && _dbcontext.IsFollowed(User.Identity.Name, user);
+        Error = error;
     }
     
     public IActionResult OnPost(string user)
     {
-        if (string.IsNullOrEmpty(User.Identity.Name))
+        if (string.IsNullOrEmpty(User.Identity.Name)) // TODO: get logged in user name from current session
             Error = "You must be logged in to follow users";
         else if (string.IsNullOrEmpty(user))
             Error = "You must specify a user to follow";
@@ -39,14 +40,16 @@ public class UserTimelineModel : PageModel
             var who = _dbcontext.GetUserByUsername(User.Identity.Name);
             var whom = _dbcontext.GetUserByUsername(user);
             if (who == null || whom == null)
-                return Redirect($"/Public/{user}");
-
-            if (Followed)
-                _dbcontext.UnfollowUser(who.id, whom.id);
+                Error = "User not found";
             else
-                _dbcontext.FollowUser(who.id, whom.id);
+            {
+                if (Followed)
+                    _dbcontext.UnfollowUser(who.id, whom.id);
+                else
+                    _dbcontext.FollowUser(who.id, whom.id);
+                return Redirect($"/Public/{user}");
+            }
         }
-        
-        return Redirect($"/Public/{user}");
+        return Redirect($"/Public/{user}/{Error}");
     }
 }
