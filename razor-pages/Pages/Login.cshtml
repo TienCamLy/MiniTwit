@@ -1,15 +1,16 @@
-@page "/Login"
+@page "/login"
 @model LoginModel
 @{
     ViewData["Title"] = "Sign In";
     Layout = "Shared/_Layout";
 }
+
+<h2>Sign In</h2>
+
 @if (!string.IsNullOrEmpty(Model.Error))
 {
     <div class="error"><strong>Error:</strong> @Model.Error</div>
 }
-
-<h2>Sign In</h2>
 
 <form method=post>
     <dl>
