@@ -1,4 +1,5 @@
 @page "/{user}/{error?}"
+@using razor_pages.Misc
 @model UserTimelineModel
 @{
     ViewData["Title"] = "Timeline";
@@ -48,10 +49,10 @@
         {
             @foreach (var message in Model.Messages)
             {
-                <li>
-                    <strong> @message.author.name </strong>
+                <li><img src="@Helpers.GenerateGravatarUrl(message.author.email)"/>
+                    <strong><a href="/@message.author.name"> @message.author.name </a></strong>
                     @message.text
-                    <small>&mdash; @message.pub_date </small>
+                    <small>&mdash; @message.pub_date.ToString("yyyy-MM-dd @ HH:mm") </small>
                 </li>
             }
         }
