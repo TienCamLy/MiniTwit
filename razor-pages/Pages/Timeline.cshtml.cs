@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using razor_pages.Structs;
-using System.Globalization;
 
 namespace razor_pages.Pages;
 

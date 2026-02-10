@@ -13,6 +13,14 @@ builder.Services.AddDataProtection()
 
 var app = builder.Build();
 
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/public");
+    return Task.CompletedTask;
+});
+
+app.MapRazorPages();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
