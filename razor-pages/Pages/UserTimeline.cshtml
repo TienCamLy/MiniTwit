@@ -2,7 +2,7 @@
 @using razor_pages.Misc
 @model UserTimelineModel
 @{
-    ViewData["Title"] = "Timeline";
+    ViewData["Title"] = Model.Username + "'s Timeline";
     Layout = "Shared/_Layout";
 }
 @if (!string.IsNullOrEmpty(Model.Error))
@@ -15,9 +15,9 @@
         <h2> @(Model.Username)'s Timeline </h2> 
     </header>
     <div class="followstatus">
-        @if (Model.Username == User.Identity.Name) // TODO: get user name from current session
-        {
-            <p>This is you!</p>
+        @if (Model.Username == User.Identity?.Name) 
+        { 
+            @:This is you!
         }
         else if (Model.Followed)
         {
@@ -58,7 +58,7 @@
         }
         else
         {
-            <li><em>There's no messages so far.</em></li>
+            <li><em>There's no message so far.</em></li>
         }
     </ul>
 </div>

@@ -81,7 +81,7 @@ public class LoginModel : PageModel
                     new ClaimsPrincipal(claimsIdentity), 
                     authProperties);
 
-                return RedirectToPage("/Timeline");
+                return Redirect("/");
             }
             else
             {

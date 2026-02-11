@@ -18,12 +18,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.MapGet("/", context =>
-{
-    context.Response.Redirect("/public");
-    return Task.CompletedTask;
-});
-
 app.MapRazorPages();
 
 // Configure the HTTP request pipeline.
