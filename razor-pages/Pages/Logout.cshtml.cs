@@ -14,6 +14,6 @@ public class LogoutModel : PageModel
         await HttpContext.SignOutAsync(
             CookieAuthenticationDefaults.AuthenticationScheme);
         
-        return RedirectToPage("/Timeline");
+        return RedirectToPage("/PublicTimeline");
     }
 }

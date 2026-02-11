@@ -3,11 +3,11 @@ using razor_pages.Structs;
 
 namespace razor_pages.Pages;
 
-public class TimelineModel : PageModel
+public class PublicTimelineModel : PageModel
 {
     public IEnumerable<Message> Messages { get; set; } = new List<Message>();
     private readonly IDBContext _dbcontext;
-    public TimelineModel(IDBContext dbcontext)
+    public PublicTimelineModel(IDBContext dbcontext)
     {
         _dbcontext = dbcontext;
     }
