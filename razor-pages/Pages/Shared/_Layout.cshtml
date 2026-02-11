@@ -11,9 +11,22 @@
 <div class=page>
     <h1>MiniTwit</h1>
     <div class=navigation>
-        <a href="/public">public timeline</a> |
-        <a href="/register">sign up</a> |
-        <a href="/login">sign in</a>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <text>
+                <a href="@("/" + User.Identity.Name)">my timeline</a> |
+                <a href="/public">public timeline</a> |
+                <a href="/logout">sign out [@(User.Identity.Name)]</a>
+            </text>
+        }
+        else
+        {
+            <text>
+                <a href="/public">public timeline</a> |
+                <a href="/register">sign up</a> |
+                <a href="/login">sign in</a>
+            </text>
+        }
     </div>
     <div class=body>
         <main role="main" class="pb-3">
@@ -21,7 +34,7 @@
         </main>
     </div>
     <div class=footer>
-        MiniTwit &mdash; A Flask Application
+        MiniTwit &mdash; A Razor Pages Application
     </div>
 </div>
 

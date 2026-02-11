@@ -24,7 +24,7 @@ public class UserTimelineModel : PageModel
         Messages = _dbcontext.GetUserTimeline(30, user);
         Username = user;
         var userObj = _dbcontext.GetUserByUsername(user);
-        var sessionUser = _dbcontext.GetUserByUsername("a"); // TODO: get logged in user id from current session
+        var sessionUser = _dbcontext.GetUserByUsername(User.Identity.Name); // TODO: get logged in user id from current session
         Followed = sessionUser != null && userObj != null && _dbcontext.IsFollowed(sessionUser.id, userObj.id);
         Error = error;
     }
