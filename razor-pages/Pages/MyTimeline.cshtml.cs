@@ -12,6 +12,7 @@ public class MyTimelineModel : PageModel
     public string Text { get; set; } = "";
 
     private readonly IDBContext _dbcontext;
+    private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
     public MyTimelineModel(IDBContext dbcontext)
     {
         _dbcontext = dbcontext;
@@ -20,18 +21,13 @@ public class MyTimelineModel : PageModel
     {
         if (User.Identity?.IsAuthenticated != true || User.Identity.Name == null) return Redirect("/public");
         
-        Messages = _dbcontext.GetUserTimeline(30, User.Identity.Name);
+        Messages = _dbcontext.GetOwnTimeline(30, UserId);
         return Page();
-
     }
     
     public IActionResult OnPostCreateMessage()
     {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        _dbcontext.CreateMessage(userId, Text);
-
-        Console.WriteLine("text: " + Text);
+        _dbcontext.CreateMessage(UserId, Text);
         return RedirectToPage();
     }
-
 }

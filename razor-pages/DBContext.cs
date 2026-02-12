@@ -175,6 +175,67 @@ public class DBContext : IDBContext
 
         return timeline;
     }
+    
+    public List<Message> GetOwnTimeline(int perPage, int authorId)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            """
+                SELECT 
+                    m.message_id,
+                    m.author_id,
+                    m.text,
+                    m.pub_date,
+                    m.flagged,
+                    
+                    u.user_id,
+                    u.username,
+                    u.email
+                FROM message m
+                JOIN user u ON m.author_id = u.user_id
+                WHERE m.flagged = 0
+                AND (
+                    m.author_id = @authorId
+                    OR m.author_id IN (
+                        SELECT whom_id
+                        FROM follower
+                        WHERE who_id = @authorId
+                    )
+                )
+                ORDER BY m.pub_date DESC
+                LIMIT @perpage
+                 
+            """;
+        cmd.Parameters.AddWithValue("@perpage", perPage);
+        cmd.Parameters.AddWithValue("@authorId", authorId);
+        
+        var timeline = new List<Message>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var user = new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+
+            var unix = reader.GetInt64(reader.GetOrdinal("pub_date"));
+            
+            timeline.Add(
+                new Message {
+                    message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
+                    author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
+                    text = reader.GetString(reader.GetOrdinal("text")),
+                    pub_date = DateTimeOffset.FromUnixTimeSeconds(unix).DateTime,
+                    flagged = reader.GetString(reader.GetOrdinal("flagged")),
+                    author = user
+                });
+        }
+
+        return timeline;
+    }
 
     public void CreateUser(string username, string email, string passwordHash)
     {
@@ -194,7 +255,7 @@ public class DBContext : IDBContext
         cmd.ExecuteNonQuery();
     }
     
-    public void CreateMessage(int author_id, string text)
+    public void CreateMessage(int authorId, string text)
     {
         using var conn = OpenConnection();
         var cmd = conn.CreateCommand();
@@ -202,10 +263,10 @@ public class DBContext : IDBContext
         cmd.CommandText =
             """
             INSERT INTO message (author_id, text, pub_date, flagged)
-            VALUES (@author_id, @text, @pub_date, 0)
+            VALUES (@authorId, @text, @pub_date, 0)
             """;
 
-        cmd.Parameters.AddWithValue("@author_id", author_id);
+        cmd.Parameters.AddWithValue("@authorId", authorId);
         cmd.Parameters.AddWithValue("@text", text);
         cmd.Parameters.AddWithValue("@pub_date",DateTimeOffset.UtcNow.ToUnixTimeSeconds());
         
