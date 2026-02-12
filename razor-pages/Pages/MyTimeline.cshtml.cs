@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using razor_pages.Structs;
@@ -7,6 +8,8 @@ namespace razor_pages.Pages;
 public class MyTimelineModel : PageModel
 {
     public IEnumerable<Message> Messages { get; set; } = new List<Message>();
+    [BindProperty]
+    public string Text { get; set; } = "";
 
     private readonly IDBContext _dbcontext;
     public MyTimelineModel(IDBContext dbcontext)
@@ -21,4 +24,14 @@ public class MyTimelineModel : PageModel
         return Page();
 
     }
+    
+    public IActionResult OnPostCreateMessage()
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        _dbcontext.CreateMessage(userId, Text);
+
+        Console.WriteLine("text: " + Text);
+        return RedirectToPage();
+    }
+
 }

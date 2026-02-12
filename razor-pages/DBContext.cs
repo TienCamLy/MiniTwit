@@ -193,6 +193,24 @@ public class DBContext : IDBContext
 
         cmd.ExecuteNonQuery();
     }
+    
+    public void CreateMessage(int author_id, string text)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+
+        cmd.CommandText =
+            """
+            INSERT INTO message (author_id, text, pub_date, flagged)
+            VALUES (@author_id, @text, @pub_date, 0)
+            """;
+
+        cmd.Parameters.AddWithValue("@author_id", author_id);
+        cmd.Parameters.AddWithValue("@text", text);
+        cmd.Parameters.AddWithValue("@pub_date",DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        
+        cmd.ExecuteNonQuery();
+    }
 
     public User? Login(string username, string password)
     {
