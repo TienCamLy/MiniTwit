@@ -36,18 +36,18 @@ public class UserTimelineModel : PageModel
     
     public IActionResult OnPost(string user)
     {
-        if (string.IsNullOrEmpty(User.Identity.Name)) // TODO: get logged in user name from current session
+        if (string.IsNullOrEmpty(User.Identity.Name))
             Error = "You must be logged in to follow users";
         else if (string.IsNullOrEmpty(user))
             Error = "You must specify a user to follow";
-        else if (user == User.Identity.Name) // TODO: get logged in user name from current session
+        else if (user == User.Identity.Name)
             Error = "You cannot follow yourself";
         else
         {
-            var who = _dbcontext.GetUserByUsername(User.Identity.Name); // TODO: get logged in user name from current session
+            var who = _dbcontext.GetUserByUsername(User.Identity.Name);
             var whom = _dbcontext.GetUserByUsername(user);
             if (who == null || whom == null)
-                Error = "User not found";
+                Error = $"User with name '{(who == null ? User.Identity.Name : user)}' not found";
             else
             {
                 if (_dbcontext.IsFollowed(who.id, whom.id))
