@@ -1,3 +1,4 @@
+# API Generator Stub
 API-build-stub:
 	cd out/itu-minitwit-sim-stub && \
 	docker build -f src/Org.OpenAPITools/Dockerfile -t org.openapitools .
@@ -11,5 +12,6 @@ API-clean-stub:
 	cd out/itu-minitwit-sim-stub && \
 	docker rm -f org.openapitools
 
+# Razor Pages App
 app-build:
 	docker compose up --build

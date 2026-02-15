@@ -23,9 +23,14 @@ public class UserTimelineModel : PageModel
     {
         Messages = _dbcontext.GetUserTimeline(30, user);
         Username = user;
-        var userObj = _dbcontext.GetUserByUsername(user);
-        var sessionUser = _dbcontext.GetUserByUsername(User.Identity.Name); // TODO: get logged in user id from current session
-        Followed = sessionUser != null && userObj != null && _dbcontext.IsFollowed(sessionUser.id, userObj.id);
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var userObj = _dbcontext.GetUserByUsername(user);
+            var sessionUser = _dbcontext.GetUserByUsername(User.Identity.Name);
+            Followed = sessionUser != null && userObj != null && _dbcontext.IsFollowed(sessionUser.id, userObj.id);
+        } else {
+            Followed = false;
+        }
         Error = error;
     }
     
@@ -45,7 +50,7 @@ public class UserTimelineModel : PageModel
                 Error = "User not found";
             else
             {
-                if (Followed)
+                if (_dbcontext.IsFollowed(who.id, whom.id))
                     _dbcontext.UnfollowUser(who.id, whom.id);
                 else
                     _dbcontext.FollowUser(who.id, whom.id);
