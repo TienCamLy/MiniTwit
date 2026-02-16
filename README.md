@@ -9,6 +9,14 @@ Contributions to this repository should be structured as necessary following the
 - All Work should be done on branches representing a single task. In the case of multiple closely related tasks, these may be implemented on the same branch as necessary.
 - Branches shall not be merged directly to main, but peer reviewed using PRs before merging.
 
+## Naming Conventions
+- Practical changes not related to a particular feature: *branches* - 'chore/XXX' *PRs* - 'Chore: XXX'
+- Changes related to fixing bugs: *branches* - 'bug/XXX' *PRs* - 'Bug: XXX'
+- Changes related to writing/running tests: *branches* - 'test/XXX' *PRs* - 'Test: XXX'
+- Changes related to deployment/CICD flows: *branches* - 'deploy/XXX' *PRs* - 'Deploy: XXX'
+- Changes related to Refactoring: *branches* - 'refactor/XXX' *PRs* - 'Refactor: XXX'
+- Changes related to API implementation: *branches* - 'api/XXX' *PRs* - 'API: XXX'
+
 # Documentation of choices and issues
 ## Choice of Programming Language / Tech Stack
 We chose to refactor to C# with [Razor Pages](https://learn.microsoft.com/en-us/aspnet/core/razor-pages).
