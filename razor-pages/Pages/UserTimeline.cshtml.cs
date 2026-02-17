@@ -38,10 +38,6 @@ public class UserTimelineModel : PageModel
     {
         if (string.IsNullOrEmpty(User.Identity.Name))
             Error = "You must be logged in to follow users";
-        else if (string.IsNullOrEmpty(user))
-            Error = "You must specify a user to follow";
-        else if (user == User.Identity.Name)
-            Error = "You cannot follow yourself";
         else
         {
             var who = _dbcontext.GetUserByUsername(User.Identity.Name);
