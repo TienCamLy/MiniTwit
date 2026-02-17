@@ -1,3 +1,8 @@
+# Razor Pages App
+app-build:
+	docker compose up --build
+
+# API Stub Build and Run
 API-build-stub:
 	cd out/itu-minitwit-sim-stub && \
 	docker build -f src/Org.OpenAPITools/Dockerfile -t org.openapitools .

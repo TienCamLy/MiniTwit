@@ -38,7 +38,6 @@ public class LoginModel : PageModel
             Error = "You have to enter a password";
         else
         {
-            Console.WriteLine($"Logging in... {Username} {Password}");
             var user = _dbcontext.Login(Username, Password);
             if (user != null)
             {

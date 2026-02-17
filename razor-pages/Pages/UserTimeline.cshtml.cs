@@ -23,29 +23,30 @@ public class UserTimelineModel : PageModel
     {
         Messages = _dbcontext.GetUserTimeline(30, user);
         Username = user;
-        var userObj = _dbcontext.GetUserByUsername(user);
-        var sessionUser = _dbcontext.GetUserByUsername(User.Identity.Name); // TODO: get logged in user id from current session
-        Followed = sessionUser != null && userObj != null && _dbcontext.IsFollowed(sessionUser.id, userObj.id);
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var userObj = _dbcontext.GetUserByUsername(user);
+            var sessionUser = _dbcontext.GetUserByUsername(User.Identity.Name);
+            Followed = sessionUser != null && userObj != null && _dbcontext.IsFollowed(sessionUser.id, userObj.id);
+        } else {
+            Followed = false;
+        }
         Error = error;
     }
     
     public IActionResult OnPost(string user)
     {
-        if (string.IsNullOrEmpty(User.Identity.Name)) // TODO: get logged in user name from current session
+        if (string.IsNullOrEmpty(User.Identity.Name))
             Error = "You must be logged in to follow users";
-        else if (string.IsNullOrEmpty(user))
-            Error = "You must specify a user to follow";
-        else if (user == User.Identity.Name) // TODO: get logged in user name from current session
-            Error = "You cannot follow yourself";
         else
         {
-            var who = _dbcontext.GetUserByUsername(User.Identity.Name); // TODO: get logged in user name from current session
+            var who = _dbcontext.GetUserByUsername(User.Identity.Name);
             var whom = _dbcontext.GetUserByUsername(user);
             if (who == null || whom == null)
-                Error = "User not found";
+                Error = $"User with name '{(who == null ? User.Identity.Name : user)}' not found";
             else
             {
-                if (Followed)
+                if (_dbcontext.IsFollowed(who.id, whom.id))
                     _dbcontext.UnfollowUser(who.id, whom.id);
                 else
                     _dbcontext.FollowUser(who.id, whom.id);
