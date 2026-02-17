@@ -28,6 +28,12 @@
             </text>
         }
     </div>
+    @if (TempData["FlashMessage"] != null)
+    {
+        <ul class="flashes">
+            <li>@TempData["FlashMessage"]</li>
+        </ul>
+    }
     <div class=body>
         <main role="main" class="pb-3">
             @RenderBody()

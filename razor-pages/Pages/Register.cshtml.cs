@@ -47,6 +47,8 @@ public class RegisterModel : PageModel
             var hasher = new PasswordHasher<string>();
             var hash = hasher.HashPassword(Username, Password);
             _dbcontext.CreateUser(Username, Email, hash);
+            
+            TempData["FlashMessage"] = "You were successfully registered and can login now";
             return RedirectToPage("/Login");
         }
         return Page();

@@ -14,6 +14,7 @@ public class LogoutModel : PageModel
         await HttpContext.SignOutAsync(
             CookieAuthenticationDefaults.AuthenticationScheme);
         
+        TempData["FlashMessage"] = "You were logged out";
         return RedirectToPage("/PublicTimeline");
     }
 }

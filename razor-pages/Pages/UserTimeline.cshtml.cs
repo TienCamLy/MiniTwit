@@ -47,9 +47,15 @@ public class UserTimelineModel : PageModel
             else
             {
                 if (_dbcontext.IsFollowed(who.id, whom.id))
+                {
                     _dbcontext.UnfollowUser(who.id, whom.id);
+                    TempData["FlashMessage"] = $"You are no longer following \"{whom.name}\"";   
+                }
                 else
+                {
                     _dbcontext.FollowUser(who.id, whom.id);
+                    TempData["FlashMessage"] = $"You are now following \"{whom.name}\"";
+                }
                 return Redirect($"/{user}");
             }
         }
