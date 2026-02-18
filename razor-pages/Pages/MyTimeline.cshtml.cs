@@ -28,6 +28,7 @@ public class MyTimelineModel : PageModel
     public IActionResult OnPostCreateMessage()
     {
         _dbcontext.CreateMessage(UserId, Text);
+        TempData["FlashMessage"] = "Your message was recorded";
         return RedirectToPage();
     }
 }
