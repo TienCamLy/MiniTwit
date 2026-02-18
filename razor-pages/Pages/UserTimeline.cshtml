@@ -14,41 +14,33 @@
     <header>
         <h2> @(Model.Username)'s Timeline </h2> 
     </header>
-    <div class="followstatus">
-        @if (Model.Username == User.Identity?.Name) 
-        { 
-            @:This is you!
-        }
-        else if (Model.Followed)
-        {
-            <div>
-                
-                <p>You are currently following this user.</p>
-                <form method="post">
-                    <div class="actions"><input type="submit" value="Unfollow user"/></div>
-                </form>
-            </div>
-            
-        }
-        else
-        {
-            <div>
-                
-                <p>You are not yet following this user.</p>
-                <form method="post">
-                    <div class="actions"><input type="submit" value="Follow user"/></div>
-                </form>
-            </div>
-            
-        }
-    </div>
+    
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="followstatus">
+            @if (Model.Username == User.Identity?.Name) 
+            { 
+                @:This is you!
+            }
+            else if (Model.Followed)
+            {
+                <form method="post" id="unfollowForm"></form>
+                @:You are currently following this user. <a href="#" onclick="document.getElementById('unfollowForm').submit(); return false;">Unfollow user</a>.
+            }
+            else
+            {
+                <form method="post" id="followForm"></form>
+                @:You are not yet following this user. <a href="#" onclick="document.getElementById('followForm').submit(); return false;">Follow user</a>.
+            }
+        </div>
+    }
     <ul class="messages">
         @if (Model.Messages.Any())
         {
             @foreach (var message in Model.Messages)
             {
                 <li><img src="@Helpers.GenerateGravatarUrl(message.author.email)"/>
-                    <strong><a href="/@message.author.name"> @message.author.name </a></strong>
+                    <strong><a href="/@message.author.name">@message.author.name</a></strong>
                     @message.text
                     <small>&mdash; @message.pub_date.ToString("yyyy-MM-dd @ HH:mm") </small>
                 </li>
