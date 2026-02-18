@@ -16,9 +16,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie();
 builder.Services.AddAuthorization();
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 app.MapRazorPages();
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
