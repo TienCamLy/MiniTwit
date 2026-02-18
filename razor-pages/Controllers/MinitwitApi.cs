@@ -220,10 +220,15 @@ namespace Org.OpenAPITools.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
 
-            //TODO: Uncomment the next line to return response 204 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(204);
+            if (payload == null || string.IsNullOrEmpty(payload.Content))
+                return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Content is required" });
 
-            throw new NotImplementedException();
+            var user = _dbcontext.GetUserByUsername(username);
+            if (user == null)
+                return UserNotFound();
+
+            _dbcontext.CreateMessage(user.id, payload.Content);
+            return NoContent();
         }
 
         /// <summary>
