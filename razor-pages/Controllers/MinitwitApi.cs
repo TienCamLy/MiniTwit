@@ -173,14 +173,30 @@ namespace Org.OpenAPITools.Controllers
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
-            
-            if (_dbcontext.GetUserByUsername(username) == null)
+
+            if (payload == null)
+                return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
+
+            var hasFollow = !string.IsNullOrEmpty(payload.Follow);
+            var hasUnfollow = !string.IsNullOrEmpty(payload.Unfollow);
+            if (hasFollow == hasUnfollow) // both set or both missing
+                return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
+
+            var who = _dbcontext.GetUserByUsername(username);
+            if (who == null)
                 return UserNotFound();
 
-            //TODO: Uncomment the next line to return response 204 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(204);
+            var targetUsername = hasFollow ? payload.Follow! : payload.Unfollow!;
+            var whom = _dbcontext.GetUserByUsername(targetUsername);
+            if (whom == null)
+                return UserNotFound();
 
-            throw new NotImplementedException();
+            if (hasFollow)
+                _dbcontext.FollowUser(who.id, whom.id);
+            else
+                _dbcontext.UnfollowUser(who.id, whom.id);
+
+            return NoContent();
         }
 
         /// <summary>
