@@ -19,6 +19,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
 using Org.OpenAPITools.Attributes;
 using Org.OpenAPITools.Models;
+using razor_pages.Converters;
+using razor_pages.Pages;
 
 namespace Org.OpenAPITools.Controllers
 { 
@@ -28,6 +30,13 @@ namespace Org.OpenAPITools.Controllers
     [ApiController]
     public class MinitwitApiController : ControllerBase
     { 
+
+        private readonly IDBContext _dbcontext;
+        public MinitwitApiController(IDBContext dbcontext)
+        {
+            _dbcontext = dbcontext;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -118,16 +127,9 @@ namespace Org.OpenAPITools.Controllers
                 return Unauthorized();
             }
 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default);
-            string exampleJson = null;
-            exampleJson = "[ {\n  \"pub_date\" : \"2019-12-01 12:00:00\",\n  \"user\" : \"Helge\",\n  \"content\" : \"Hello, World!\"\n}, {\n  \"pub_date\" : \"2019-12-01 12:00:00\",\n  \"user\" : \"Helge\",\n  \"content\" : \"Hello, World!\"\n} ]";
-
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<List<Message>>(exampleJson)
-            : default;
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var domainMessages = _dbcontext.GetPublicTimeline(no ?? 100);
+            var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
+            return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
         /// <summary>
@@ -154,18 +156,12 @@ namespace Org.OpenAPITools.Controllers
                 return Unauthorized();
             }
 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default);
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
-            string exampleJson = null;
-            exampleJson = "[ {\n  \"pub_date\" : \"2019-12-01 12:00:00\",\n  \"user\" : \"Helge\",\n  \"content\" : \"Hello, World!\"\n}, {\n  \"pub_date\" : \"2019-12-01 12:00:00\",\n  \"user\" : \"Helge\",\n  \"content\" : \"Hello, World!\"\n} ]";
-            
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<List<Message>>(exampleJson)
-            : default;
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            if (_dbcontext.GetUserByUsername(username) == null)
+                return UserNotFound();
+
+            var domainMessages = _dbcontext.GetUserTimeline(no ?? 100, username);
+            var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
+            return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
         /// <summary>
@@ -265,6 +261,15 @@ namespace Org.OpenAPITools.Controllers
             {
                 Status = 403,
                 ErrorMsg = "Unauthorized - Must include correct Authorization header"
+            });
+        }
+
+        private IActionResult UserNotFound()
+        {
+            return new ObjectResult(new ErrorResponse
+            {
+                Status = 404,
+                ErrorMsg = "User not found"
             });
         }
     }
