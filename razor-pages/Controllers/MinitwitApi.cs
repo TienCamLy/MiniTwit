@@ -59,19 +59,12 @@ namespace Org.OpenAPITools.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
             
-            if (_dbcontext.GetUserByUsername(username) == null)
+            var user = _dbcontext.GetUserByUsername(username);
+            if (user == null)
                 return UserNotFound();
 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default);
-            string exampleJson = null;
-            exampleJson = "{\n  \"follows\" : [ \"Helge\", \"John\" ]\n}";
-            
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<FollowsResponse>(exampleJson)
-            : default;
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            var followers = _dbcontext.GetFollowedUsers(user.id, no ?? 100);
+            return new ObjectResult(new FollowsResponse { Follows = followers }) { StatusCode = 200 };
         }
 
         /// <summary>

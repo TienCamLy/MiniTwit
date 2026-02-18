@@ -10,6 +10,7 @@ public interface IDBContext
     List<Message> GetOwnTimeline(int perPage, int author_id);
     void CreateUser(string username, string email, string passwordHash);
     void CreateMessage(int authorId, string text);
+    List<string> GetFollowedUsers(int whoId, int maxResults);
     bool IsFollowed(int whoId, int whomId);
     void FollowUser(int whoId, int whomId);
     void UnfollowUser(int whoId, int whomId);

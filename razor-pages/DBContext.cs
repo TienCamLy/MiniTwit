@@ -35,6 +35,22 @@ public class DBContext : IDBContext
         }
         throw new Exception("Invald user_id");
     }
+
+    public List<string> GetFollowedUsers(int who_id, int maxResults)
+    {
+        using var conn = OpenConnection();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT u.username FROM follower f JOIN user u ON f.whom_id = u.user_id WHERE f.who_id = @userId LIMIT @no";
+        cmd.Parameters.AddWithValue("@userId", who_id);
+        cmd.Parameters.AddWithValue("@no", maxResults);
+        using var reader = cmd.ExecuteReader();
+        var followers = new List<string>();
+        while (reader.Read())
+        {
+            followers.Add(reader.GetString(reader.GetOrdinal("username")));
+        }
+        return followers;
+    }
     
     public bool IsFollowed(int whoId, int whomId)
     {
