@@ -57,14 +57,13 @@ namespace Org.OpenAPITools.Controllers
         public virtual IActionResult GetFollow([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no)
         {
             if (!ValidateAuthorization(authorization))
-            {
                 return Unauthorized();
-            }
+            
+            if (_dbcontext.GetUserByUsername(username) == null)
+                return UserNotFound();
 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default);
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
             string exampleJson = null;
             exampleJson = "{\n  \"follows\" : [ \"Helge\", \"John\" ]\n}";
             
@@ -123,9 +122,7 @@ namespace Org.OpenAPITools.Controllers
         {
 
             if (!ValidateAuthorization(authorization))
-            {
                 return Unauthorized();
-            }
 
             var domainMessages = _dbcontext.GetPublicTimeline(no ?? 100);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
@@ -152,9 +149,7 @@ namespace Org.OpenAPITools.Controllers
         public virtual IActionResult GetMessagesPerUser([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no)
         {
             if (!ValidateAuthorization(authorization))
-            {
                 return Unauthorized();
-            }
 
             if (_dbcontext.GetUserByUsername(username) == null)
                 return UserNotFound();
@@ -184,14 +179,13 @@ namespace Org.OpenAPITools.Controllers
         public virtual IActionResult PostFollow([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromBody]FollowAction payload, [FromQuery (Name = "latest")]int? latest)
         {
             if (!ValidateAuthorization(authorization))
-            {
                 return Unauthorized();
-            }
+            
+            if (_dbcontext.GetUserByUsername(username) == null)
+                return UserNotFound();
 
             //TODO: Uncomment the next line to return response 204 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(204);
-            //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(404);
 
             throw new NotImplementedException();
         }
@@ -215,9 +209,7 @@ namespace Org.OpenAPITools.Controllers
         public virtual IActionResult PostMessagesPerUser([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromBody]PostMessage payload, [FromQuery (Name = "latest")]int? latest)
         {
             if (!ValidateAuthorization(authorization))
-            {
                 return Unauthorized();
-            }
 
             //TODO: Uncomment the next line to return response 204 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(204);
