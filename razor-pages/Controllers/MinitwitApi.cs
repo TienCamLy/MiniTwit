@@ -66,6 +66,10 @@ namespace Org.OpenAPITools.Controllers
                 return UserNotFound();
 
             var followers = _dbcontext.GetFollowedUsers(user.id, no ?? 100);
+            
+            if (latest.HasValue)
+                _latest = latest.Value;
+            
             return new ObjectResult(new FollowsResponse { Follows = followers }) { StatusCode = 200 };
         }
 
@@ -117,12 +121,13 @@ namespace Org.OpenAPITools.Controllers
 
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
-
-            if (latest.HasValue)
-                _latest = latest.Value;
             
             var domainMessages = _dbcontext.GetPublicTimeline(no ?? 100);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
+            
+            if (latest.HasValue)
+                _latest = latest.Value;
+            
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
@@ -147,15 +152,16 @@ namespace Org.OpenAPITools.Controllers
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
-            
-            if (latest.HasValue)
-                _latest = latest.Value;
 
             if (_dbcontext.GetUserByUsername(username) == null)
                 return UserNotFound();
 
             var domainMessages = _dbcontext.GetUserTimeline(no ?? 100, username);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
+            
+            if (latest.HasValue)
+                _latest = latest.Value;
+            
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
@@ -179,10 +185,7 @@ namespace Org.OpenAPITools.Controllers
         public virtual IActionResult PostFollow([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromBody]FollowAction payload, [FromQuery (Name = "latest")]int? latest)
         {
             if (!ValidateAuthorization(authorization))
-                return Unauthorized();
-            
-            if (latest.HasValue)
-                _latest = latest.Value;
+                return Unauthorized(); 
 
             if (payload == null)
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
@@ -206,6 +209,11 @@ namespace Org.OpenAPITools.Controllers
             else
                 _dbcontext.UnfollowUser(who.id, whom.id);
 
+            if (latest.HasValue)
+                _latest = latest.Value;
+            else
+                _latest++;
+            
             return NoContent();
         }
 
@@ -229,9 +237,6 @@ namespace Org.OpenAPITools.Controllers
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
-            
-            if (latest.HasValue)
-                _latest = latest.Value;
 
             if (payload == null || string.IsNullOrEmpty(payload.Content))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Content is required" });
@@ -241,6 +246,10 @@ namespace Org.OpenAPITools.Controllers
                 return UserNotFound();
 
             _dbcontext.CreateMessage(user.id, payload.Content);
+            
+            if (latest.HasValue)
+                _latest = latest.Value;
+            
             return NoContent();
         }
 

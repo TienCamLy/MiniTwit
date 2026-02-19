@@ -7,7 +7,7 @@ from pathlib import Path
 from contextlib import closing
 
 
-BASE_URL = 'http://127.0.0.1:8080'
+BASE_URL = 'http://127.0.0.1:5185'
 DATABASE = "../razor-pages/minitwit.db"
 USERNAME = 'simulator'
 PWD = 'super_safe!'
