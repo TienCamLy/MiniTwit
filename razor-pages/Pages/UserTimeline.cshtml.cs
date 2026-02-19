@@ -12,7 +12,7 @@ public class UserTimelineModel : PageModel
     public bool Followed { get; set; } = false;
 
     private readonly IDBContext _dbcontext;
-    public string Error { get; set; }
+    public string? Error { get; set; }
     
     public UserTimelineModel(IDBContext dbcontext)
     {
@@ -23,7 +23,7 @@ public class UserTimelineModel : PageModel
     {
         Messages = _dbcontext.GetUserTimeline(30, user);
         Username = user;
-        if (User.Identity?.IsAuthenticated == true)
+        if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
         {
             var userObj = _dbcontext.GetUserByUsername(user);
             var sessionUser = _dbcontext.GetUserByUsername(User.Identity.Name);
@@ -36,14 +36,16 @@ public class UserTimelineModel : PageModel
     
     public IActionResult OnPost(string user)
     {
-        if (string.IsNullOrEmpty(User.Identity.Name))
+        var identityName = User.Identity?.Name;
+        
+        if (string.IsNullOrEmpty(identityName))
             Error = "You must be logged in to follow users";
         else
         {
-            var who = _dbcontext.GetUserByUsername(User.Identity.Name);
+            var who = _dbcontext.GetUserByUsername(identityName);
             var whom = _dbcontext.GetUserByUsername(user);
             if (who == null || whom == null)
-                Error = $"User with name '{(who == null ? User.Identity.Name : user)}' not found";
+                Error = $"User with name '{(who == null ? identityName : user)}' not found";
             else
             {
                 if (_dbcontext.IsFollowed(who.id, whom.id))

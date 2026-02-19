@@ -12,13 +12,11 @@ namespace razor_pages.Pages;
 public class LoginModel : PageModel
 {
 
-    [BindProperty]
-    public string Username { get; set; }
+    [BindProperty] public string Username { get; set; } = string.Empty;
 
-    [BindProperty]
-    public string Password { get; set; }
+    [BindProperty] public string Password { get; set; } = String.Empty;
 
-    public string Error { get; set; }
+    public string Error { get; set; } = string.Empty;
 
     private readonly IDBContext _dbcontext;
     public LoginModel(IDBContext dbcontext)

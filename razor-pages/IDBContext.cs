@@ -4,7 +4,7 @@ namespace razor_pages.Pages;
 public interface IDBContext
 {
     User GetUserById(string id);
-    User GetUserByUsername(string username);
+    User? GetUserByUsername(string username);
     List<Message> GetPublicTimeline(int perPage);
     List<Message> GetUserTimeline(int perPage, string username);
     List<Message> GetOwnTimeline(int perPage, int author_id);

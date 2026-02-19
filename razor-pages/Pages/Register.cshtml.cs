@@ -7,20 +7,16 @@ namespace razor_pages.Pages;
 public class RegisterModel : PageModel
 {
     private readonly IDBContext _dbcontext;
-    
-    [BindProperty]
-    public string Email { get; set; }
-    
-    [BindProperty]
-    public string Username { get; set; }
 
-    [BindProperty]
-    public string Password { get; set; }
+    [BindProperty] public string Email { get; set; } = string.Empty;
+
+    [BindProperty] public string Username { get; set; } = string.Empty;
+
+    [BindProperty] public string Password { get; set; } = string.Empty;
+
+    [BindProperty] public string Password2 { get; set; } = string.Empty;
     
-    [BindProperty] 
-    public string Password2 { get; set; }
-    
-    public string Error { get; set; }
+    public string Error { get; set; } = String.Empty;
     public RegisterModel(IDBContext dbcontext)
     {
         _dbcontext = dbcontext;

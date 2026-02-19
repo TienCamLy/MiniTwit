@@ -294,7 +294,7 @@ public class DBContext : IDBContext
         return null;
     }
 
-    public User GetUserByUsername(string username)
+    public User? GetUserByUsername(string username)
     {
         using var conn = OpenConnection();
         var cmd = conn.CreateCommand();
