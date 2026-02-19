@@ -22,5 +22,5 @@ deploy-digital-ocean: # requires Digital Ocean API PAT token to be set in enviro
 	vagrant up
 
 clean-digital-ocean:
-	vagrant destroy -f
+	vagrant destroy
 	rm -rf .vagrant
