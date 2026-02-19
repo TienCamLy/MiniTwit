@@ -1,8 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$ip_file = "db_ip.txt"
-
 Vagrant.configure("2") do |config|
   config.vm.box = 'digital_ocean'
   config.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
@@ -33,9 +31,11 @@ Vagrant.configure("2") do |config|
       sudo apt-get update -qq
 
       # Install Docker
-      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose-v2 git
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose-v2
 
-      # Deploy (from synced project dir)
+      # Make DB writable by the container
+      chmod 666 /vagrant/razor-pages/minitwit.db
+      # Deploy (from synced project dir; DB uses named volume minitwit-db)
       cd /vagrant && sudo docker compose up --build -d
     SHELL
   end
