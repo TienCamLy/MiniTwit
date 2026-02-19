@@ -32,7 +32,7 @@ namespace Org.OpenAPITools.Models
         /// <value>Username</value>
         [Required]
         [DataMember(Name="username", EmitDefaultValue=false)]
-        public string Username { get; set; }
+        public required string Username { get; set; }
 
         /// <summary>
         /// Email address
@@ -40,7 +40,7 @@ namespace Org.OpenAPITools.Models
         /// <value>Email address</value>
         [Required]
         [DataMember(Name="email", EmitDefaultValue=false)]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         /// <summary>
         /// Password
@@ -48,7 +48,7 @@ namespace Org.OpenAPITools.Models
         /// <value>Password</value>
         [Required]
         [DataMember(Name="pwd", EmitDefaultValue=false)]
-        public string Pwd { get; set; }
+        public required string Pwd { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object

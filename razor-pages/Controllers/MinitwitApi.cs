@@ -14,6 +14,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
@@ -247,13 +248,28 @@ namespace Org.OpenAPITools.Controllers
         [SwaggerResponse(statusCode: 400, type: typeof(ErrorResponse), description: "Bad Request | Possible reasons:  - missing username  - invalid email  - password missing  - username already taken")]
         public virtual IActionResult PostRegister([FromBody]RegisterRequest payload, [FromQuery (Name = "latest")]int? latest)
         {
+            var username =  payload.Username;
+            var email = payload.Email;
+            var password = payload.Pwd;
+            
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) 
+                return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Username or password is missing" });
+            
+            if (string.IsNullOrEmpty(email) || !email.Contains('@'))
+                return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Invalid email" });
+            
+            //TODO: 
+            //if (Password != Password2)
+            //    Error = "The two passwords do not match";
+            
+            if (_dbcontext.GetUserByUsername(username) != null) 
+                return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "The username is already taken" });
 
-            //TODO: Uncomment the next line to return response 204 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(204);
-            //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(400, default);
-
-            throw new NotImplementedException();
+            var hasher = new PasswordHasher<string>();
+            var hash = hasher.HashPassword(username, password);
+            _dbcontext.CreateUser(username, email, hash);
+            
+            return NoContent();
         }
 
         private bool ValidateAuthorization(string authorization)
