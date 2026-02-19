@@ -64,3 +64,6 @@ razor-pages/bin
 # Deployment
 .secrets
 .vagrant/*
+
+# Environment variables
+.env

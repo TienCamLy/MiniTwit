@@ -1,4 +1,4 @@
-﻿services:
+services:
   razor-pages:
     image: razor-pages
     build:
@@ -6,6 +6,8 @@
       dockerfile: razor-pages/Dockerfile
     ports:
       - "8080:8080"
+    env_file:
+      - ./razor-pages/.env
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:8080
     volumes:
