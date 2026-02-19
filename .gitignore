@@ -61,5 +61,9 @@ minitwit.db
 razor-pages/obj
 razor-pages/bin
 
+# Deployment
+.secrets
+.vagrant/*
+
 # Environment variables
 .env
