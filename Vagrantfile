@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$ip_file = "db_ip.txt"
+
+Vagrant.configure("2") do |config|
+  config.vm.box = 'digital_ocean'
+  config.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+  config.ssh.private_key_path = '~/.ssh/id_rsa'
+  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+
+  config.vm.define "webserver", primary: false do |server|
+    server.vm.provider :digital_ocean do |provider|
+      provider.ssh_key_name = ENV["SSH_KEY_NAME"]
+      provider.token = ENV["DIGITAL_OCEAN_TOKEN"]
+      provider.image = 'ubuntu-22-04-x64'
+      provider.region = 'fra1'
+      provider.size = 's-1vcpu-1gb'
+      provider.privatenetworking = true
+    end
+
+    server.vm.hostname = "webserver"
+
+    server.vm.provision "shell", inline: <<-SHELL
+      set -e
+      # Wait for apt lock (unattended-upgrades often runs on first boot)
+      echo "Waiting for apt to be ready..."
+      for i in $(seq 1 24); do
+        if sudo apt-get update -qq 2>/dev/null; then break; fi
+        echo "  Retry $i/24 in 10s..."
+        sleep 10
+      done
+      sudo apt-get update -qq
+
+      # Install Docker
+      sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose-v2 git
+
+      # Deploy (from synced project dir)
+      cd /vagrant && sudo docker compose up --build -d
+    SHELL
+  end
+end
