@@ -33,6 +33,7 @@ namespace Org.OpenAPITools.Controllers
     { 
 
         private readonly IDBContext _dbcontext;
+        private static int _latest;
         public MinitwitApiController(IDBContext dbcontext)
         {
             _dbcontext = dbcontext;
@@ -82,19 +83,18 @@ namespace Org.OpenAPITools.Controllers
         [SwaggerResponse(statusCode: 500, type: typeof(ErrorResponse), description: "Internal Server Error")]
         public virtual IActionResult GetLatestValue()
         {
-
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default);
-            //TODO: Uncomment the next line to return response 500 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(500, default);
-            string exampleJson = null;
-            exampleJson = "{\n  \"latest\" : 0\n}";
-            
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<LatestValue>(exampleJson)
-            : default;
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            try
+            {
+                var response = new LatestValue
+                {
+                    Latest = _latest
+                };
+                return new ObjectResult(response) { StatusCode = 200 };
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ErrorResponse { Status = 500, ErrorMsg = "Internal Server Error" });
+            }
         }
 
         /// <summary>
@@ -118,6 +118,9 @@ namespace Org.OpenAPITools.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
 
+            if (latest.HasValue)
+                _latest = latest.Value;
+            
             var domainMessages = _dbcontext.GetPublicTimeline(no ?? 100);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             return new ObjectResult(apiMessages) { StatusCode = 200 };
@@ -144,6 +147,9 @@ namespace Org.OpenAPITools.Controllers
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
+            
+            if (latest.HasValue)
+                _latest = latest.Value;
 
             if (_dbcontext.GetUserByUsername(username) == null)
                 return UserNotFound();
@@ -174,6 +180,9 @@ namespace Org.OpenAPITools.Controllers
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
+            
+            if (latest.HasValue)
+                _latest = latest.Value;
 
             if (payload == null)
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
@@ -220,6 +229,9 @@ namespace Org.OpenAPITools.Controllers
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
+            
+            if (latest.HasValue)
+                _latest = latest.Value;
 
             if (payload == null || string.IsNullOrEmpty(payload.Content))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Content is required" });
@@ -268,6 +280,9 @@ namespace Org.OpenAPITools.Controllers
             var hasher = new PasswordHasher<string>();
             var hash = hasher.HashPassword(username, password);
             _dbcontext.CreateUser(username, email, hash);
+            
+            if (latest.HasValue)
+                _latest = latest.Value;
             
             return NoContent();
         }
