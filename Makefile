@@ -15,3 +15,12 @@ API-run-stub:
 API-clean-stub:
 	cd out/itu-minitwit-sim-stub && \
 	docker rm -f org.openapitools
+
+# Deployment to Digital Ocean
+deploy-digital-ocean: # requires Digital Ocean API PAT token to be set in environment variable DIGITAL_OCEAN_TOKEN
+	export SSH_KEY_NAME="MacLocalKey"
+	vagrant up
+
+clean-digital-ocean:
+	vagrant destroy -f
+	rm -rf .vagrant
