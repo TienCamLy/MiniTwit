@@ -21,6 +21,9 @@ deploy-digital-ocean: # requires Digital Ocean API PAT token to be set in enviro
 	export SSH_KEY_NAME="MacLocalKey" && \
 	vagrant up
 
+provision-digital-ocean:
+	vagrant provision
+
 clean-digital-ocean:
 	vagrant destroy && \
 	rm -rf .vagrant

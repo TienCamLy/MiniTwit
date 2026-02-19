@@ -60,3 +60,7 @@ minitwit.db
 # Razor - Pages
 razor-pages/obj
 razor-pages/bin
+
+# Deployment
+.secrets
+.vagrant/*
