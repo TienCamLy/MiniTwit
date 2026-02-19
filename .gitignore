@@ -60,3 +60,6 @@ minitwit.db
 # Razor - Pages
 razor-pages/obj
 razor-pages/bin
+
+# Environment variables
+.env
