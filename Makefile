@@ -18,9 +18,9 @@ API-clean-stub:
 
 # Deployment to Digital Ocean
 deploy-digital-ocean: # requires Digital Ocean API PAT token to be set in environment variable DIGITAL_OCEAN_TOKEN
-	export SSH_KEY_NAME="MacLocalKey"
+	export SSH_KEY_NAME="MacLocalKey" && \
 	vagrant up
 
 clean-digital-ocean:
-	vagrant destroy
+	vagrant destroy && \
 	rm -rf .vagrant
