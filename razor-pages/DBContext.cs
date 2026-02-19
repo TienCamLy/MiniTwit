@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using razor_pages.Structs;
@@ -11,35 +12,36 @@ public class DBContext : IDBContext
     private SqliteConnection OpenConnection() {
         var conn = new SqliteConnection(ConnectionString);
         conn.Open();
+        conn.DefaultTimeout = 5000; // 5 seconds
         return conn;
     }
     
     public User GetUserById(string id)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var cmd = conn.CreateCommand();
         
         cmd.CommandText = "SELECT * FROM user WHERE user_id = @userId";
         cmd.Parameters.AddWithValue("@userId", id);
-        
-        using (var reader = cmd.ExecuteReader()) {
-            if (reader.Read())
+
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            return new User
             {
-                return new User
-                {
-                    id = reader.GetInt32(reader.GetOrdinal("user_id")),
-                    name = reader.GetString(reader.GetOrdinal("username")),
-                    email = reader.GetString(reader.GetOrdinal("email"))
-                };
-            }
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
         }
+
         throw new Exception("Invald user_id");
     }
 
     public List<string> GetFollowedUsers(int who_id, int maxResults)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT u.username FROM follower f JOIN user u ON f.whom_id = u.user_id WHERE f.who_id = @userId LIMIT @no";
         cmd.Parameters.AddWithValue("@userId", who_id);
         cmd.Parameters.AddWithValue("@no", maxResults);
@@ -55,7 +57,7 @@ public class DBContext : IDBContext
     public bool IsFollowed(int whoId, int whomId)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT * FROM follower WHERE who_id = @whoId AND whom_id = @whomId";
         cmd.Parameters.AddWithValue("@whoId", whoId);
         cmd.Parameters.AddWithValue("@whomId", whomId);
@@ -69,27 +71,31 @@ public class DBContext : IDBContext
     public void FollowUser(int whoId, int whomId)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var transaction = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
         cmd.CommandText = "INSERT INTO follower (who_id, whom_id) VALUES (@whoId, @whomId)";
         cmd.Parameters.AddWithValue("@whoId", whoId);
         cmd.Parameters.AddWithValue("@whomId", whomId);
         cmd.ExecuteNonQuery();
+        transaction.Commit();
     }
 
     public void UnfollowUser(int whoId, int whomId)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var transaction = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
         cmd.CommandText = "DELETE FROM follower WHERE who_id = @whoId AND whom_id = @whomId";
         cmd.Parameters.AddWithValue("@whoId", whoId);
         cmd.Parameters.AddWithValue("@whomId", whomId);
         cmd.ExecuteNonQuery();
+        transaction.Commit();
     }
     
     public List<Message> GetPublicTimeline(int perPage)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var cmd = conn.CreateCommand();
         cmd.CommandText =
             """
                 SELECT 
@@ -141,7 +147,7 @@ public class DBContext : IDBContext
     public List<Message> GetUserTimeline(int perPage, string username)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var cmd = conn.CreateCommand();
         cmd.CommandText =
             """
                 SELECT 
@@ -195,7 +201,7 @@ public class DBContext : IDBContext
     public List<Message> GetOwnTimeline(int perPage, int authorId)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var cmd = conn.CreateCommand();
         cmd.CommandText =
             """
                 SELECT 
@@ -256,7 +262,8 @@ public class DBContext : IDBContext
     public void CreateUser(string username, string email, string passwordHash)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var transaction = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
 
         cmd.CommandText =
             """
@@ -269,12 +276,14 @@ public class DBContext : IDBContext
         cmd.Parameters.AddWithValue("@pw_hash", passwordHash);
 
         cmd.ExecuteNonQuery();
+        transaction.Commit();
     }
     
     public void CreateMessage(int authorId, string text)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var transaction = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
 
         cmd.CommandText =
             """
@@ -287,12 +296,13 @@ public class DBContext : IDBContext
         cmd.Parameters.AddWithValue("@pub_date",DateTimeOffset.UtcNow.ToUnixTimeSeconds());
         
         cmd.ExecuteNonQuery();
+        transaction.Commit();
     }
 
     public User? Login(string username, string password)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT * FROM user WHERE username = @username";
         cmd.Parameters.AddWithValue("@username", username);
         using var reader = cmd.ExecuteReader();
@@ -313,7 +323,7 @@ public class DBContext : IDBContext
     public User GetUserByUsername(string username)
     {
         using var conn = OpenConnection();
-        var cmd = conn.CreateCommand();
+        using var cmd = conn.CreateCommand();
         
         cmd.CommandText = "SELECT * FROM user WHERE username = @username";
         cmd.Parameters.AddWithValue("@username", username);
