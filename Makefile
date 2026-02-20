@@ -3,18 +3,16 @@ app-build:
 	docker compose up --build
 
 # API Stub Build and Run
-API-build-stub:
-	cd out/itu-minitwit-sim-stub && \
-	docker build -f src/Org.OpenAPITools/Dockerfile -t org.openapitools .
+API-generate:
+	docker run --rm -v "$$(pwd):/local" openapitools/openapi-generator-cli:v7.19.0 \
+      generate \
+      -i /local/swagger3.json \
+      -g aspnetcore \
+      -o /local/out/itu-minitwit-sim-stub \
+      --additional-properties=buildTarget=program,aspnetCoreVersion=8.0,operationIsAsync=true,nullableReferenceTypes=true,useSwashbuckle=true
 
-API-run-stub:
-	cd out/itu-minitwit-sim-stub && \
-	echo "API running at: http://localhost:5001/openapi" && \
-	docker run -p 5001:8080 org.openapitools
-
-API-clean-stub:
-	cd out/itu-minitwit-sim-stub && \
-	docker rm -f org.openapitools
+API-clean-generate:
+	rm -rf out
 
 # Deployment to Digital Ocean
 deploy-digital-ocean: # requires Digital Ocean API PAT token to be set in environment variable DIGITAL_OCEAN_TOKEN

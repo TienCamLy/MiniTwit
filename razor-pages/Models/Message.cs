@@ -16,15 +16,15 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
-using Org.OpenAPITools.Converters;
+using razor_pages.Converters;
 
-namespace Org.OpenAPITools.Models
+namespace razor_pages.Models
 { 
     /// <summary>
     /// 
     /// </summary>
     [DataContract]
-    public partial class Message : IEquatable<Message>
+    public partial class ApiMessage : IEquatable<ApiMessage>
     {
         /// <summary>
         /// Text content of the message
@@ -57,7 +57,7 @@ namespace Org.OpenAPITools.Models
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class Message {\n");
+            sb.Append("class ApiMessage {\n");
             sb.Append("  Content: ").Append(Content).Append("\n");
             sb.Append("  PubDate: ").Append(PubDate).Append("\n");
             sb.Append("  User: ").Append(User).Append("\n");
@@ -83,7 +83,7 @@ namespace Org.OpenAPITools.Models
         {
             if (obj is null) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((Message)obj);
+            return obj.GetType() == GetType() && Equals((ApiMessage)obj);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Org.OpenAPITools.Models
         /// </summary>
         /// <param name="other">Instance of Message to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(Message other)
+        public bool Equals(ApiMessage other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -137,12 +137,12 @@ namespace Org.OpenAPITools.Models
         #region Operators
         #pragma warning disable 1591
 
-        public static bool operator ==(Message left, Message right)
+        public static bool operator ==(ApiMessage left, ApiMessage right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(Message left, Message right)
+        public static bool operator !=(ApiMessage left, ApiMessage right)
         {
             return !Equals(left, right);
         }
