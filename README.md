@@ -8,6 +8,7 @@ Deployment of the application MiniTwit was done by using Vagrant and DigitalOcea
 - Vagrant ([Download here](https://developer.hashicorp.com/vagrant/install))
 - DigitalOcean plugin:`vagrant plugin install vagrant-digitalocean`
 - SSH Key
+- A DigitalOcean account
 
 ### 2. DigitalOcean
 In DigitalOcean:
@@ -20,7 +21,7 @@ Set the environment variables from DigitalOcean by:
 export DIGITAL_OCEAN_TOKEN="your_api_token_on_digitalocean"
 export SSH_KEY_NAME="your_ssh_key_name_on_digitalocean"
 ```
-### 4. Creating the VM (droplet)
+### 4. Creating the VM (droplet) and deploy Docker Release
 Clone the repository by running:
 ```
 git clone https://github.com/TienCamLy/MiniTwit.git
@@ -30,19 +31,33 @@ Run the following command in terminal:
 ```
 vagrant up
 ```
-### 5. Deploy Docker Release
-Run the following command in terminal:
-```
-docker compose up --build -d
-```
-### 6. Droplet IP
+`vagrant up` creates the VM and executes the provisioning script (shell script) in the VagrantFile. 
+This will build the Docker image and deploys the application using Docker Compose.
+
+### 5. Droplet IP
 The application can be accessed by:
 ```
-http://<YOUR_DROPLET_IP>
+http://<YOUR_DROPLET_IP>:8080
 ```
 Our public droplet IP:
 ```
-http://157.230.30.175:8080/
+http://157.230.30.175:8080
+```
+
+### Shutdown
+To stop the VM and destroy all resources that were created during the machine creation process,
+run the following in terminal:
+```
+vagrant destroy
+```
+
+### Logging
+To connect to the VM, navigate to the project directory, and stream the logs of the running Docker container,
+run the following in termnial:
+```
+vagrant ssh webserver
+cd /vagrant
+sudo docker compose logs -f razor-pages
 ```
 
 ## Processes & Workflows
