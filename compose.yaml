@@ -1,6 +1,6 @@
 services:
   razor-pages:
-    image: razor-pages
+    image: ${DOCKER_USERNAME:-local}/minitwitimage:latest
     build:
       context: .
       dockerfile: razor-pages/Dockerfile
