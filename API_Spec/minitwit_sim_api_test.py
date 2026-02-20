@@ -8,6 +8,7 @@ from contextlib import closing
 
 
 BASE_URL = 'http://127.0.0.1:8080'
+MAIN_BASE_URL = 'http://157.230.30.175:8080'
 DATABASE = "../razor-pages/minitwit.db"
 USERNAME = 'simulator'
 PWD = 'super_safe!'
