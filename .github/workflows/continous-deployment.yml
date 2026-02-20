@@ -46,7 +46,10 @@ jobs:
 #          tags: ${{ secrets.DOCKER_USERNAME }}/minitwitimage:latest
 #          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwitimage:webbuildcache
 #          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwitimage:webbuildcache,mode=max
-
+      
+      - name: Create .env file for compose
+        run: echo "API_TOKEN=${{ secrets.API_TOKEN }}" > razor-pages/.env
+      
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
         env:

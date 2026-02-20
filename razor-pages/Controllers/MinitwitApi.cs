@@ -298,7 +298,7 @@ namespace razor_pages.Controllers
 
         private bool ValidateAuthorization(string authorization)
         {
-            return authorization == $"Basic {Environment.GetEnvironmentVariable("api_token")}";
+            return authorization == $"Basic {Environment.GetEnvironmentVariable("API_TOKEN")}";
         }
 
         private IActionResult Unauthorized()
