@@ -18,12 +18,12 @@ using Microsoft.AspNetCore.Identity;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
-using Org.OpenAPITools.Attributes;
-using Org.OpenAPITools.Models;
+using razor_pages.Attributes;
+using razor_pages.Models;
 using razor_pages.Converters;
 using razor_pages.Pages;
 
-namespace Org.OpenAPITools.Controllers
+namespace razor_pages.Controllers
 { 
     /// <summary>
     /// 
@@ -114,7 +114,7 @@ namespace Org.OpenAPITools.Controllers
         [Route("/msgs")]
         [ValidateModelState]
         [SwaggerOperation("GetMessages")]
-        [SwaggerResponse(statusCode: 200, type: typeof(List<Message>), description: "Success")]
+        [SwaggerResponse(statusCode: 200, type: typeof(List<ApiMessage>), description: "Success")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
         public virtual IActionResult GetMessages([FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no)
         {
@@ -146,7 +146,7 @@ namespace Org.OpenAPITools.Controllers
         [Route("/msgs/{username}")]
         [ValidateModelState]
         [SwaggerOperation("GetMessagesPerUser")]
-        [SwaggerResponse(statusCode: 200, type: typeof(List<Message>), description: "Success")]
+        [SwaggerResponse(statusCode: 200, type: typeof(List<ApiMessage>), description: "Success")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
         public virtual IActionResult GetMessagesPerUser([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no)
         {

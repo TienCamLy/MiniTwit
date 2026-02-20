@@ -13,7 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Newtonsoft.Json;
 
-namespace Org.OpenAPITools.Converters
+namespace razor_pages.Converters
 {
     /// <summary>
     /// Custom string to enum converter
@@ -47,6 +47,25 @@ namespace Org.OpenAPITools.Converters
             }
 
             return JsonConvert.DeserializeObject<T>(@"""" + value + @"""");
+        }
+    }
+
+    /// <summary>
+    /// Converts domain structs to API (OpenAPI) DTOs for the Minitwit API.
+    /// </summary>
+    public static class ApiConverters
+    {
+        /// <summary>API pub_date format matching the spec (e.g. "2019-12-01 12:00:00").</summary>
+        private const string PubDateFormat = "yyyy-MM-dd HH:mm:ss";
+
+        public static razor_pages.Models.ApiMessage ToApiMessage(Structs.Message message)
+        {
+            return new razor_pages.Models.ApiMessage
+            {
+                Content = message.text,
+                PubDate = message.pub_date.ToString(PubDateFormat),
+                User = message.author.name
+            };
         }
     }
 }
