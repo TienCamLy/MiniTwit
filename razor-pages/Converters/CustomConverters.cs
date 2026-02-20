@@ -12,6 +12,8 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using Newtonsoft.Json;
+using razor_pages.Models;
+using razor_pages.Structs;
 
 namespace razor_pages.Converters
 {
@@ -58,9 +60,9 @@ namespace razor_pages.Converters
         /// <summary>API pub_date format matching the spec (e.g. "2019-12-01 12:00:00").</summary>
         private const string PubDateFormat = "yyyy-MM-dd HH:mm:ss";
 
-        public static razor_pages.Models.ApiMessage ToApiMessage(Structs.Message message)
+        public static ApiMessage ToApiMessage(Message message)
         {
-            return new razor_pages.Models.ApiMessage
+            return new ApiMessage
             {
                 Content = message.text,
                 PubDate = message.pub_date.ToString(PubDateFormat),
