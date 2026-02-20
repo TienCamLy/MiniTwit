@@ -11,10 +11,6 @@ API-generate:
       -o /local/out/itu-minitwit-sim-stub \
       --additional-properties=buildTarget=program,aspnetCoreVersion=8.0,operationIsAsync=true,nullableReferenceTypes=true,useSwashbuckle=true
 
-API-clean-stub:
-	cd out/itu-minitwit-sim-stub && \
-	docker rm -f org.openapitools
-
 API-clean-generate:
 	rm -rf out
 
