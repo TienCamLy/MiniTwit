@@ -75,7 +75,7 @@ jobs:
         run: >
           ssh $SSH_USER@$SSH_HOST
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'cd /vagrant && docker compose pull && docker compose up -d --remove-orphans'
+          'export DOCKER_USERNAME=$DOCKER_USERNAME && cd /vagrant && docker compose pull && docker compose up -d --remove-orphans'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
