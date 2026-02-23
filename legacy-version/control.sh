@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 if [ "$1" = "init" ]; then
 
-    if [ -f "/tmp/minitwit.db" ]; then 
+    if [ -f "minitwit.db" ]; then 
         echo "Database already exists."
         exit 1
     fi
-    echo "Putting a database to /tmp/minitwit.db..."
+    echo "Putting a database to minitwit.db..."
     python -c"from minitwit import init_db;init_db()"
 elif [ "$1" = "startprod" ]; then
      echo "Starting minitwit with production webserver..."
-     nohup "$HOME"/.local/bin/gunicorn --workers 4 --timeout 120 --bind 0.0.0.0:5000 minitwit:app > /tmp/out.log 2>&1 &
+     nohup "$HOME"/.local/bin/gunicorn --workers 4 --timeout 120 --bind 0.0.0.0:5000 minitwit:app > out.log 2>&1 &
 elif [ "$1" = "start" ]; then
     echo "Starting minitwit..."
-    # shellcheck disable=SC2046
-    nohup $(which python) minitwit.py > /tmp/out.log 2>&1 &
+    #/dev/null redirects stdin to avoid errors with suspending the process while running in the background
+    nohup "$(which python)" minitwit.py < /dev/null > out.log 2>&1 & 
 elif [ "$1" = "stop" ]; then
     echo "Stopping minitwit..."
     pkill -f minitwit
