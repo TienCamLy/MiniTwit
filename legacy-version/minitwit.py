@@ -21,7 +21,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 # ArgParsing
 parser = argparse.ArgumentParser()
-parser.add_argument('--port', dest='port', nargs='?', const=5000, type=int,
+parser.add_argument('--port', dest='port', nargs='?', default=5000, type=int,
     help='Specify Port to Run The Flask Application On')
 args = parser.parse_args()
 
