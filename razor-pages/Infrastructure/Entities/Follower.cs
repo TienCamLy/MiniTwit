@@ -1,4 +1,4 @@
-namespace DefaultNamespace;
+namespace Infrastructure.Entities;
 
 public class Follower
 {

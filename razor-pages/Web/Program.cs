@@ -1,6 +1,7 @@
 using Web.Pages;
 using Core.Interfaces;
 using Infrastructure.Repositories;
+using Infrastructure.Context;
 
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -17,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 // Add sql server
-builder.Services.AddDbContext<DBContext>(options =>
+builder.Services.AddDbContext<MiniTwitContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), settings =>
          settings.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10)));
 
@@ -40,6 +41,13 @@ var app = builder.Build();
 
 app.MapRazorPages();
 app.MapControllers();
+
+// Apply migrations
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<MiniTwitContext>();
+    dbContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

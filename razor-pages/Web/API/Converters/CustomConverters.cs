@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 using razor_pages.Models;
 using razor_pages.Structs;
 
-namespace razor_pages.Converters
+namespace Web.API.Converters
 {
     /// <summary>
     /// Custom string to enum converter

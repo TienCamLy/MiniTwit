@@ -23,7 +23,7 @@ using razor_pages.Models;
 using razor_pages.Converters;
 using razor_pages.Pages;
 
-namespace razor_pages.Controllers
+namespace Web.API.Controllers
 { 
     /// <summary>
     /// 

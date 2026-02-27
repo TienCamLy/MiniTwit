@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace razor_pages.Attributes
+namespace Web.API.Attributes
 {
     /// <summary>
     /// Model state validation attribute

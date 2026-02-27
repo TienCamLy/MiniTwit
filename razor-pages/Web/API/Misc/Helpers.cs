@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace razor_pages.Misc;
+namespace Web.API.Misc;
 
 public static class Helpers
 {

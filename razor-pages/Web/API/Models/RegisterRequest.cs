@@ -18,7 +18,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using razor_pages.Converters;
 
-namespace razor_pages.Models
+namespace Web.API.Models
 { 
     /// <summary>
     /// 
