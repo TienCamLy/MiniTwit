@@ -60,7 +60,7 @@ namespace Web.API.Models
         /// </summary>
         /// <param name="obj">Object to be compared</param>
         /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -72,7 +72,7 @@ namespace Web.API.Models
         /// </summary>
         /// <param name="other">Instance of LatestValue to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(LatestValue other)
+        public bool Equals(LatestValue? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;

@@ -195,7 +195,7 @@ namespace Web.API.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized(); 
 
-            if (payload == null)
+            if (string.IsNullOrEmpty(payload?.Follow) || string.IsNullOrEmpty(payload?.Unfollow))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
 
             var hasFollow = !string.IsNullOrEmpty(payload.Follow);
@@ -246,7 +246,7 @@ namespace Web.API.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
 
-            if (payload == null || string.IsNullOrEmpty(payload.Content))
+            if (string.IsNullOrEmpty(payload?.Content))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Content is required" });
 
             var user = _userRepository.GetUserByUsername(username);
