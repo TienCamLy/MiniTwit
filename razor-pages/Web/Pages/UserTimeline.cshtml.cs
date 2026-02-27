@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using razor_pages.Structs;
 
-namespace razor_pages.Pages;
+namespace Web.Pages;
 
 public class UserTimelineModel : PageModel
 {
