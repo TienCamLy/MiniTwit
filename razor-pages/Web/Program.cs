@@ -1,8 +1,11 @@
-using razor_pages.Pages;
+using Web.Pages;
+using Core.Interfaces;
+using Infrastructure.Repositories;
 
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
 
 // Load .env from project directory (optional; no-op if file is missing)
 if (File.Exists(".env"))
@@ -12,7 +15,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddScoped<IDBContext, DBContext>();
+
+// Add sql server
+builder.Services.AddDbContext<DBContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), settings =>
+         settings.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10)));
+
+// Add repositories to the container.
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
