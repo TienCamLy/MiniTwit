@@ -15,26 +15,90 @@ public class UserRepository : IUserRepository
 
     public UserDTO GetUserByID(int id)
     {
-        throw new NotImplementedException();
+        var user = _context.Users.Where(u => u.Id == id).FirstOrDefault();
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+
+        return new UserDTO
+        {
+            id = user.Id,
+            name = user.Username,
+            email = user.Email,
+        };
     }
 
     public UserDTO GetUserByUsername(string username)
     {
-        throw new NotImplementedException();
+        var user = _context.Users.Where(u => u.Username == username).FirstOrDefault();
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+
+        return new UserDTO
+        {
+            id = user.Id,
+            name = user.Username,
+            email = user.Email,
+        };
     }
 
     public UserDTO Login(string username, string password)
     {
-        throw new NotImplementedException();
+        var user = _context.Users.Where(u => u.Username == username).FirstOrDefault();
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+        
+        // TODO: Implement password hashing and salting
+        if (user.PasswordHash != password)
+        {
+            throw new Exception("Invalid password");
+        }
+        
+        return new UserDTO
+        {
+            id = user.Id,
+            name = user.Username,
+            email = user.Email,
+        };
     }
 
     public void CreateUser(string username, string email, string passwordhash)
     {
-        throw new NotImplementedException();
+        var existingUser = _context.Users.Where(u => u.Username == username).FirstOrDefault();
+
+        if (existingUser is not null)
+        {
+            throw new ArgumentException("User already exists: ", username);
+        }
+
+        var user = new User
+        {
+            Name = username,
+            Email = email,
+            PasswordHash = password,
+        };
+            
+        _context.Users.Add(user);
+        _context.SaveChanges();
     }
 
     public void DeleteUser(int user_id)
     {
-        throw new NotImplementedException();
+        var existingUser = _context.Users.Where(u => u.Id == user_id).FirstOrDefault();
+
+        if (existingUser is null)
+        {
+            throw new ArgumentException("User not found");
+        }
+        
+        // TODO: Remove all messages and followers
+        
+        _context.Users.Remove(existingUser);
+        _context.SaveChanges();
     }
 }
