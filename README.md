@@ -62,15 +62,16 @@ sudo docker compose logs -f razor-pages
 
 ## DevOps Principles
 The group adheres to the "*Three Ways*" characterizing DevOps (from "The DevOps Handbook") by the following:
-- Flow:
+- **Flow**:
   - To make our work visible, we make use of a visual work board by using Trello. This consists of assigning group members to small, self-contained tasks (ensuring small batch sizes) and displaying the current status of them. Every time a task needs to be done, it is added to the board first. We structure our pull requests accordingly to ensure small, atomic changes to the main branch. Our workflow is described in more detail in the [Processes and Workflows](https://github.com/TienCamLy/MiniTwit?tab=readme-ov-file#processes--workflows) section.
   - To increase visibility, we have also introduced a log (log.txt in the root path) where we write down design decisions made during development each week. A GitHub webhook has been added to our main communication channel, so that all members get notified whenever a change to the repository has been made.
   - We ensure limiting Work In Process (WIP) by, as a general rule, allowing one group member to work on one ticket at the same time. If someone wants to take on new work, they either have to finish their previous ticket or report it as needing help.
   - To improve the flow, we automate the process by using workflows. This includes setting the environment up and building/deploying the application.
   - We don’t have any hard constraints limiting our flow, save for the development pace (a constraint as close to the developers as possible) and PR acceptance (which can potentially take up to a day but is usually much faster)
-- Feedback:
-  - ...
-- Continual Learning and Experimentation:
+- **Feedback**:
+  - The workflows provide us feedback on whether the automated build succeeded or not. This happens every time a commit has been pushed to the main branch.
+  - For quality control, every pull request must be reviewed by another group member.
+- **Continual Learning and Experimentation**:
   - ...
 
 ## Processes & Workflows
