@@ -62,6 +62,8 @@ razor-pages/obj
 razor-pages/bin
 /bin
 /obj
+**/obj
+**/bin
 
 # Deployment
 .secrets
