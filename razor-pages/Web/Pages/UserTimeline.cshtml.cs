@@ -2,12 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Core.DTOs;
+using Infrastructure.Repositories;
 
 namespace Web.Pages;
 
 public class UserTimelineModel : PageModel
 {
-    private readonly MiniTwitContext _miniTwitContext;
     private readonly IMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
     private readonly IFollowerRepository _followerRepository;
@@ -18,12 +18,10 @@ public class UserTimelineModel : PageModel
     public string? Error { get; set; }
     
     public UserTimelineModel(
-        MiniTwitContext miniTwitContext, 
         MessageRepository messageRepository, 
         UserRepository userRepository, 
         FollowerRepository followerRepository)
     {
-        _miniTwitContext = miniTwitContext;
         _messageRepository = messageRepository;
         _userRepository = userRepository;
         _followerRepository = followerRepository;

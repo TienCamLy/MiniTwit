@@ -1,18 +1,19 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using razor_pages.Structs;
+using Core.DTOs;
+using Infrastructure.Repositories;
 
-namespace razor_pages.Pages;
+namespace Web.Pages;
 
 public class PublicTimelineModel : PageModel
 {
-    public IEnumerable<Message> Messages { get; set; } = new List<Message>();
-    private readonly IDBContext _dbcontext;
-    public PublicTimelineModel(IDBContext dbcontext)
+    private readonly IMessageRepository _messageRepository;
+    public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
+    public PublicTimelineModel(MessageRepository messageRepository)
     {
-        _dbcontext = dbcontext;
+        _messageRepository = messageRepository;
     }
     public void OnGet()
     {
-        Messages = _dbcontext.GetPublicTimeline(30);
+        Messages = _messageRepository.GetPublicTimeline(30);
     }
 }

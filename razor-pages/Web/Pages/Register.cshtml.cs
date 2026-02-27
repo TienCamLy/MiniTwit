@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Infrastructure.Repositories;
 
-namespace razor_pages.Pages;
+namespace Web.Pages;
 
 public class RegisterModel : PageModel
 {
-    private readonly MiniTwitContext _miniTwitContext;
     private readonly IUserRepository _userRepository;
 
     [BindProperty] public string Email { get; set; } = string.Empty;
@@ -18,9 +18,7 @@ public class RegisterModel : PageModel
     [BindProperty] public string Password2 { get; set; } = string.Empty;
     
     public string Error { get; set; } = String.Empty;
-    public RegisterModel(
-        MiniTwitContext miniTwitContext, 
-        UserRepository userRepository)
+    public RegisterModel(UserRepository userRepository)
     {
         _miniTwitContext = miniTwitContext;
         _userRepository = userRepository;
