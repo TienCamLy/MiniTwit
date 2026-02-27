@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace razor_pages.Pages;
+namespace Web.Pages;
 
 public class LogoutModel : PageModel
 {

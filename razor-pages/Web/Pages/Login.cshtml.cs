@@ -5,23 +5,21 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using razor_pages.Structs;
+using Core.DTOs;
 
-namespace razor_pages.Pages;
+namespace Web.Pages;
 
 public class LoginModel : PageModel
 {
+    private readonly IUserRepository _userRepository;
 
     [BindProperty] public string Username { get; set; } = string.Empty;
-
     [BindProperty] public string Password { get; set; } = String.Empty;
-
     public string Error { get; set; } = string.Empty;
 
-    private readonly IDBContext _dbcontext;
-    public LoginModel(IDBContext dbcontext)
+    public LoginModel(UserRepository userRepository)
     {
-        _dbcontext = dbcontext;
+        _userRepository = userRepository;
     }
     
     public void OnGet()
@@ -36,7 +34,7 @@ public class LoginModel : PageModel
             Error = "You have to enter a password";
         else
         {
-            var user = _dbcontext.Login(Username, Password);
+            var user = _userRepository.Login(Username, Password);
             if (user != null)
             {
                 var claims = new List<Claim>
