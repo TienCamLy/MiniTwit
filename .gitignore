@@ -60,6 +60,8 @@ minitwit.db
 # Razor - Pages
 razor-pages/obj
 razor-pages/bin
+/bin
+/obj
 
 # Deployment
 .secrets
