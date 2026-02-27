@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Core.DTOs;
+using Core.Interfaces;
 
 namespace Web.Pages;
 
@@ -17,7 +18,7 @@ public class LoginModel : PageModel
     [BindProperty] public string Password { get; set; } = String.Empty;
     public string Error { get; set; } = string.Empty;
 
-    public LoginModel(UserRepository userRepository)
+    public LoginModel(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }

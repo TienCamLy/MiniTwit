@@ -6,5 +6,6 @@ public interface IMessageRepository
 {
     public IEnumerable<MessageDTO> GetPublicTimeline();
     public IEnumerable<MessageDTO> GetUserTimeline(int user_id);
+    public IEnumerable<MessageDTO> GetUserTimeline(string username);
     public void CreateMessage(int author_id, string text);
 }

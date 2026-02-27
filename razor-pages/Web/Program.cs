@@ -20,7 +20,7 @@ builder.Services.AddRazorPages();
 // Add sql server
 builder.Services.AddDbContext<MiniTwitContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), settings =>
-         settings.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10)));
+         settings.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)));
 
 // Add repositories to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();

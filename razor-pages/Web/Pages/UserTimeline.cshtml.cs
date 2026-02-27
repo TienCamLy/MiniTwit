@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Core.DTOs;
-using Infrastructure.Repositories;
+using Core.Interfaces;
 
 namespace Web.Pages;
 
@@ -18,9 +18,9 @@ public class UserTimelineModel : PageModel
     public string? Error { get; set; }
     
     public UserTimelineModel(
-        MessageRepository messageRepository, 
-        UserRepository userRepository, 
-        FollowerRepository followerRepository)
+        IMessageRepository messageRepository, 
+        IUserRepository userRepository, 
+        IFollowerRepository followerRepository)
     {
         _messageRepository = messageRepository;
         _userRepository = userRepository;

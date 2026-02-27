@@ -18,10 +18,11 @@ using Microsoft.AspNetCore.Identity;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
-using razor_pages.Attributes;
-using razor_pages.Models;
-using razor_pages.Converters;
-using razor_pages.Pages;
+using Web.API.Attributes;
+using Web.API.Models;
+using Web.API.Converters;
+using Web.Pages;
+using Core.Interfaces;
 
 namespace Web.API.Controllers
 { 
@@ -31,13 +32,20 @@ namespace Web.API.Controllers
     [ApiController]
     public class MinitwitApiController : ControllerBase
     { 
-
-        private readonly IDBContext _dbcontext;
+		private readonly IMessageRepository _messageRepository;
+    	private readonly IUserRepository _userRepository;
+    	private readonly IFollowerRepository _followerRepository;
         private static int _latest;
-        public MinitwitApiController(IDBContext dbcontext)
-        {
-            _dbcontext = dbcontext;
-        }
+        
+		public MinitwitApiController(
+        	IMessageRepository messageRepository, 
+        	IUserRepository userRepository, 
+        	IFollowerRepository followerRepository)
+    	{
+        	_messageRepository = messageRepository;
+        	_userRepository = userRepository;
+        	_followerRepository = followerRepository;
+    	}
 
         /// <summary>
         /// 
@@ -61,11 +69,11 @@ namespace Web.API.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
             
-            var user = _dbcontext.GetUserByUsername(username);
+            var user = _userRepository.GetUserByUsername(username);
             if (user == null)
                 return UserNotFound();
 
-            var followers = _dbcontext.GetFollowedUsers(user.id, no ?? 100);
+            var followers = _followerRepository.GetFollowedUsers(user.id).Select(u => u.name).ToList();
             
             if (latest.HasValue)
                 _latest = latest.Value;
@@ -122,7 +130,7 @@ namespace Web.API.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
             
-            var domainMessages = _dbcontext.GetPublicTimeline(no ?? 100);
+            var domainMessages = _messageRepository.GetPublicTimeline();
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
@@ -153,10 +161,10 @@ namespace Web.API.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
 
-            if (_dbcontext.GetUserByUsername(username) == null)
+            if (_userRepository.GetUserByUsername(username) == null)
                 return UserNotFound();
 
-            var domainMessages = _dbcontext.GetUserTimeline(no ?? 100, username);
+            var domainMessages = _messageRepository.GetUserTimeline(username);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
@@ -195,19 +203,19 @@ namespace Web.API.Controllers
             if (hasFollow == hasUnfollow) // both set or both missing
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
 
-            var who = _dbcontext.GetUserByUsername(username);
+            var who = _userRepository.GetUserByUsername(username);
             if (who == null)
                 return UserNotFound();
 
             var targetUsername = hasFollow ? payload.Follow! : payload.Unfollow!;
-            var whom = _dbcontext.GetUserByUsername(targetUsername);
+            var whom = _userRepository.GetUserByUsername(targetUsername);
             if (whom == null)
                 return UserNotFound();
 
             if (hasFollow)
-                _dbcontext.FollowUser(who.id, whom.id);
+                _followerRepository.FollowUser(who.id, whom.id);
             else
-                _dbcontext.UnfollowUser(who.id, whom.id);
+                _followerRepository.UnfollowUser(who.id, whom.id);
 
             if (latest.HasValue)
                 _latest = latest.Value;
@@ -241,11 +249,11 @@ namespace Web.API.Controllers
             if (payload == null || string.IsNullOrEmpty(payload.Content))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Content is required" });
 
-            var user = _dbcontext.GetUserByUsername(username);
+            var user = _userRepository.GetUserByUsername(username);
             if (user == null)
                 return UserNotFound();
 
-            _dbcontext.CreateMessage(user.id, payload.Content);
+            _messageRepository.CreateMessage(user.id, payload.Content);
             
             if (latest.HasValue)
                 _latest = latest.Value;
@@ -283,12 +291,12 @@ namespace Web.API.Controllers
             //if (Password != Password2)
             //    Error = "The two passwords do not match";
             
-            if (_dbcontext.GetUserByUsername(username) != null) 
+            if (_userRepository.GetUserByUsername(username) != null) 
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "The username is already taken" });
 
             var hasher = new PasswordHasher<string>();
             var hash = hasher.HashPassword(username, password);
-            _dbcontext.CreateUser(username, email, hash);
+            _userRepository.CreateUser(username, email, hash);
             
             if (latest.HasValue)
                 _latest = latest.Value;

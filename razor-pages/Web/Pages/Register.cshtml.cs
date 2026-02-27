@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Infrastructure.Repositories;
+using Core.Interfaces;
 
 namespace Web.Pages;
 
@@ -18,9 +18,8 @@ public class RegisterModel : PageModel
     [BindProperty] public string Password2 { get; set; } = string.Empty;
     
     public string Error { get; set; } = String.Empty;
-    public RegisterModel(UserRepository userRepository)
+    public RegisterModel(IUserRepository userRepository)
     {
-        _miniTwitContext = miniTwitContext;
         _userRepository = userRepository;
     }
 
