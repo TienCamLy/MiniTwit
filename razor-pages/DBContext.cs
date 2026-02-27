@@ -7,34 +7,6 @@ namespace razor_pages.Pages;
 
 public class DBContext : IDBContext
 {
-    private const string ConnectionString = "Data Source=data/minitwit.db";
-    public DBContext()
-    {
-        using var conn = OpenConnection();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-            CREATE TABLE IF NOT EXISTS user (
-                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL,
-                email TEXT NOT NULL,
-                pw_hash TEXT NOT NULL
-            );
-
-            CREATE TABLE IF NOT EXISTS follower (
-                who_id INTEGER,
-                whom_id INTEGER
-            );
-
-            CREATE TABLE IF NOT EXISTS message (
-                message_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                author_id INTEGER NOT NULL,
-                text TEXT NOT NULL,
-                pub_date INTEGER,
-                flagged INTEGER
-            );
-        ";
-        cmd.ExecuteNonQuery();
-    }
     private SqliteConnection OpenConnection() {
         var conn = new SqliteConnection(ConnectionString);
         conn.Open();
