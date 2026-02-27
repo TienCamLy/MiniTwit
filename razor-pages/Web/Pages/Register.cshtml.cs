@@ -6,7 +6,8 @@ namespace razor_pages.Pages;
 
 public class RegisterModel : PageModel
 {
-    private readonly IDBContext _dbcontext;
+    private readonly MiniTwitContext _miniTwitContext;
+    private readonly IUserRepository _userRepository;
 
     [BindProperty] public string Email { get; set; } = string.Empty;
 
@@ -17,9 +18,12 @@ public class RegisterModel : PageModel
     [BindProperty] public string Password2 { get; set; } = string.Empty;
     
     public string Error { get; set; } = String.Empty;
-    public RegisterModel(IDBContext dbcontext)
+    public RegisterModel(
+        MiniTwitContext miniTwitContext, 
+        UserRepository userRepository)
     {
-        _dbcontext = dbcontext;
+        _miniTwitContext = miniTwitContext;
+        _userRepository = userRepository;
     }
 
     public void OnGet()
@@ -36,13 +40,13 @@ public class RegisterModel : PageModel
             Error = "You have to enter a password";
         else if (Password != Password2)
             Error = "The two passwords do not match";
-        else if (_dbcontext.GetUserByUsername(Username) != null)
+        else if (_userRepository.GetUserByUsername(Username) != null)
             Error = "The username is already taken";
         else
         {
             var hasher = new PasswordHasher<string>();
             var hash = hasher.HashPassword(Username, Password);
-            _dbcontext.CreateUser(Username, Email, hash);
+            _userRepository.CreateUser(Username, Email, hash);
             
             TempData["FlashMessage"] = "You were successfully registered and can login now";
             return RedirectToPage("/Login");

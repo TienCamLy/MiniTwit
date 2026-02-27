@@ -26,7 +26,7 @@ public class UserTimelineModel : PageModel
         _miniTwitContext = miniTwitContext;
         _messageRepository = messageRepository;
         _userRepository = userRepository;
-        _followerRepository = followerRepository
+        _followerRepository = followerRepository;
     }
     
 
