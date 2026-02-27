@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 namespace Infrastructure.Entities;
 
 public class Message
 {
+    [Key]
     public required int message_id { get; set; }
     public required int author_id { get; set; }
     public required string text { get; set; }

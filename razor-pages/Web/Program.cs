@@ -2,11 +2,13 @@ using Web.Pages;
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Context;
+using Infrastructure.Entities;
 
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 // Load .env from project directory (optional; no-op if file is missing)
 if (File.Exists(".env"))
@@ -17,10 +19,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// Add identity services
+builder.Services.AddIdentity<User, IdentityRole<int>>()
+    .AddEntityFrameworkStores<MiniTwitContext>();
+
 // Add sql server
 builder.Services.AddDbContext<MiniTwitContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), settings =>
-         settings.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add repositories to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();

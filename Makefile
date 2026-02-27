@@ -16,7 +16,24 @@ db-migrate:
 		--context MiniTwitContext \
 		--project razor-pages/Infrastructure \
 		--startup-project razor-pages/Web && \
-	dotnet ef database update
+	dotnet ef database update \
+    	--context MiniTwitContext \
+    	--project razor-pages/Infrastructure \
+    	--startup-project razor-pages/Web
+
+# Database remove migrations from root directory
+db-remove-migration:
+	dotnet ef migrations remove \
+		--context MiniTwitContext \
+		--project razor-pages/Infrastructure \
+		--startup-project razor-pages/Web
+
+# Database Migration Update from root directory
+db-update:
+	dotnet ef database update \
+		--context MiniTwitContext \
+		--project razor-pages/Infrastructure \
+		--startup-project razor-pages/Web
 
 # API Stub Build and Run
 API-generate:
