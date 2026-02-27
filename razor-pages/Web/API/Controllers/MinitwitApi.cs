@@ -308,7 +308,8 @@ namespace Web.API.Controllers
         {
             return authorization == $"Basic {Environment.GetEnvironmentVariable("API_TOKEN")}";
         }
-
+		
+		// TODO: Fix associated warning 
         private IActionResult Unauthorized()
         {
             return new ObjectResult(new ErrorResponse
