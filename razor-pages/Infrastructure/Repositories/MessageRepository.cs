@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repositories;
 public class MessageRepository : IMessageRepository
 {
+    // TODO: Take page number into account, currently only the first page is returned
     private readonly MiniTwitContext _context;
     private const int _messagesPerPage = 30;
     public MessageRepository(MiniTwitContext context)
@@ -16,21 +17,53 @@ public class MessageRepository : IMessageRepository
 
     public IEnumerable<MessageDTO> GetPublicTimeline()
     {
-        throw new NotImplementedException();
+        return GetMessages().Take(_messagesPerPage);
     }
 
     public IEnumerable<MessageDTO> GetUserTimeline(int user_id)
     {
-        throw new NotImplementedException();
+        return GetMessages().Where(m => m.author_id == user_id).Take(_messagesPerPage);
     }
     
     public IEnumerable<MessageDTO> GetUserTimeline(string username)
     {
-        throw new NotImplementedException();
+        return GetMessages().Where(m => m.author_name == username).Take(_messagesPerPage);
     }
 
     public void CreateMessage(int author_id, string text)
     {
-        throw new NotImplementedException();
+        var user = _context.Users.Where(u => u.Id == author_id).FirstOrDefault();
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+        
+        var message = new Message
+        {
+            author_id = author_id,
+            author_name = user.Username,
+            author_email = user.Email,
+            text = text,
+            pub_date = DateTime.UtcNow,
+            flagged = "false"
+        };
+    }
+
+    private IEnumerable<MessageDTO> GetMessages()
+    {
+        var messages = _context.Messages
+            .OrderByDescending(m => m.pub_date)
+            .Select(m => new MessageDTO
+            {
+                id = m.id,
+                author_id = m.author_id,
+                author_name = m.author_name,
+                author_email = m.author_email,
+                text = m.text,
+                pub_date = m.pub_date.ToString("yyyy-MM-dd HH:mm:ss")
+            })
+            .ToList();
+        
+        return messages.Take(_messagesPerPage);
     }
 }
