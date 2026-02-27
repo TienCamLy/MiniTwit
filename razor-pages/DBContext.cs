@@ -7,6 +7,7 @@ namespace razor_pages.Pages;
 
 public class DBContext : IDBContext
 {
+    private const string ConnectionString = "Data Source=data/minitwit.db";
     private SqliteConnection OpenConnection() {
         var conn = new SqliteConnection(ConnectionString);
         conn.Open();
