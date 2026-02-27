@@ -15,12 +15,23 @@ public class FollowerRepository : IFollowerRepository
 
     public IEnumerable<UserDTO> GetFollowedUsers(int user_id)
     {
-        throw new NotImplementedException();
+        var followedUsers = _context.Followers
+            .Where(f => f.source_id == user_id)
+            .Select(f => f.target)
+            .Select<User, UserDTO>(u => new UserDTO
+            {
+                id = u.Id,
+                name = u.Username,
+                email = u.Email,
+            })
+            .ToList();
+
+        return followedUsers;
     }
 
     public bool IsFollowed(int source_id, int target_id)
     {
-        throw new NotImplementedException();
+        return _context.Followers.Any(f => f.source_id == source_id && f.target_id == target_id);
     }
 
     public void FollowUser(int source_id, int target_id)
