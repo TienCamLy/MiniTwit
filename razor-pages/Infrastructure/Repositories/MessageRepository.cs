@@ -40,7 +40,6 @@ public class MessageRepository : IMessageRepository
         
         var message = new Message
         {
-            id = 123,
             author_id = author_id,
             author_name = user.UserName,
             author_email = user.Email,

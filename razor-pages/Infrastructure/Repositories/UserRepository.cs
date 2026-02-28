@@ -2,6 +2,7 @@ using Core.Interfaces;
 using Core.DTOs;
 using Infrastructure.Entities;
 using Infrastructure.Context;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -53,8 +54,9 @@ public class UserRepository : IUserRepository
             throw new Exception("User not found");
         }
         
-        // TODO: Implement password hashing and salting
-        if (user.PasswordHash != password)
+        var hash = new PasswordHasher<User>();
+        var verifyHashResult = hash.VerifyHashedPassword(user, user.PasswordHash, password);
+        if (verifyHashResult == PasswordVerificationResult.Failed)
         {
             throw new Exception("Invalid password");
         }
@@ -67,7 +69,7 @@ public class UserRepository : IUserRepository
         };
     }
 
-    public void CreateUser(string username, string email, string passwordhash)
+    public void CreateUser(string username, string email, string password)
     {
         var existingUser = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
 
@@ -75,12 +77,14 @@ public class UserRepository : IUserRepository
         {
             throw new ArgumentException("User already exists: ", username);
         }
-
+        
+        var hash = new PasswordHasher<User>(); 
+        
         var user = new User
         {
             UserName = username,
             Email = email,
-            PasswordHash = passwordhash,
+            PasswordHash = hash.HashPassword(null, password),
         };
             
         _context.Users.Add(user);
