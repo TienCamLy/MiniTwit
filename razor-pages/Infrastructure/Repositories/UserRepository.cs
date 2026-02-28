@@ -24,14 +24,14 @@ public class UserRepository : IUserRepository
         return new UserDTO
         {
             id = user.Id,
-            name = user.Username,
+            name = user.UserName,
             email = user.Email,
         };
     }
 
     public UserDTO GetUserByUsername(string username)
     {
-        var user = _context.Users.Where(u => u.Username == username).FirstOrDefault();
+        var user = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
         if (user == null)
         {
             throw new Exception("User not found");
@@ -40,14 +40,14 @@ public class UserRepository : IUserRepository
         return new UserDTO
         {
             id = user.Id,
-            name = user.Username,
+            name = user.UserName,
             email = user.Email,
         };
     }
 
     public UserDTO Login(string username, string password)
     {
-        var user = _context.Users.Where(u => u.Username == username).FirstOrDefault();
+        var user = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
         if (user == null)
         {
             throw new Exception("User not found");
@@ -62,14 +62,14 @@ public class UserRepository : IUserRepository
         return new UserDTO
         {
             id = user.Id,
-            name = user.Username,
+            name = user.UserName,
             email = user.Email,
         };
     }
 
     public void CreateUser(string username, string email, string passwordhash)
     {
-        var existingUser = _context.Users.Where(u => u.Username == username).FirstOrDefault();
+        var existingUser = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
 
         if (existingUser is not null)
         {
@@ -78,9 +78,9 @@ public class UserRepository : IUserRepository
 
         var user = new User
         {
-            Name = username,
+            UserName = username,
             Email = email,
-            PasswordHash = password,
+            PasswordHash = passwordhash,
         };
             
         _context.Users.Add(user);

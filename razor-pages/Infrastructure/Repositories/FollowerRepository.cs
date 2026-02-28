@@ -21,7 +21,7 @@ public class FollowerRepository : IFollowerRepository
             .Select<User, UserDTO>(u => new UserDTO
             {
                 id = u.Id,
-                name = u.Username,
+                name = u.UserName,
                 email = u.Email,
             })
             .ToList();
