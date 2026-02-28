@@ -35,7 +35,7 @@ public class UserRepository : IUserRepository
         var user = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
         if (user == null)
         {
-            throw new Exception("User not found");
+            return null;
         }
 
         return new UserDTO
