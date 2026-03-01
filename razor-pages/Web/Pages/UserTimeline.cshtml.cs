@@ -16,6 +16,8 @@ public class UserTimelineModel : PageModel
     public string Username { get; set; } = string.Empty;
     public bool Followed { get; set; } = false;
     public string? Error { get; set; }
+    [FromQuery(Name = "page")]
+    public int Page { get; set; } = 1;
     
     public UserTimelineModel(
         IMessageRepository messageRepository, 
@@ -29,18 +31,26 @@ public class UserTimelineModel : PageModel
     
 
     
-    public void OnGet(string user, string error)
+    public void OnGet(string user, string? error = null)
     {
-        Messages = _messageRepository.GetUserTimeline(user);
+
         Username = user;
+        Messages = _messageRepository.GetUserTimeline(user, Page);
+        
+
+        ViewData["Page"] = Page;
+
         if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
         {
             var userObj = _userRepository.GetUserByUsername(user);
             var sessionUser = _userRepository.GetUserByUsername(User.Identity.Name);
             Followed = sessionUser != null && userObj != null && _followerRepository.IsFollowed(sessionUser.id, userObj.id);
-        } else {
+        }
+        else
+        {
             Followed = false;
         }
+
         Error = error;
     }
     

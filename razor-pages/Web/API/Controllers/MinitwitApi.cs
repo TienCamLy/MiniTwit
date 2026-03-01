@@ -124,13 +124,13 @@ namespace Web.API.Controllers
         [SwaggerOperation("GetMessages")]
         [SwaggerResponse(statusCode: 200, type: typeof(List<ApiMessage>), description: "Success")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult GetMessages([FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no)
+        public virtual IActionResult GetMessages([FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no,[FromQuery] int page = 1)
         {
 
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
             
-            var domainMessages = _messageRepository.GetPublicTimeline();
+            var domainMessages = _messageRepository.GetPublicTimeline(page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
@@ -156,7 +156,7 @@ namespace Web.API.Controllers
         [SwaggerOperation("GetMessagesPerUser")]
         [SwaggerResponse(statusCode: 200, type: typeof(List<ApiMessage>), description: "Success")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult GetMessagesPerUser([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no)
+        public virtual IActionResult GetMessagesPerUser([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no,[FromQuery] int page = 1)
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
@@ -164,7 +164,7 @@ namespace Web.API.Controllers
             if (_userRepository.GetUserByUsername(username) == null)
                 return UserNotFound();
 
-            var domainMessages = _messageRepository.GetUserTimeline(username);
+            var domainMessages = _messageRepository.GetUserTimeline(username,page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
