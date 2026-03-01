@@ -47,6 +47,9 @@ public class MessageRepository : IMessageRepository
             pub_date = DateTime.UtcNow,
             flagged = "false"
         };
+        
+        _context.Messages.Add(message);
+        _context.SaveChanges();
     }
 
     private IEnumerable<MessageDTO> GetMessages()

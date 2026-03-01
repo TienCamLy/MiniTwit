@@ -20,8 +20,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 // Add identity services
-builder.Services.AddIdentity<User, IdentityRole<int>>()
-    .AddEntityFrameworkStores<MiniTwitContext>();
+//builder.Services.AddIdentity<User, IdentityRole<int>>()
+//    .AddEntityFrameworkStores<MiniTwitContext>();
 
 // Add sql server
 builder.Services.AddDbContext<MiniTwitContext>(options =>
