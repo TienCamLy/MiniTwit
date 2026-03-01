@@ -51,14 +51,14 @@ public class UserRepository : IUserRepository
         var user = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
         if (user == null)
         {
-            throw new Exception("User not found");
+            return null;
         }
         
         var hash = new PasswordHasher<User>();
         var verifyHashResult = hash.VerifyHashedPassword(user, user.PasswordHash, password);
         if (verifyHashResult == PasswordVerificationResult.Failed)
         {
-            throw new Exception("Invalid password");
+            return null;
         }
         
         return new UserDTO
