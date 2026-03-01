@@ -35,9 +35,7 @@ public class UserTimelineModel : PageModel
     {
 
         Username = user;
-        Messages = _messageRepository.GetUserTimeline(user, Page);
-        
-
+        //maybe used for paginator
         ViewData["Page"] = Page;
 
         if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
