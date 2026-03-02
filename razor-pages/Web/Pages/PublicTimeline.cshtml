@@ -16,10 +16,10 @@
             @foreach (var message in Model.Messages)
             {
                 <li>
-                    <img src="@Helpers.GenerateGravatarUrl(message.author_email)" />
-                    <strong><a href="/@message.author_name">@message.author_name</a></strong>
-                    @message.text
-                    <small>&mdash; @message.pub_date</small>
+                    <img src="@Helpers.GenerateGravatarUrl(message.AuthorEmail)" />
+                    <strong><a href="/@message.AuthorName">@message.AuthorName</a></strong>
+                    @message.Text
+                    <small>&mdash; @message.PubDate</small>
                 </li>
             }
         }

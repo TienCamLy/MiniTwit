@@ -13,71 +13,81 @@ public class MessageRepository : IMessageRepository
     {
         _context = context;
     }
-    
-    public int GetUserTimelineCount(string username)
-    {
-        return _context.Messages.Count(m => m.author_name == username);
-    }
-    
-    public int GetPublicTimelineCount()
-    {
-        return _context.Messages.Count();
-    }
-    
-    public IEnumerable<MessageDTO> GetPublicTimeline(int page = 1)
+
+    public IEnumerable<MessageDTO> GetPublicTimeline()
     {
         return _context.Messages
-            .OrderByDescending(m => m.pub_date)
-            .ThenByDescending(m => m.id)
-            .Skip((page - 1) * _messagesPerPage)
-            .Take(_messagesPerPage)
+            .OrderByDescending(m => m.PubDate)
             .Select(m => new MessageDTO
             {
-                id = m.id,
-                author_id = m.author_id,
-                author_name = m.author_name,
-                author_email = m.author_email,
-                text = m.text,
-                pub_date = m.pub_date.ToString("yyyy-MM-dd HH:mm:ss")
+                Id = m.Id,
+                Text = m.Text,
+                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+				AuthorName = m.Author.UserName,
+                AuthorEmail = m.Author.Email
             })
-            .ToList();
+			.ToList();
+    }
+
+    public IEnumerable<MessageDTO> GetPublicTimelinePage(int page = 1)
+    {
+        return _context.Messages
+            .OrderByDescending(m => m.PubDate)
+			.Skip((page - 1) * _messagesPerPage)
+			.Take(_messagesPerPage)
+            .Select(m => new MessageDTO
+            {
+                Id = m.Id,
+                Text = m.Text,
+                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+				AuthorName = m.Author.UserName,
+                AuthorEmail = m.Author.Email
+            })
+			.ToList();
     }
 
     public IEnumerable<MessageDTO> GetUserTimeline(int user_id)
     {
         return _context.Messages
-            .Where(m => m.author_id == user_id)
-            .OrderByDescending(m => m.pub_date)
-            .Take(_messagesPerPage)
+            .OrderByDescending(m => m.PubDate)
+			.Where(m => m.Author.Id == user_id)
             .Select(m => new MessageDTO
             {
-                id = m.id,
-                author_id = m.author_id,
-                author_name = m.author_name,
-                author_email = m.author_email,
-                text = m.text,
-                pub_date = m.pub_date.ToString("yyyy-MM-dd HH:mm:ss")
+                Id = m.Id,
+                Text = m.Text,
+                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+				AuthorName = m.Author.UserName,
+                AuthorEmail = m.Author.Email
             })
-            .ToList();
+			.ToList();
     }
     
-    public IEnumerable<MessageDTO> GetUserPrivateTimeline(string username, int page = 1)
+    public IEnumerable<MessageDTO> GetUserTimelinePage(string username, int page = 1)
     {
-        return _context.Messages
-            .Where(m => m.author_name == username)
-            .OrderByDescending(m => m.pub_date)
-            .Skip((page - 1) * _messagesPerPage)
-            .Take(_messagesPerPage)
+		return _context.Messages
+            .OrderByDescending(m => m.PubDate)
+			.Where(m => m.Author.UserName == username)
+			.Skip((page - 1) * _messagesPerPage)
+			.Take(_messagesPerPage)
             .Select(m => new MessageDTO
             {
-                id = m.id,
-                author_id = m.author_id,
-                author_name = m.author_name,
-                author_email = m.author_email,
-                text = m.text,
-                pub_date = m.pub_date.ToString("yyyy-MM-dd HH:mm:ss")
+                Id = m.Id,
+                Text = m.Text,
+                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+				AuthorName = m.Author.UserName,
+                AuthorEmail = m.Author.Email
             })
-            .ToList();
+			.ToList();
+    }
+    
+	public int GetUserTimelineCount(string username)
+    {
+        return _context.Messages.Count(m => m.Author.UserName == username);
+    }
+    
+    public int GetPublicTimelineCount()
+    {
+        return _context.Messages.Count();
     }
 
     public void CreateMessage(int author_id, string text)
@@ -90,30 +100,14 @@ public class MessageRepository : IMessageRepository
         
         var message = new Message
         {
-            author_id = author_id,
-            author_name = user.UserName,
-            author_email = user.Email,
-            text = text,
-            pub_date = DateTime.UtcNow,
-            flagged = "false"
+            AuthorId = author_id,
+            Author = user,
+            Text = text,
+            PubDate = DateTime.UtcNow,
+            Flagged = 0
         };
         
         _context.Messages.Add(message);
         _context.SaveChanges();
-    }
-
-    private IEnumerable<MessageDTO> GetMessages()
-    {
-        return _context.Messages
-            .OrderByDescending(m => m.pub_date)
-            .Select(m => new MessageDTO
-            {
-                id = m.id,
-                author_id = m.author_id,
-                author_name = m.author_name,
-                author_email = m.author_email,
-                text = m.text,
-                pub_date = m.pub_date.ToString("yyyy-MM-dd HH:mm:ss")
-            });
     }
 }

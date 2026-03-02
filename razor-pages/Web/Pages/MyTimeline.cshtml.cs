@@ -37,7 +37,7 @@ public class MyTimelineModel : PageModel
     {
         if (User.Identity?.IsAuthenticated != true || User.Identity.Name == null) return Redirect("/public");
 
-        Messages = _messageRepository.GetUserPrivateTimeline(Username,Page);
+        Messages = _messageRepository.GetUserTimelinePage(Username, Page);
         var totalMessages = _messageRepository.GetUserTimelineCount(Username);
         TotalPages = (int)Math.Ceiling((double)totalMessages / 10);
 

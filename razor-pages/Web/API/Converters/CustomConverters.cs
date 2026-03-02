@@ -64,9 +64,9 @@ namespace Web.API.Converters
         {
             return new ApiMessage
             {
-                Content = message.text,
-                PubDate = message.pub_date,
-                User = message.author_name
+                Content = message.Text,
+                PubDate = message.PubDate,
+                User = message.AuthorName
             };
         }
     }

@@ -53,24 +53,6 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Messages",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    author_id = table.Column<int>(type: "INTEGER", nullable: false),
-                    author_name = table.Column<string>(type: "TEXT", nullable: false),
-                    author_email = table.Column<string>(type: "TEXT", nullable: false),
-                    text = table.Column<string>(type: "TEXT", nullable: false),
-                    pub_date = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    flagged = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Messages", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -180,23 +162,43 @@ namespace Infrastructure.Migrations
                 name: "Followers",
                 columns: table => new
                 {
-                    source_id = table.Column<int>(type: "INTEGER", nullable: false),
-                    target_id = table.Column<int>(type: "INTEGER", nullable: false),
-                    sourceId = table.Column<int>(type: "INTEGER", nullable: false),
-                    targetId = table.Column<int>(type: "INTEGER", nullable: false)
+                    SourceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TargetId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Followers", x => new { x.source_id, x.target_id });
+                    table.PrimaryKey("PK_Followers", x => new { x.SourceId, x.TargetId });
                     table.ForeignKey(
-                        name: "FK_Followers_AspNetUsers_sourceId",
-                        column: x => x.sourceId,
+                        name: "FK_Followers_AspNetUsers_SourceId",
+                        column: x => x.SourceId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Followers_AspNetUsers_targetId",
-                        column: x => x.targetId,
+                        name: "FK_Followers_AspNetUsers_TargetId",
+                        column: x => x.TargetId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AuthorId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Text = table.Column<string>(type: "TEXT", nullable: false),
+                    PubDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Flagged = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -240,14 +242,14 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Followers_sourceId",
+                name: "IX_Followers_TargetId",
                 table: "Followers",
-                column: "sourceId");
+                column: "TargetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Followers_targetId",
-                table: "Followers",
-                column: "targetId");
+                name: "IX_Messages_AuthorId",
+                table: "Messages",
+                column: "AuthorId");
         }
 
         /// <inheritdoc />

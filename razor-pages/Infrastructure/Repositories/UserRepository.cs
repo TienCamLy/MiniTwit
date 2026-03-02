@@ -24,9 +24,9 @@ public class UserRepository : IUserRepository
 
         return new UserDTO
         {
-            id = user.Id,
-            name = user.UserName,
-            email = user.Email,
+            Id = user.Id,
+            UserName = user.UserName,
+            Email = user.Email,
         };
     }
 
@@ -40,9 +40,9 @@ public class UserRepository : IUserRepository
 
         return new UserDTO
         {
-            id = user.Id,
-            name = user.UserName,
-            email = user.Email,
+            Id = user.Id,
+            UserName = user.UserName,
+            Email = user.Email,
         };
     }
 
@@ -63,9 +63,9 @@ public class UserRepository : IUserRepository
         
         return new UserDTO
         {
-            id = user.Id,
-            name = user.UserName,
-            email = user.Email,
+            Id = user.Id,
+            UserName = user.UserName,
+            Email = user.Email,
         };
     }
 
@@ -100,9 +100,13 @@ public class UserRepository : IUserRepository
             throw new ArgumentException("User not found");
         }
         
-        // TODO: Remove all messages and followers
+		var userMessages = _context.Messages.Where(m => m.Author == existingUser).ToList();
+		var followers = _context.Followers.Where(f => f.SourceId == user_id || f.TargetId == user_id).ToList();
         
+		_context.Followers.RemoveRange(followers);
+		_context.Messages.RemoveRange(userMessages);
         _context.Users.Remove(existingUser);
+
         _context.SaveChanges();
     }
 }

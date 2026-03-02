@@ -40,9 +40,9 @@ public class LoginModel : PageModel
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
-                    new Claim(ClaimTypes.Name, user.name),
-                    new Claim(ClaimTypes.Email, user.email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email),
                 };
 
                 var claimsIdentity = new ClaimsIdentity(

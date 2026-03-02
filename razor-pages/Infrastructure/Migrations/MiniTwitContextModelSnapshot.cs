@@ -19,56 +19,41 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Entities.Follower", b =>
                 {
-                    b.Property<int>("source_id")
+                    b.Property<int>("SourceId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("target_id")
+                    b.Property<int>("TargetId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("sourceId")
-                        .HasColumnType("INTEGER");
+                    b.HasKey("SourceId", "TargetId");
 
-                    b.Property<int>("targetId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("source_id", "target_id");
-
-                    b.HasIndex("sourceId");
-
-                    b.HasIndex("targetId");
+                    b.HasIndex("TargetId");
 
                     b.ToTable("Followers");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.Message", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("author_email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("author_id")
+                    b.Property<int>("AuthorId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("author_name")
+                    b.Property<int>("Flagged")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("PubDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("flagged")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.HasKey("Id");
 
-                    b.Property<DateTime>("pub_date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("id");
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Messages");
                 });
@@ -266,21 +251,32 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Entities.Follower", b =>
                 {
-                    b.HasOne("Infrastructure.Entities.User", "source")
+                    b.HasOne("Infrastructure.Entities.User", "Source")
                         .WithMany()
-                        .HasForeignKey("sourceId")
+                        .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.Entities.User", "target")
+                    b.HasOne("Infrastructure.Entities.User", "Target")
                         .WithMany()
-                        .HasForeignKey("targetId")
+                        .HasForeignKey("TargetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("source");
+                    b.Navigation("Source");
 
-                    b.Navigation("target");
+                    b.Navigation("Target");
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.Message", b =>
+                {
+                    b.HasOne("Infrastructure.Entities.User", "Author")
+                        .WithMany("Messages")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -332,6 +328,11 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Infrastructure.Entities.User", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

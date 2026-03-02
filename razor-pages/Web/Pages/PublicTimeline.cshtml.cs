@@ -24,7 +24,7 @@ public class PublicTimelineModel : PageModel
 
     public void OnGet()
     {
-        Messages = _messageRepository.GetPublicTimeline(Page);
+        Messages = _messageRepository.GetPublicTimelinePage(Page);
 
         TotalMessages = _messageRepository.GetPublicTimelineCount();
         TotalPages = (int)Math.Ceiling((double)TotalMessages / _messagesPerPage);

@@ -19,6 +19,6 @@ public class MiniTwitContext : IdentityDbContext<User, IdentityRole<int>, int>
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<Follower>()
-            .HasKey(f => new { f.source_id, f.target_id });
+            .HasKey(f => new { f.SourceId, f.TargetId });
     }
 }

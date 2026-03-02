@@ -42,7 +42,7 @@ public class UserTimelineModel : PageModel
         {
             var userObj = _userRepository.GetUserByUsername(user);
             var sessionUser = _userRepository.GetUserByUsername(User.Identity.Name);
-            Followed = sessionUser != null && userObj != null && _followerRepository.IsFollowed(sessionUser.id, userObj.id);
+            Followed = sessionUser != null && userObj != null && _followerRepository.IsFollowed(sessionUser.Id, userObj.Id);
         }
         else
         {
@@ -66,15 +66,15 @@ public class UserTimelineModel : PageModel
                 Error = $"User with name '{(who == null ? identityName : user)}' not found";
             else
             {
-                if (_followerRepository.IsFollowed(who.id, whom.id))
+                if (_followerRepository.IsFollowed(who.Id, whom.Id))
                 {
-                    _followerRepository.UnfollowUser(who.id, whom.id);
-                    TempData["FlashMessage"] = $"You are no longer following \"{whom.name}\"";   
+                    _followerRepository.UnfollowUser(who.Id, whom.Id);
+                    TempData["FlashMessage"] = $"You are no longer following \"{whom.UserName}\"";   
                 }
                 else
                 {
-                    _followerRepository.FollowUser(who.id, whom.id);
-                    TempData["FlashMessage"] = $"You are now following \"{whom.name}\"";
+                    _followerRepository.FollowUser(who.Id, whom.Id);
+                    TempData["FlashMessage"] = $"You are now following \"{whom.UserName}\"";
                 }
                 return Redirect($"/{user}");
             }

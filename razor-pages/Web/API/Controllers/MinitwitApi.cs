@@ -73,7 +73,7 @@ namespace Web.API.Controllers
             if (user == null)
                 return UserNotFound();
 
-            var followers = _followerRepository.GetFollowedUsers(user.id).Select(u => u.name).ToList();
+            var followers = _followerRepository.GetFollowedUsers(user.Id).Select(u => u.UserName).ToList();
             
             if (latest.HasValue)
                 _latest = latest.Value;
@@ -130,7 +130,7 @@ namespace Web.API.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
             
-            var domainMessages = _messageRepository.GetPublicTimeline(page);
+            var domainMessages = _messageRepository.GetPublicTimelinePage(page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
@@ -164,7 +164,7 @@ namespace Web.API.Controllers
             if (_userRepository.GetUserByUsername(username) == null)
                 return UserNotFound();
 
-            var domainMessages = _messageRepository.GetUserPrivateTimeline(username,page);
+            var domainMessages = _messageRepository.GetUserTimelinePage(username, page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
@@ -213,9 +213,9 @@ namespace Web.API.Controllers
                 return UserNotFound();
 
             if (hasFollow)
-                _followerRepository.FollowUser(who.id, whom.id);
+                _followerRepository.FollowUser(who.Id, whom.Id);
             else
-                _followerRepository.UnfollowUser(who.id, whom.id);
+                _followerRepository.UnfollowUser(who.Id, whom.Id);
 
             if (latest.HasValue)
                 _latest = latest.Value;
@@ -253,7 +253,7 @@ namespace Web.API.Controllers
             if (user == null)
                 return UserNotFound();
 
-            _messageRepository.CreateMessage(user.id, payload.Content);
+            _messageRepository.CreateMessage(user.Id, payload.Content);
             
             if (latest.HasValue)
                 _latest = latest.Value;

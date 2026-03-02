@@ -2,10 +2,10 @@ namespace Core.DTOs;
 
 public class MessageDTO
 {
-    public required int id { get; init; }
-    public required int author_id { get; init; }
-    public required string author_name { get; init; }
-    public required string author_email { get; init; }
-    public required string text { get; init; }
-    public required string pub_date { get; init; }
+    public required int Id { get; init; }
+    public required string Text { get; init; }
+    public required string PubDate { get; init; }
+
+	public required string AuthorName { get; init; }
+	public required string AuthorEmail { get; init; }
 }
