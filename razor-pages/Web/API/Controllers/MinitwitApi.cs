@@ -164,7 +164,7 @@ namespace Web.API.Controllers
             if (_userRepository.GetUserByUsername(username) == null)
                 return UserNotFound();
 
-            var domainMessages = _messageRepository.GetUserTimeline(username,page);
+            var domainMessages = _messageRepository.GetUserPrivateTimeline(username,page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)

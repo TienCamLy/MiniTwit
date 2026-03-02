@@ -45,10 +45,23 @@ public class MessageRepository : IMessageRepository
 
     public IEnumerable<MessageDTO> GetUserTimeline(int user_id)
     {
-        return GetMessages().Where(m => m.author_id == user_id).Take(_messagesPerPage);
+        return _context.Messages
+            .Where(m => m.author_id == user_id)
+            .OrderByDescending(m => m.pub_date)
+            .Take(_messagesPerPage)
+            .Select(m => new MessageDTO
+            {
+                id = m.id,
+                author_id = m.author_id,
+                author_name = m.author_name,
+                author_email = m.author_email,
+                text = m.text,
+                pub_date = m.pub_date.ToString("yyyy-MM-dd HH:mm:ss")
+            })
+            .ToList();
     }
     
-    public IEnumerable<MessageDTO> GetUserTimeline(string username, int page = 1)
+    public IEnumerable<MessageDTO> GetUserPrivateTimeline(string username, int page = 1)
     {
         return _context.Messages
             .Where(m => m.author_name == username)
