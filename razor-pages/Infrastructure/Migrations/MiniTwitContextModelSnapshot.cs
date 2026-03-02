@@ -42,15 +42,20 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Entities.Message", b =>
                 {
-                    b.Property<int>("message_id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("authorId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("author_email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("author_id")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("author_name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("flagged")
                         .IsRequired()
@@ -63,9 +68,7 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("message_id");
-
-                    b.HasIndex("authorId");
+                    b.HasKey("id");
 
                     b.ToTable("Messages");
                 });
@@ -278,17 +281,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("source");
 
                     b.Navigation("target");
-                });
-
-            modelBuilder.Entity("Infrastructure.Entities.Message", b =>
-                {
-                    b.HasOne("Infrastructure.Entities.User", "author")
-                        .WithMany()
-                        .HasForeignKey("authorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("author");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

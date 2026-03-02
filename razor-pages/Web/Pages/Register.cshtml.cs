@@ -31,6 +31,7 @@ public class RegisterModel : PageModel
     {
         if (string.IsNullOrEmpty(Username))
             Error = "You have to enter a username";
+        
         else if (string.IsNullOrEmpty(Email) || !Email.Contains("@"))
             Error = "You have to enter a valid email address";
         else if (string.IsNullOrEmpty(Password))
@@ -41,12 +42,16 @@ public class RegisterModel : PageModel
             Error = "The username is already taken";
         else
         {
-            var hasher = new PasswordHasher<string>();
-            var hash = hasher.HashPassword(Username, Password);
-            _userRepository.CreateUser(Username, Email, hash);
-            
-            TempData["FlashMessage"] = "You were successfully registered and can login now";
-            return RedirectToPage("/Login");
+            try
+            {
+                _userRepository.CreateUser(Username, Email, Password);
+                TempData["FlashMessage"] = "You were successfully registered and can login now";
+                return RedirectToPage("/Login");
+            }
+            catch (ArgumentException ex)
+            {
+                Error = ex.Message;
+            }
         }
         return Page();
     }

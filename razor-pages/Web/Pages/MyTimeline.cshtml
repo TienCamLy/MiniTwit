@@ -38,4 +38,27 @@
             <li><em>There's no message so far.</em></li>
         }
     </ul>
+    <div class="pagination">
+        @if (Model.Page > 1)
+        {
+            <a href="/public?Page=@(Model.Page - 1)" class="prev">Previous</a>
+        }
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            if (i == Model.Page)
+            {
+                <span class="current">@i</span>
+            }
+            else
+            {
+                <a href="/public?Page=@i">@i</a>
+            }
+        }
+
+        @if (Model.Page < Model.TotalPages)
+        {
+            <a href="/public?Page=@(Model.Page + 1)" class="next">Next</a>
+        }
+    </div>
 </div>

@@ -53,6 +53,24 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    author_id = table.Column<int>(type: "INTEGER", nullable: false),
+                    author_name = table.Column<string>(type: "TEXT", nullable: false),
+                    author_email = table.Column<string>(type: "TEXT", nullable: false),
+                    text = table.Column<string>(type: "TEXT", nullable: false),
+                    pub_date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    flagged = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -184,29 +202,6 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Messages",
-                columns: table => new
-                {
-                    message_id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    author_id = table.Column<int>(type: "INTEGER", nullable: false),
-                    text = table.Column<string>(type: "TEXT", nullable: false),
-                    pub_date = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    flagged = table.Column<string>(type: "TEXT", nullable: false),
-                    authorId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Messages", x => x.message_id);
-                    table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_authorId",
-                        column: x => x.authorId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -253,11 +248,6 @@ namespace Infrastructure.Migrations
                 name: "IX_Followers_targetId",
                 table: "Followers",
                 column: "targetId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Messages_authorId",
-                table: "Messages",
-                column: "authorId");
         }
 
         /// <inheritdoc />

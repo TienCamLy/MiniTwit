@@ -4,7 +4,7 @@ namespace Infrastructure.Entities;
 public class Message
 {
     [Key]
-    public required int id { get; set; }
+    public int id { get; set; }
     public required int author_id { get; set; }
     public required string author_name { get; set; }
     public required string author_email { get; set; }
