@@ -41,7 +41,7 @@
     <div class="pagination">
         @if (Model.Page > 1)
         {
-            <a href="/public?Page=@(Model.Page - 1)" class="prev">Previous</a>
+            <a href="/?Page=@(Model.Page - 1)" class="prev">Previous</a>
         }
 
         @for (int i = 1; i <= Model.TotalPages; i++)
@@ -52,13 +52,13 @@
             }
             else
             {
-                <a href="/public?Page=@i">@i</a>
+                <a href="/?Page=@i">@i</a>
             }
         }
 
         @if (Model.Page < Model.TotalPages)
         {
-            <a href="/public?Page=@(Model.Page + 1)" class="next">Next</a>
+            <a href="/?Page=@(Model.Page + 1)" class="next">Next</a>
         }
     </div>
 </div>

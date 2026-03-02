@@ -23,7 +23,7 @@ public class MyTimelineModel : PageModel
     public int TotalPages { get; set; }
     
     private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-    
+    private string Username => User.FindFirst(ClaimTypes.Name)!.Value;
     public MyTimelineModel(
         IMessageRepository messageRepository, 
         IUserRepository userRepository, 
@@ -36,9 +36,9 @@ public class MyTimelineModel : PageModel
     public IActionResult OnGet()
     {
         if (User.Identity?.IsAuthenticated != true || User.Identity.Name == null) return Redirect("/public");
-        
-        Messages = _messageRepository.GetUserTimeline(UserId);
-        var totalMessages = _messageRepository.GetUserTimelineCount(User.Identity.Name!);
+
+        Messages = _messageRepository.GetUserPrivateTimeline(Username,Page);
+        var totalMessages = _messageRepository.GetUserTimelineCount(Username);
         TotalPages = (int)Math.Ceiling((double)totalMessages / 10);
 
         return Page();
