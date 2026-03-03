@@ -19,10 +19,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// Add identity services
-//builder.Services.AddIdentity<User, IdentityRole<int>>()
-//    .AddEntityFrameworkStores<MiniTwitContext>();
-
 // Add sql server
 builder.Services.AddDbContext<MiniTwitContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
