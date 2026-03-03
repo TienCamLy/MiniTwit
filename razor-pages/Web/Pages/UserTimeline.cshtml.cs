@@ -29,18 +29,16 @@ public class UserTimelineModel : PageModel
         _followerRepository = followerRepository;
     }
     
-
-    
     public void OnGet(string user, string? error = null)
     {
-
+        var userObj = _userRepository.GetUserByUsername(user);
+        Messages = _messageRepository.GetUserTimeline(userObj.Id);
         Username = user;
         //maybe used for paginator
         ViewData["Page"] = Page;
 
         if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
         {
-            var userObj = _userRepository.GetUserByUsername(user);
             var sessionUser = _userRepository.GetUserByUsername(User.Identity.Name);
             Followed = sessionUser != null && userObj != null && _followerRepository.IsFollowed(sessionUser.Id, userObj.Id);
         }
