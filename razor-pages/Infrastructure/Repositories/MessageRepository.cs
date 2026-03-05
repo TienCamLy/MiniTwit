@@ -89,6 +89,26 @@ public class MessageRepository : IMessageRepository
     {
         return _context.Messages.Count();
     }
+    
+    public IEnumerable<MessageDTO> GetMyTimeline(int userId, int page = 1)
+    {
+        var messages = _context.Messages
+            .Where(m => m.AuthorId == userId ||
+                        _context.Followers.Any(f => f.SourceId == userId && f.TargetId == m.AuthorId))
+            .OrderByDescending(m => m.PubDate)
+            .Skip((page - 1) * _messagesPerPage)
+            .Select(m => new MessageDTO
+            {
+                Id = m.Id,
+                Text = m.Text,
+                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                AuthorName = m.Author.UserName,
+                AuthorEmail = m.Author.Email
+            })
+            .ToList();
+
+        return messages;
+    }
 
     public void CreateMessage(int author_id, string text)
     {

@@ -10,5 +10,6 @@ public interface IMessageRepository
     public IEnumerable<MessageDTO> GetUserTimelinePage(string username, int page);
     public int GetUserTimelineCount(string username);
     public int GetPublicTimelineCount();
+    public IEnumerable<MessageDTO> GetMyTimeline(int userId, int page);
     public void CreateMessage(int author_id, string text);
 }
