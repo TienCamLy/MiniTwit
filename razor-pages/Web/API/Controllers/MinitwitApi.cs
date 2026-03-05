@@ -195,12 +195,12 @@ namespace Web.API.Controllers
             if (!ValidateAuthorization(authorization))
                 return Unauthorized(); 
 
-            if (string.IsNullOrEmpty(payload?.Follow) || string.IsNullOrEmpty(payload?.Unfollow))
+            if (string.IsNullOrEmpty(payload?.Follow) && string.IsNullOrEmpty(payload?.Unfollow))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
 
             var hasFollow = !string.IsNullOrEmpty(payload.Follow);
             var hasUnfollow = !string.IsNullOrEmpty(payload.Unfollow);
-            if (hasFollow == hasUnfollow) // both set or both missing
+            if (hasFollow == hasUnfollow)
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
 
             var who = _userRepository.GetUserByUsername(username);
