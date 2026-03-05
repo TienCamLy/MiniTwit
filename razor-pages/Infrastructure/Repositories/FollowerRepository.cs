@@ -57,6 +57,22 @@ public class FollowerRepository : IFollowerRepository
 
     public void UnfollowUser(int sourceId, int targetId)
     {
-        throw new NotImplementedException();
+        var sourceUser = _context.Users.SingleOrDefault(u => u.Id == sourceId);
+        var targetUser = _context.Users.SingleOrDefault(u => u.Id == targetId);
+        
+        if (sourceUser == null || targetUser == null) throw new Exception("User not found");
+        
+        var alreadyFollowing = _context.Followers.Any(f => f.SourceId == sourceId && f.TargetId == targetId);
+        if (!alreadyFollowing) return;
+
+        var follower = new Follower
+        {
+            Source = sourceUser,
+            SourceId = sourceId,
+            Target = targetUser,
+            TargetId = targetId
+        };
+        _context.Followers.Remove(follower);
+        _context.SaveChanges();
     }
 }
