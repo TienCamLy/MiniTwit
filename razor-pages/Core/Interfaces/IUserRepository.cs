@@ -8,5 +8,5 @@ public interface IUserRepository
     public UserDTO GetUserByUsername(string username);
     public UserDTO Login(string username, string password);
     public void CreateUser(string username, string email, string passwordhash);
-    public void DeleteUser(int user_id);
+    public void DeleteUser(int userId);
 }

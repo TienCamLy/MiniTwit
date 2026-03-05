@@ -16,7 +16,7 @@ public class UserRepository : IUserRepository
 
     public UserDTO GetUserByID(int id)
     {
-        var user = _context.Users.Where(u => u.Id == id).FirstOrDefault();
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
         if (user == null)
         {
             throw new Exception("User not found");
@@ -32,7 +32,7 @@ public class UserRepository : IUserRepository
 
     public UserDTO GetUserByUsername(string username)
     {
-        var user = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
+        var user = _context.Users.FirstOrDefault(u => u.UserName == username);
         if (user == null)
         {
             return null;
@@ -48,7 +48,7 @@ public class UserRepository : IUserRepository
 
     public UserDTO Login(string username, string password)
     {
-        var user = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
+        var user = _context.Users.FirstOrDefault(u => u.UserName == username);
         if (user == null)
         {
             return null;
@@ -71,7 +71,7 @@ public class UserRepository : IUserRepository
 
     public void CreateUser(string username, string email, string password)
     {
-        var existingUser = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
+        var existingUser = _context.Users.FirstOrDefault(u => u.UserName == username);
 
         if (existingUser is not null)
         {
@@ -91,9 +91,9 @@ public class UserRepository : IUserRepository
         _context.SaveChanges();
     }
 
-    public void DeleteUser(int user_id)
+    public void DeleteUser(int userId)
     {
-        var existingUser = _context.Users.Where(u => u.Id == user_id).FirstOrDefault();
+        var existingUser = _context.Users.FirstOrDefault(u => u.Id == userId);
 
         if (existingUser is null)
         {
@@ -101,7 +101,7 @@ public class UserRepository : IUserRepository
         }
         
 		var userMessages = _context.Messages.Where(m => m.Author == existingUser).ToList();
-		var followers = _context.Followers.Where(f => f.SourceId == user_id || f.TargetId == user_id).ToList();
+		var followers = _context.Followers.Where(f => f.SourceId == userId || f.TargetId == userId).ToList();
         
 		_context.Followers.RemoveRange(followers);
 		_context.Messages.RemoveRange(userMessages);

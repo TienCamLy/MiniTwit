@@ -8,7 +8,7 @@ namespace Infrastructure.Repositories;
 public class MessageRepository : IMessageRepository
 {
     private readonly MiniTwitContext _context;
-    private const int _messagesPerPage = 10;
+    private const int MessagesPerPage = 10;
     public MessageRepository(MiniTwitContext context)
     {
         _context = context;
@@ -33,8 +33,8 @@ public class MessageRepository : IMessageRepository
     {
         return _context.Messages
             .OrderByDescending(m => m.PubDate)
-			.Skip((page - 1) * _messagesPerPage)
-			.Take(_messagesPerPage)
+			.Skip((page - 1) * MessagesPerPage)
+			.Take(MessagesPerPage)
             .Select(m => new MessageDTO
             {
                 Id = m.Id,
@@ -46,11 +46,11 @@ public class MessageRepository : IMessageRepository
 			.ToList();
     }
 
-    public IEnumerable<MessageDTO> GetUserTimeline(int user_id)
+    public IEnumerable<MessageDTO> GetUserTimeline(int userId)
     {
         return _context.Messages
             .OrderByDescending(m => m.PubDate)
-			.Where(m => m.Author.Id == user_id)
+			.Where(m => m.Author.Id == userId)
             .Select(m => new MessageDTO
             {
                 Id = m.Id,
@@ -67,8 +67,8 @@ public class MessageRepository : IMessageRepository
 		return _context.Messages
             .OrderByDescending(m => m.PubDate)
 			.Where(m => m.Author.UserName == username)
-			.Skip((page - 1) * _messagesPerPage)
-			.Take(_messagesPerPage)
+			.Skip((page - 1) * MessagesPerPage)
+			.Take(MessagesPerPage)
             .Select(m => new MessageDTO
             {
                 Id = m.Id,
@@ -96,7 +96,7 @@ public class MessageRepository : IMessageRepository
             .Where(m => m.AuthorId == userId ||
                         _context.Followers.Any(f => f.SourceId == userId && f.TargetId == m.AuthorId))
             .OrderByDescending(m => m.PubDate)
-            .Skip((page - 1) * _messagesPerPage)
+            .Skip((page - 1) * MessagesPerPage)
             .Select(m => new MessageDTO
             {
                 Id = m.Id,
@@ -110,9 +110,9 @@ public class MessageRepository : IMessageRepository
         return messages;
     }
 
-    public void CreateMessage(int author_id, string text)
+    public void CreateMessage(int authorId, string text)
     {
-        var user = _context.Users.Where(u => u.Id == author_id).FirstOrDefault();
+        var user = _context.Users.FirstOrDefault(u => u.Id == authorId);
         if (user == null)
         {
             throw new Exception("User not found");
@@ -120,7 +120,7 @@ public class MessageRepository : IMessageRepository
         
         var message = new Message
         {
-            AuthorId = author_id,
+            AuthorId = authorId,
             Author = user,
             Text = text,
             PubDate = DateTime.UtcNow,
