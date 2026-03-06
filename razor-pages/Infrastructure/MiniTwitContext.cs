@@ -7,6 +7,7 @@ namespace Infrastructure.Context;
 
 public class MiniTwitContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
+    // public DbSet<User> Users => Set<User>(); (implicit)
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Follower> Followers => Set<Follower>();
     
