@@ -1,14 +1,11 @@
-using Web.Pages;
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Context;
-using Infrastructure.Entities;
 
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 
 // Load .env from project directory (optional; no-op if file is missing)
 if (File.Exists(".env"))

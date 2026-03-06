@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - ./razor-pages/.env
+      - ./razor-pages/Web/.env
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:8080
     volumes:
