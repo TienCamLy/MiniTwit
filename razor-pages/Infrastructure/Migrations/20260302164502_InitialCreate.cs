@@ -250,6 +250,10 @@ namespace Infrastructure.Migrations
                 name: "IX_Messages_AuthorId",
                 table: "Messages",
                 column: "AuthorId");
+            
+            migrationBuilder.sql("INSERT INTO AspNetUsers (Id, UserName, Email, PasswordHash) (select user_id, username, email, pw_hash from user);");
+            migrationBuilder.sql("INSERT INTO Followers (SourceId, TargetId) (select who_id, whom_id from follower);");
+            migrationBuilder.sql("INSERT INTO Messages (Id, AuthorId, Text, PubDate, Flagged) (select message_id, author_id, text, pub_date, flagged from message);");
         }
 
         /// <inheritdoc />
