@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 
+using Prometheus;
+
 // Load .env from project directory (optional; no-op if file is missing)
 if (File.Exists(".env"))
     Env.Load();
@@ -58,6 +60,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseMetricServer();
+app.UseHttpMetrics();
 
 app.UseAuthentication();
 app.UseAuthorization();

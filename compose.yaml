@@ -13,7 +13,24 @@ services:
     volumes:
       - keys-volume:/app/keys
       - data-volume:/app/data
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+  
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-temp}
+    volumes:
+      - grafana-storage:/var/lib/grafana
       
 volumes:
   keys-volume:
   data-volume:
+  grafana-storage:
