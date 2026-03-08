@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -251,9 +251,11 @@ namespace Infrastructure.Migrations
                 table: "Messages",
                 column: "AuthorId");
             
-            migrationBuilder.sql("INSERT INTO AspNetUsers (Id, UserName, Email, PasswordHash) (select user_id, username, email, pw_hash from user);");
-            migrationBuilder.sql("INSERT INTO Followers (SourceId, TargetId) (select who_id, whom_id from follower);");
-            migrationBuilder.sql("INSERT INTO Messages (Id, AuthorId, Text, PubDate, Flagged) (select message_id, author_id, text, pub_date, flagged from message);");
+            migrationBuilder.Sql(@"
+                INSERT INTO AspNetUsers (Id, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnd, LockoutEnabled, AccessFailedCount)
+                SELECT user_id, username, UPPER(username), email, UPPER(email), 0, pw_hash, NULL, NULL, NULL, 0, 0, NULL, 0, 0 FROM user;");
+            migrationBuilder.Sql("INSERT INTO Followers (SourceId, TargetId) SELECT who_id, whom_id FROM follower;");
+            migrationBuilder.Sql("INSERT INTO Messages (Id, AuthorId, Text, PubDate, Flagged) SELECT message_id, author_id, text, datetime(pub_date, 'unixepoch'), flagged FROM message;");
         }
 
         /// <inheritdoc />
