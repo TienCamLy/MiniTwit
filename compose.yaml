@@ -20,6 +20,10 @@ services:
       - "9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-storage:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
   
   grafana:
     image: grafana/grafana:latest
@@ -36,4 +40,5 @@ services:
 volumes:
   keys-volume:
   data-volume:
+  prometheus-storage:
   grafana-storage:
