@@ -72,7 +72,9 @@ The group adheres to the "*Three Ways*" characterizing DevOps (from "The DevOps 
   - The workflows provide us feedback on whether the automated build succeeded or not. This happens every time a commit has been pushed to the main branch.
   - For quality control, every pull request must be reviewed by another group member.
 - **Continual Learning and Experimentation**:
-  - ...
+  - We don't blame group members for trying to solve a problem and failing; instead, we appreciate the work they did, and let other people help if needed. For this reason, we have added a "Need help" status in Trello. If anyone is stuck with a specfic problem and is unsure how to proceed, they can also write on discord; the conversation is always focused on how to proceed best instead of simply critisizing. This creates safety culture.
+  - After each solved issue, a group member posts an update to the discord groupchat about what they did, and how they solved the problem. If anything is unclear, other group members may request a presentation of a new solution in-person. This enables transforming local discoveries into global improvement by openly sharing information that other group members might find relevant in their work.
+  - If our process during the past week didn't seem streamlined during a Friday meeting, we introduce improvements right away. For this reason, for example, we decided to log our work in Trello. This way we improve our daily work continuously. 
 
 ## Processes & Workflows
 Contributions to this repository should be structured as necessary following these guidelines:
