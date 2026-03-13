@@ -48,7 +48,6 @@ test-spell-checker:
 run-all-tests: test-api-simulator test-spell-checker
 
 build-and-test:
-	python -m pip install --upgrade pip && \
 	printf "Building and testing Docker image...\n" && \
 	make app-build && \
 	make run-all-tests && \

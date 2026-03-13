@@ -14,10 +14,14 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
+    
+      - name: Upgrade pip
+        run: |
+          python -m pip install --upgrade pip
 
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Build and test Docker image
         run: |
-            make build-and-test
+          make build-and-test
