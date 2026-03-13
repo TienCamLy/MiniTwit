@@ -10,9 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Build Docker image
         run: |
             make app-build
+    
+      - name: Run tests
+        run: |
+          make run-all-tests

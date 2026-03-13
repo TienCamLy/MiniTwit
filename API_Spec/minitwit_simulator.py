@@ -102,8 +102,11 @@ def get_actions():
                 print(traceback.format_exc())
 
 
-def main(host):
+def main(host, max_actions=None):
+    total_actions = 0
     for action, delay in get_actions():
+        if max_actions and total_actions >= max_actions:
+            return total_actions
         try:
             # SWITCH ON TYPE
             command = action["post_type"]
@@ -138,7 +141,7 @@ def main(host):
                     or (response.status_code == 400)
                 ):
                     ts_str = datetime.strftime(
-                        datetime.utcnow(), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -172,7 +175,7 @@ def main(host):
                 # 403 bad request
                 if response.status_code != 200:
                     ts_str = datetime.strftime(
-                        datetime.utcnow(), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -212,7 +215,7 @@ def main(host):
                 # 403 unauthorized or 404 Not Found
                 if response.status_code != 204:
                     ts_str = datetime.strftime(
-                        datetime.utcnow(), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -252,7 +255,7 @@ def main(host):
                 # 403 unauthorized or 404 Not Found
                 if response.status_code != 204:
                     ts_str = datetime.strftime(
-                        datetime.utcnow(), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -290,7 +293,7 @@ def main(host):
                 # 403 unauthorized
                 if response.status_code != 204:
                     ts_str = datetime.strftime(
-                        datetime.utcnow(), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -309,7 +312,7 @@ def main(host):
             else:
                 # throw exception. Should not be hit
                 ts_str = datetime.strftime(
-                    datetime.utcnow(), "%Y-%m-%d %H:%M:%S"
+                    datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
                 )
                 print(
                     ",".join(
@@ -321,23 +324,25 @@ def main(host):
                         ]
                     )
                 )
+            
+            total_actions += 1
 
         except requests.exceptions.ConnectionError as e:
-            ts_str = datetime.strftime(datetime.utcnow(), "%Y-%m-%d %H:%M:%S")
+            ts_str = datetime.strftime(datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S")
             print(
                 ",".join(
                     [ts_str, host, str(action["latest"]), "ConnectionError"]
                 )
             )
         except requests.exceptions.ReadTimeout as e:
-            ts_str = datetime.strftime(datetime.utcnow(), "%Y-%m-%d %H:%M:%S")
+            ts_str = datetime.strftime(datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S")
             print(
                 ",".join([ts_str, host, str(action["latest"]), "ReadTimeout"])
             )
         except Exception as e:
             print("========================================")
             print(traceback.format_exc())
-            ts_str = datetime.strftime(datetime.utcnow(), "%Y-%m-%d %H:%M:%S")
+            ts_str = datetime.strftime(datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S")
             print(
                 ",".join(
                     [ts_str, host, str(action["latest"]), type(e).__name__]
@@ -345,9 +350,20 @@ def main(host):
             )
 
         sleep(delay / (1000 * 100000))
+    return total_actions
 
 
 if __name__ == "__main__":
     host = sys.argv[1]
+    max_actions = int(sys.argv[2]) if len(sys.argv) > 2 else None
+    start_time = datetime.now()
+    total_actions = main(host, max_actions)
+    if max_actions and total_actions != max_actions:
+        print(f"Simulation failed in {datetime.now() - start_time} seconds.")
+        print(f"Expected {max_actions} actions, but only ran {total_actions} actions successfully")
+        sys.exit(1)
+    else:
+        print(f"Simulation completed in {datetime.now() - start_time} seconds.")
+        print(f"Ran {total_actions} actions successfully.")
+        sys.exit(0)
 
-    main(host)

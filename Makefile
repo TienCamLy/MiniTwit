@@ -2,9 +2,12 @@
 app-build: # Rebuilds the app without deleting volumes
 	docker compose up --build --detach
 
+app-down: # Delete all volumes
+	docker compose down -v
+
 app-down-build: # Delete all volumes and rebuild the app
-	docker compose down -v && \
-	docker compose up --build
+	make app-down && \
+	make app-build
 
 # API Stub Build and Run
 API-generate:
@@ -29,3 +32,13 @@ provision-digital-ocean:
 clean-digital-ocean:
 	vagrant destroy && \
 	rm -rf .vagrant
+
+# Tests
+test-api-simulator:
+	cd API_Spec && \
+	python minitwit_simulator.py http://localhost:8080 2000
+
+run-all-tests: test-api-simulator
+
+build-and-test:
+	make app-build && make run-all-tests && make app-down
