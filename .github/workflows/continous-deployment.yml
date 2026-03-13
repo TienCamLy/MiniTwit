@@ -4,9 +4,14 @@ name: Continuous Deployment
 on:
   push:
     # Run workflow every time something is pushed to the main branch
-    branches:
-      - main
-      - master
+    #branches:
+    #  - main
+    #  - master
+    
+    # Run workflow every time a new tag is pushed to the main branch
+    tags:
+      - '*'
+
   # allow manual triggers for now too
   workflow_dispatch:
     manual: true
