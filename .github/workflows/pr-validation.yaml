@@ -18,10 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build Docker image
+      - name: Build and test Docker image
         run: |
-            make app-build
-    
-      - name: Run tests
-        run: |
-          make run-all-tests
+            make build-and-test

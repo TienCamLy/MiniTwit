@@ -41,4 +41,9 @@ test-api-simulator:
 run-all-tests: test-api-simulator
 
 build-and-test:
-	make app-build && make run-all-tests && make app-down
+	printf "Building and testing Docker image...\n" && \
+	make app-build && \
+	printf "\n\nRunning API simulator tests...\n" && \
+	make run-all-tests && \
+	printf "\n\nStopping and removing Docker container...\n" && \
+	make app-down
