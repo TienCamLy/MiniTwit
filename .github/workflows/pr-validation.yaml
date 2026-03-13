@@ -15,4 +15,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-            make app-down-build
+            make app-build

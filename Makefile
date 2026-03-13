@@ -1,6 +1,6 @@
 # Razor Pages App
 app-build: # Rebuilds the app without deleting volumes
-	docker compose up --build
+	docker compose up --build --detach
 
 app-down-build: # Delete all volumes and rebuild the app
 	docker compose down -v && \
