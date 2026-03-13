@@ -34,7 +34,7 @@ public class DBContext : IDBContext
             };
         }
 
-        throw new Exception("Invald user_id");
+        throw new Exception("Invalid user_id");
     }
 
     public List<string> GetFollowedUsers(int who_id, int maxResults)

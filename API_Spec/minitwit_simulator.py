@@ -14,7 +14,7 @@ import socket
 import base64
 import requests
 from time import sleep
-from datetime import datetime
+from datetime import datetime, UTC
 from contextlib import closing
 import sqlite3
 
@@ -141,7 +141,7 @@ def main(host, max_actions=None):
                     or (response.status_code == 400)
                 ):
                     ts_str = datetime.strftime(
-                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -175,7 +175,7 @@ def main(host, max_actions=None):
                 # 403 bad request
                 if response.status_code != 200:
                     ts_str = datetime.strftime(
-                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -215,7 +215,7 @@ def main(host, max_actions=None):
                 # 403 unauthorized or 404 Not Found
                 if response.status_code != 204:
                     ts_str = datetime.strftime(
-                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -255,7 +255,7 @@ def main(host, max_actions=None):
                 # 403 unauthorized or 404 Not Found
                 if response.status_code != 204:
                     ts_str = datetime.strftime(
-                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -293,7 +293,7 @@ def main(host, max_actions=None):
                 # 403 unauthorized
                 if response.status_code != 204:
                     ts_str = datetime.strftime(
-                        datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
+                        datetime.now(UTC), "%Y-%m-%d %H:%M:%S"
                     )
                     print(
                         ",".join(
@@ -312,7 +312,7 @@ def main(host, max_actions=None):
             else:
                 # throw exception. Should not be hit
                 ts_str = datetime.strftime(
-                    datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S"
+                    datetime.now(UTC), "%Y-%m-%d %H:%M:%S"
                 )
                 print(
                     ",".join(
@@ -328,21 +328,21 @@ def main(host, max_actions=None):
             total_actions += 1
 
         except requests.exceptions.ConnectionError as e:
-            ts_str = datetime.strftime(datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S")
+            ts_str = datetime.strftime(datetime.now(UTC), "%Y-%m-%d %H:%M:%S")
             print(
                 ",".join(
                     [ts_str, host, str(action["latest"]), "ConnectionError"]
                 )
             )
         except requests.exceptions.ReadTimeout as e:
-            ts_str = datetime.strftime(datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S")
+            ts_str = datetime.strftime(datetime.now(UTC), "%Y-%m-%d %H:%M:%S")
             print(
                 ",".join([ts_str, host, str(action["latest"]), "ReadTimeout"])
             )
         except Exception as e:
             print("========================================")
             print(traceback.format_exc())
-            ts_str = datetime.strftime(datetime.now(datetime.UTC), "%Y-%m-%d %H:%M:%S")
+            ts_str = datetime.strftime(datetime.now(UTC), "%Y-%m-%d %H:%M:%S")
             print(
                 ",".join(
                     [ts_str, host, str(action["latest"]), type(e).__name__]

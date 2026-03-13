@@ -35,15 +35,22 @@ clean-digital-ocean:
 
 # Tests
 test-api-simulator:
+	printf "\n\nRunning API simulator tests...\n" && \
 	cd API_Spec && \
 	python minitwit_simulator.py http://localhost:8080 2000
 
-run-all-tests: test-api-simulator
+test-spell-checker:
+	printf "\n\nRunning spell checker tests...\n" && \
+	pip install codespell && \
+	cd razor-pages && \
+	codespell
+
+run-all-tests: test-api-simulator test-spell-checker
 
 build-and-test:
+	python -m pip install --upgrade pip && \
 	printf "Building and testing Docker image...\n" && \
 	make app-build && \
-	printf "\n\nRunning API simulator tests...\n" && \
 	make run-all-tests && \
 	printf "\n\nStopping and removing Docker container...\n" && \
 	make app-down
