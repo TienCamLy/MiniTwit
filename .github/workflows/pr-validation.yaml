@@ -15,4 +15,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker compose build
+            make app-down-build
