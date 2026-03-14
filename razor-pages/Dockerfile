@@ -10,21 +10,23 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["razor-pages/razor-pages.csproj", "razor-pages/"]
-RUN dotnet restore "razor-pages/razor-pages.csproj"
+COPY ["razor-pages/Web/Web.csproj", "razor-pages/Web/"]
+COPY ["razor-pages/Infrastructure/Infrastructure.csproj", "razor-pages/Infrastructure/"]
+COPY ["razor-pages/Core/Core.csproj", "razor-pages/Core/"]
+
+RUN dotnet restore "razor-pages/Web/Web.csproj"
 COPY . .
-WORKDIR "/src/razor-pages"
-RUN dotnet build "./razor-pages.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/razor-pages/Web"
+RUN dotnet build "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./razor-pages.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY razor-pages/minitwit.db /app/data/minitwit.db
 USER root
 RUN chown -R $APP_UID:$APP_UID /app
 USER $APP_UID
-ENTRYPOINT ["dotnet", "razor-pages.dll"]
+ENTRYPOINT ["dotnet", "Web.dll"]
