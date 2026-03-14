@@ -5,7 +5,10 @@ using Infrastructure.Context;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
+using Infrastructure.Context.Services;
 using Microsoft.EntityFrameworkCore;
+
+using Prometheus;
 
 // Load .env from project directory (optional; no-op if file is missing)
 if (File.Exists(".env"))
@@ -29,6 +32,9 @@ builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))
     .SetApplicationName("razor-pages");
+
+builder.Services.AddScoped<MetricsService>();
+builder.Services.AddHostedService<MetricsUpdater>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
@@ -63,6 +69,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseMetricServer();
+app.UseHttpMetrics();
 
 app.UseAuthentication();
 app.UseAuthorization();

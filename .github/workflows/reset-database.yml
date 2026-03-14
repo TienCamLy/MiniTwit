@@ -1,0 +1,31 @@
+name: Reset Database
+
+on: ## reset database manually by typing input
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type RESET to confirm database wipe'
+        required: true
+        
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/do_ssh_key
+          chmod 600 ~/.ssh/do_ssh_key
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      - name: Reset database # deletes the minitwit.db and recreates it
+        if: github.event.inputs.confirm == 'RESET'
+        run: >
+          ssh $SSH_USER@$SSH_HOST
+          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+          'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && cd /vagrant && docker compose down -v && docker compose up -d'
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
