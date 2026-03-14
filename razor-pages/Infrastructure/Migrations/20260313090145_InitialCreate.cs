@@ -251,6 +251,56 @@ namespace Infrastructure.Migrations
                 name: "IX_Messages_AuthorId",
                 table: "Messages",
                 column: "AuthorId");
+            
+            // Users
+            migrationBuilder.Sql(@"
+INSERT INTO ""AspNetUsers""
+(""Id"", ""UserName"", ""NormalizedUserName"", ""Email"", ""NormalizedEmail"",
+ ""EmailConfirmed"", ""PasswordHash"", ""SecurityStamp"", ""ConcurrencyStamp"",
+ ""PhoneNumber"", ""PhoneNumberConfirmed"", ""TwoFactorEnabled"",
+ ""LockoutEnd"", ""LockoutEnabled"", ""AccessFailedCount"")
+SELECT
+    user_id,
+    username,
+    UPPER(username),
+    email,
+    UPPER(email),
+    FALSE,
+    pw_hash,
+    '',
+    '',
+    '',
+    FALSE,
+    FALSE,
+    NULL,
+    FALSE,
+    0
+FROM ""user""
+ON CONFLICT (""Id"") DO NOTHING;
+");
+
+
+            // Followers
+            migrationBuilder.Sql(@"
+INSERT INTO ""Followers"" (""SourceId"", ""TargetId"")
+SELECT who_id, whom_id
+FROM follower
+ON CONFLICT (""SourceId"", ""TargetId"") DO NOTHING;
+");
+
+
+            // Messages
+            migrationBuilder.Sql(@"
+INSERT INTO ""Messages"" (""Id"", ""AuthorId"", ""Text"", ""PubDate"", ""Flagged"")
+SELECT
+    message_id,
+    author_id,
+    text,
+    to_timestamp(pub_date),
+    flagged
+FROM message 
+ON CONFLICT (""Id"") DO NOTHING;
+");
         }
 
         /// <inheritdoc />

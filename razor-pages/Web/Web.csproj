@@ -6,7 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Web</RootNamespace>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    </PropertyGroup>
+      <UserSecretsId>8c0aa75b-1073-4cee-a2d7-1aa97f9fd0b3</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <Content Include="..\..\.dockerignore">

@@ -18,7 +18,8 @@ builder.Services.AddRazorPages();
 
 // Add sql server
 builder.Services.AddDbContext<MiniTwitContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), npgsqlOptions => 
+        { npgsqlOptions.CommandTimeout(180); }));
 
 // Add repositories to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -45,6 +46,10 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<MiniTwitContext>();
     dbContext.Database.Migrate();
+    dbContext.Database.ExecuteSqlRaw(@"
+        SELECT setval(pg_get_serial_sequence('""AspNetUsers""','Id'), COALESCE(MAX(""Id""),1)) FROM ""AspNetUsers"";
+        SELECT setval(pg_get_serial_sequence('""Messages""','Id'), COALESCE(MAX(""Id""),1)) FROM ""Messages"";
+    ");
 }
 
 // Configure the HTTP request pipeline.

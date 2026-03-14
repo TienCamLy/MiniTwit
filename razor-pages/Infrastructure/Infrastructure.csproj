@@ -6,7 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Infrastructure</RootNamespace>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    </PropertyGroup>
+      <UserSecretsId>38b1e681-0473-46b9-b099-9441fbaa3ed6</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <Content Include="..\..\.dockerignore">
