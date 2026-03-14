@@ -1,0 +1,342 @@
+using System.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
+using razor_pages.Structs;
+
+namespace razor_pages.Pages;
+
+public class DBContext : IDBContext
+{
+    private const string ConnectionString = "Data Source=data/minitwit.db";
+    private SqliteConnection OpenConnection() {
+        var conn = new SqliteConnection(ConnectionString);
+        conn.Open();
+        conn.DefaultTimeout = 5000; // 5 seconds
+        return conn;
+    }
+    
+    public User GetUserById(string id)
+    {
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        
+        cmd.CommandText = "SELECT * FROM user WHERE user_id = @userId";
+        cmd.Parameters.AddWithValue("@userId", id);
+
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            return new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+        }
+
+        throw new Exception("Invald user_id");
+    }
+
+    public List<string> GetFollowedUsers(int who_id, int maxResults)
+    {
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT u.username FROM follower f JOIN user u ON f.whom_id = u.user_id WHERE f.who_id = @userId LIMIT @no";
+        cmd.Parameters.AddWithValue("@userId", who_id);
+        cmd.Parameters.AddWithValue("@no", maxResults);
+        using var reader = cmd.ExecuteReader();
+        var followers = new List<string>();
+        while (reader.Read())
+        {
+            followers.Add(reader.GetString(reader.GetOrdinal("username")));
+        }
+        return followers;
+    }
+    
+    public bool IsFollowed(int whoId, int whomId)
+    {
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM follower WHERE who_id = @whoId AND whom_id = @whomId";
+        cmd.Parameters.AddWithValue("@whoId", whoId);
+        cmd.Parameters.AddWithValue("@whomId", whomId);
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read()){
+            return true;
+        }
+        return false;
+    }
+
+    public void FollowUser(int whoId, int whomId)
+    {
+        using var conn = OpenConnection();
+        using var transaction = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "INSERT INTO follower (who_id, whom_id) VALUES (@whoId, @whomId)";
+        cmd.Parameters.AddWithValue("@whoId", whoId);
+        cmd.Parameters.AddWithValue("@whomId", whomId);
+        cmd.ExecuteNonQuery();
+        transaction.Commit();
+    }
+
+    public void UnfollowUser(int whoId, int whomId)
+    {
+        using var conn = OpenConnection();
+        using var transaction = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "DELETE FROM follower WHERE who_id = @whoId AND whom_id = @whomId";
+        cmd.Parameters.AddWithValue("@whoId", whoId);
+        cmd.Parameters.AddWithValue("@whomId", whomId);
+        cmd.ExecuteNonQuery();
+        transaction.Commit();
+    }
+    
+    public List<Message> GetPublicTimeline(int perPage)
+    {
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            """
+                SELECT 
+                    m.message_id,
+                    m.author_id,
+                    m.text,
+                    m.pub_date,
+                    m.flagged,
+                    
+                    u.user_id,
+                    u.username,
+                    u.email
+                    FROM message m 
+                    JOIN user u ON m.author_id = u.user_id
+                    WHERE m.flagged = 0
+                    ORDER BY m.pub_date DESC
+                    LIMIT @perpage
+            """;
+        cmd.Parameters.AddWithValue("@perpage", perPage);
+
+        var timeline = new List<Message>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var user = new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+            
+            var unix = reader.GetInt64(reader.GetOrdinal("pub_date"));
+            
+            timeline.Add(
+                new Message 
+                {
+                message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
+                author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
+                text = reader.GetString(reader.GetOrdinal("text")),
+                pub_date = DateTimeOffset.FromUnixTimeSeconds(unix).DateTime,
+                flagged = reader.GetString(reader.GetOrdinal("flagged")),
+                author = user
+            });
+        }
+
+        return timeline;
+    }
+    
+    public List<Message> GetUserTimeline(int perPage, string username)
+    {
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            """
+                SELECT 
+                    m.message_id,
+                    m.author_id,
+                    m.text,
+                    m.pub_date,
+                    m.flagged,
+                    
+                    u.user_id,
+                    u.username,
+                    u.email
+                    FROM message m 
+                    JOIN user u ON m.author_id = u.user_id
+                    WHERE m.flagged = 0 AND u.username = @username
+                    ORDER BY m.pub_date DESC
+                    LIMIT @perpage
+                 
+            """;
+        cmd.Parameters.AddWithValue("@perpage", perPage);
+        cmd.Parameters.AddWithValue("@username", username);
+        
+
+		var timeline = new List<Message>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var user = new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+
+            var unix = reader.GetInt64(reader.GetOrdinal("pub_date"));
+            
+            timeline.Add(
+                new Message {
+                message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
+                author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
+                text = reader.GetString(reader.GetOrdinal("text")),
+                pub_date = DateTimeOffset.FromUnixTimeSeconds(unix).DateTime,
+                flagged = reader.GetString(reader.GetOrdinal("flagged")),
+                author = user
+                });
+        }
+
+        return timeline;
+    }
+    
+    public List<Message> GetOwnTimeline(int perPage, int authorId)
+    {
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            """
+                SELECT 
+                    m.message_id,
+                    m.author_id,
+                    m.text,
+                    m.pub_date,
+                    m.flagged,
+                    
+                    u.user_id,
+                    u.username,
+                    u.email
+                FROM message m
+                JOIN user u ON m.author_id = u.user_id
+                WHERE m.flagged = 0
+                AND (
+                    m.author_id = @authorId
+                    OR m.author_id IN (
+                        SELECT whom_id
+                        FROM follower
+                        WHERE who_id = @authorId
+                    )
+                )
+                ORDER BY m.pub_date DESC
+                LIMIT @perpage
+                 
+            """;
+        cmd.Parameters.AddWithValue("@perpage", perPage);
+        cmd.Parameters.AddWithValue("@authorId", authorId);
+        
+        var timeline = new List<Message>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            var user = new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+
+            var unix = reader.GetInt64(reader.GetOrdinal("pub_date"));
+            
+            timeline.Add(
+                new Message {
+                    message_id = reader.GetInt32(reader.GetOrdinal("message_id")),
+                    author_id = reader.GetInt32(reader.GetOrdinal("author_id")),
+                    text = reader.GetString(reader.GetOrdinal("text")),
+                    pub_date = DateTimeOffset.FromUnixTimeSeconds(unix).DateTime,
+                    flagged = reader.GetString(reader.GetOrdinal("flagged")),
+                    author = user
+                });
+        }
+
+        return timeline;
+    }
+
+    public void CreateUser(string username, string email, string passwordHash)
+    {
+        using var conn = OpenConnection();
+        using var transaction = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
+
+        cmd.CommandText =
+            """
+            INSERT INTO user (username, email, pw_hash)
+            VALUES (@username, @email, @pw_hash)
+            """;
+
+        cmd.Parameters.AddWithValue("@username", username);
+        cmd.Parameters.AddWithValue("@email", email);
+        cmd.Parameters.AddWithValue("@pw_hash", passwordHash);
+
+        cmd.ExecuteNonQuery();
+        transaction.Commit();
+    }
+    
+    public void CreateMessage(int authorId, string text)
+    {
+        using var conn = OpenConnection();
+        using var transaction = conn.BeginTransaction();
+        using var cmd = conn.CreateCommand();
+
+        cmd.CommandText =
+            """
+            INSERT INTO message (author_id, text, pub_date, flagged)
+            VALUES (@authorId, @text, @pub_date, 0)
+            """;
+
+        cmd.Parameters.AddWithValue("@authorId", authorId);
+        cmd.Parameters.AddWithValue("@text", text);
+        cmd.Parameters.AddWithValue("@pub_date",DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        
+        cmd.ExecuteNonQuery();
+        transaction.Commit();
+    }
+
+    public User? Login(string username, string password)
+    {
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM user WHERE username = @username";
+        cmd.Parameters.AddWithValue("@username", username);
+        using var reader = cmd.ExecuteReader();
+
+        var hasher = new PasswordHasher<string>();
+        if (reader.Read() && hasher.VerifyHashedPassword(username, reader.GetString(reader.GetOrdinal("pw_hash")), password) == PasswordVerificationResult.Success)
+        {
+            return new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+        }
+        return null;
+    }
+
+    public User? GetUserByUsername(string username)
+    {
+        using var conn = OpenConnection();
+        using var cmd = conn.CreateCommand();
+        
+        cmd.CommandText = "SELECT * FROM user WHERE username = @username";
+        cmd.Parameters.AddWithValue("@username", username);
+
+        using var reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            return new User
+            {
+                id = reader.GetInt32(reader.GetOrdinal("user_id")),
+                name = reader.GetString(reader.GetOrdinal("username")),
+                email = reader.GetString(reader.GetOrdinal("email"))
+            };
+        }
+        return null;
+    }
+}
