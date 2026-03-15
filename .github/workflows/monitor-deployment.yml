@@ -44,7 +44,8 @@ jobs:
         run: >
           ssh $SSH_USER@$MONITOR_SSH_HOST
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'cd /vagrant/monitoring && docker compose up -d --build'
+          'export GRAFANA_PASSWORD=${GRAFANA_PASSWORD} && cd /vagrant/monitoring && docker compose up -d --build'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
+          GRAFANA_PASSWORD: ${{ secrets.GRAFANA_PASSWORD }}
