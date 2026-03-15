@@ -21,8 +21,7 @@ builder.Services.AddRazorPages();
 
 // Add sql server
 builder.Services.AddDbContext<MiniTwitContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), npgsqlOptions => 
-        { npgsqlOptions.CommandTimeout(180); }));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add repositories to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
