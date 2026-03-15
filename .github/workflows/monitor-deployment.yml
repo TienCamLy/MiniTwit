@@ -2,6 +2,7 @@
 name: Deploy Monitoring
 
 on:
+  pull_request:
   workflow_dispatch:
 
 # Remember to set the following secrets in your repository's settings:
