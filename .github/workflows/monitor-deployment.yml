@@ -32,8 +32,8 @@ jobs:
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
 
       - name: Copy monitoring directory
-        run: |
-          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no -r monitoring $SSH_USER@$MONITOR_SSH_HOST:/vagrant/
+        run: | # scp -o StrictHostKeyChecking=no -r monitoring root@209.38.255.154:/vagrant/monitoring
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no -r monitoring $SSH_USER@$MONITOR_SSH_HOST:/vagrant/monitoring
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
