@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -254,53 +254,52 @@ namespace Infrastructure.Migrations
             
             // Users
             migrationBuilder.Sql(@"
-INSERT INTO ""AspNetUsers""
-(""Id"", ""UserName"", ""NormalizedUserName"", ""Email"", ""NormalizedEmail"",
- ""EmailConfirmed"", ""PasswordHash"", ""SecurityStamp"", ""ConcurrencyStamp"",
- ""PhoneNumber"", ""PhoneNumberConfirmed"", ""TwoFactorEnabled"",
- ""LockoutEnd"", ""LockoutEnabled"", ""AccessFailedCount"")
-SELECT
-    user_id,
-    username,
-    UPPER(username),
-    email,
-    UPPER(email),
-    FALSE,
-    pw_hash,
-    '',
-    '',
-    '',
-    FALSE,
-    FALSE,
-    NULL,
-    FALSE,
-    0
-FROM ""user""
-ON CONFLICT (""Id"") DO NOTHING;
-");
+            INSERT INTO ""AspNetUsers""
+            (""Id"", ""UserName"", ""NormalizedUserName"", ""Email"", ""NormalizedEmail"",
+             ""EmailConfirmed"", ""PasswordHash"", ""SecurityStamp"", ""ConcurrencyStamp"",
+             ""PhoneNumber"", ""PhoneNumberConfirmed"", ""TwoFactorEnabled"",
+             ""LockoutEnd"", ""LockoutEnabled"", ""AccessFailedCount"")
+            SELECT
+                id,
+                username,
+                UPPER(username),
+                email,
+                UPPER(email),
+                FALSE,
+                passwordhash,
+                '',
+                '',
+                '',
+                FALSE,
+                FALSE,
+                NULL,
+                FALSE,
+                0
+            FROM aspnetusers
+            ON CONFLICT (""Id"") DO NOTHING;
+            ");
 
 
             // Followers
             migrationBuilder.Sql(@"
-INSERT INTO ""Followers"" (""SourceId"", ""TargetId"")
-SELECT who_id, whom_id
-FROM follower
-ON CONFLICT (""SourceId"", ""TargetId"") DO NOTHING;
-");
-
-
+            INSERT INTO ""Followers"" (""SourceId"", ""TargetId"")
+            SELECT sourceid, targetid
+            FROM followers
+            ON CONFLICT (""SourceId"", ""TargetId"") DO NOTHING;
+            ");
+            
             // Messages
             migrationBuilder.Sql(@"
-INSERT INTO ""Messages"" (""Id"", ""AuthorId"", ""Text"", ""PubDate"", ""Flagged"")
-SELECT
-    message_id,
-    author_id,
-    text,
-    to_timestamp(pub_date),
-    flagged
-FROM message 
-ON CONFLICT (""Id"") DO NOTHING;
-");
+            INSERT INTO ""Messages"" (""Id"", ""AuthorId"", ""Text"", ""PubDate"", ""Flagged"")
+            SELECT
+                id,
+                authorid,
+                text,
+                pubdate::timestamp,
+                flagged
+            FROM messages 
+            ON CONFLICT (""Id"") DO NOTHING;
+            ");
         }
 
         /// <inheritdoc />
