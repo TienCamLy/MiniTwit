@@ -23,6 +23,7 @@ on:
 # SSH_USER
 # SSH_KEY
 # SSH_HOST
+# CONNECTIONSTRING
 
 jobs:
   build:
@@ -43,7 +44,9 @@ jobs:
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
       
       - name: Create .env file for compose
-        run: echo "API_TOKEN=${{ secrets.API_TOKEN }}" > razor-pages/Web/.env
+        run: |
+          echo "API_TOKEN=${{ secrets.API_TOKEN }}" > razor-pages/Web/.env
+          echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=${{ secrets.CONNECTIONSTRING }}" >> razor-pages/Web/.env
       
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
@@ -60,9 +63,18 @@ jobs:
 
       - name: Deploy to server (using compose)
         run: >
-          ssh $SSH_USER@$SSH_HOST
-          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && cd /vagrant && docker compose pull && docker compose up -d --remove-orphans'
+          ssh $SSH_USER@$SSH_HOST \
+                -i ~/.ssh/do_ssh_key \
+                -o StrictHostKeyChecking=no \
+                -o UserKnownHostsFile=/dev/null \
+                -o LogLevel=ERROR \
+                -T \
+                '
+                export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} &&
+                cd /vagrant &&
+                docker compose pull &&
+                docker compose up -d --remove-orphans
+                '
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}

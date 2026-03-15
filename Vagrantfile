@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
       sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose-v2
 
       # Make DB writable by the container
-      chmod 666 /vagrant/razor-pages/minitwit.db
+      # chmod 666 /vagrant/razor-pages/minitwit.db
       # Deploy (from synced project dir; DB uses named volume minitwit-db)
       cd /vagrant && sudo docker compose up --build -d
     SHELL
