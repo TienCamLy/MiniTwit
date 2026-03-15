@@ -1,0 +1,51 @@
+---
+name: Deploy Monitoring
+
+on:
+  workflow_dispatch:
+
+# Remember to set the following secrets in your repository's settings:
+# https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
+# DOCKER_USERNAME
+# DOCKER_PASSWORD
+# SSH_USER
+# SSH_PRIVATE_KEY
+# MONITOR_SSH_HOST
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/do_ssh_key
+          chmod 600 ~/.ssh/do_ssh_key
+          ssh-keyscan -H "$MONITOR_SSH_HOST" >> ~/.ssh/known_hosts
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
+
+      - name: Copy monitoring directory
+        run: |
+          SSH_OPTS="-i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no"
+          ssh $SSH_OPTS $SSH_USER@$MONITOR_SSH_HOST 'rm -rf /tmp/monitoring && mkdir -p /tmp/monitoring'
+          scp $SSH_OPTS -r monitoring/* $SSH_USER@$MONITOR_SSH_HOST:/tmp/monitoring/
+          ssh $SSH_OPTS $SSH_USER@$MONITOR_SSH_HOST 'mkdir -p /vagrant/monitoring && rm -rf /vagrant/monitoring/* && cp -r /tmp/monitoring/* /vagrant/monitoring/ && rm -rf /tmp/monitoring'
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
+
+      - name: Deploy to server (using compose)
+        run: >
+          ssh $SSH_USER@$MONITOR_SSH_HOST
+          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+          'export GRAFANA_PASSWORD=${GRAFANA_PASSWORD} && cd /vagrant/monitoring && docker compose up -d --build'
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
+          GRAFANA_PASSWORD: ${{ secrets.GRAFANA_PASSWORD }}

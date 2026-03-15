@@ -26,6 +26,7 @@ RUN dotnet publish "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:Use
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY razor-pages/minitwit.db /app/data/minitwit.db
 USER root
 RUN chown -R $APP_UID:$APP_UID /app
 USER $APP_UID
