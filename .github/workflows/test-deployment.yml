@@ -70,17 +70,21 @@ jobs:
       - name: Deploy to server (using compose)
         run: >
           ssh $SSH_USER@$TEMP_SSH_HOST
-              -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-              '
-              export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} &&
-              if [ ! -d minitwit ]; then
-                git clone https:https://github.com/TienCamLy/MiniTwit.git minitwit;
-              fi &&
-              cd minitwit &&
-              git pull &&
-              docker compose pull &&
-              docker compose up -d --remove-orphans
-              '
+            -i ~/.ssh/do_ssh_key
+            -o StrictHostKeyChecking=no
+            -o UserKnownHostsFile=/dev/null
+            -o LogLevel=ERROR
+            -T
+            '
+            export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} &&
+            if [ ! -d minitwit ]; then
+              git clone https://github.com/TienCamLy/MiniTwit.git minitwit;
+            fi &&
+            cd minitwit &&
+            git pull &&
+            docker compose pull &&
+            docker compose up -d --remove-orphans
+            '
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           TEMP_SSH_HOST: ${{ secrets.TEMP_SSH_HOST }}
