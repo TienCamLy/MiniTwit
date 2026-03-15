@@ -32,32 +32,16 @@ jobs:
       - name: Set up Docker Buildx (for docker compose)
 #        uses: docker/setup-buildx-action@v3
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
-    
-#      - name: Build and push minitwitimage
-#        uses: docker/build-push-action@v6
-#        with:
-#          context: .
-#          file: ./razor-pages/Dockerfile
-#          push: true
-#          tags: ${{ secrets.DOCKER_USERNAME }}/minitwitimage:latest
-#          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwitimage:webbuildcache
-#          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/minitwitimage:webbuildcache,mode=max
-      
+
       - name: Create .env file for compose
-        run: echo "API_TOKEN=${{ secrets.API_TOKEN }}" > razor-pages/Web/.env
+        run: |
+          echo "API_TOKEN=${{ secrets.API_TOKEN }}" > razor-pages/Web/.env
+          echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=${{ secrets.CONNECTIONSTRING }}" >> razor-pages/Web/.env
       
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-
-#      - name: Test minitwit
-#        run: |
-#          docker build -t $DOCKER_USERNAME/minitwittestimage -f Dockerfile-minitwit-tests .
-#          yes 2>/dev/null | docker compose up -d
-#          docker run --rm --network=itu-minitwit-network $DOCKER_USERNAME/minitwittestimage
-#        env:
-#          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
       - name: Configure SSH
         run: |
@@ -66,31 +50,12 @@ jobs:
           chmod 600 ~/.ssh/do_ssh_key
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      
-      - name: Add SSH host to known_hosts
-        run: |
-          ssh-keyscan "$TEMP_SSH_HOST" >> ~/.ssh/known_hosts
-        env:
-          TEMP_SSH_HOST: ${{ secrets.TEMP_SSH_HOST }}
 
       - name: Deploy to server (using compose)
         run: >
-          ssh $SSH_USER@$TEMP_SSH_HOST
-            -i ~/.ssh/do_ssh_key
-            -o StrictHostKeyChecking=no
-            -o UserKnownHostsFile=/dev/null
-            -o LogLevel=ERROR
-            -T
-            '
-            export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} &&
-            if [ ! -d minitwit ]; then
-              git clone https://github.com/TienCamLy/MiniTwit.git minitwit;
-            fi &&
-            cd minitwit &&
-            git pull &&
-            docker compose pull &&
-            docker compose up -d --remove-orphans
-            '
+          ssh $SSH_USER@TEMP_SSH_HOST
+                    -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+                    'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && cd /MiniTwit && git checkout restructure/postgresql-merge && docker compose pull && docker compose up -d --remove-orphans'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           TEMP_SSH_HOST: ${{ secrets.TEMP_SSH_HOST }}
