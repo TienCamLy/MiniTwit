@@ -82,7 +82,7 @@
           "refId": "A"
         }
       ],
-      "title": "CPU Usage",
+      "title": "CPU Usage (%)",
       "type": "gauge"
     },
     {
@@ -176,14 +176,14 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 5,
+        "w": 6,
         "x": 10,
         "y": 0
       },
       "id": 11,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -208,7 +208,7 @@
           "refId": "A"
         }
       ],
-      "title": "Avg. Request Time",
+      "title": "Avg. Request Time (Sec)",
       "type": "stat"
     },
     {
@@ -236,8 +236,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 5,
-        "x": 15,
+        "w": 4,
+        "x": 16,
         "y": 0
       },
       "id": 12,
@@ -1241,6 +1241,6 @@
   "timezone": "browser",
   "title": "Initial Dashboard",
   "uid": "ad8crlm",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
