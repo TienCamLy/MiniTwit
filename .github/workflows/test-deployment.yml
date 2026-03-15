@@ -70,6 +70,8 @@ jobs:
       - name: Add SSH host to known_hosts
         run: |
           ssh-keyscan "$TEMP_SSH_HOST" >> ~/.ssh/known_hosts
+        env:
+          TEMP_SSH_HOST: ${{ secrets.TEMP_SSH_HOST }}
 
       - name: Deploy to server (using compose)
         run: >
