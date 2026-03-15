@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - restructure/postgresql-merge
+    workflow_dispatch:
+      manual: true
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -68,8 +70,17 @@ jobs:
       - name: Deploy to server (using compose)
         run: >
           ssh $SSH_USER@$TEMP_SSH_HOST
-          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && docker compose pull && docker compose up -d --remove-orphans'
+              -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+              '
+              export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} &&
+              if [ ! -d minitwit ]; then
+                git clone https:https://github.com/TienCamLy/MiniTwit.git minitwit;
+              fi &&
+              cd minitwit &&
+              git pull &&
+              docker compose pull &&
+              docker compose up -d --remove-orphans
+              '
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           TEMP_SSH_HOST: ${{ secrets.TEMP_SSH_HOST }}
