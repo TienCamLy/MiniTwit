@@ -1,5 +1,5 @@
 ---
-name: Continuous Deployment
+name: Test deployment
 
 on:
   # allow manual triggers for now too
@@ -73,4 +73,4 @@ jobs:
           'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && cd /vagrant && docker compose pull && docker compose up -d --remove-orphans'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_HOST: ${{ secrets.TEMP_SSH_HOST }}
