@@ -2,9 +2,9 @@
 name: Test deployment
 
 on:
-  # allow manual triggers for now too
-  workflow_dispatch:
-    manual: true
+  push:
+    branches:
+      - restructure/postgresql-merge
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
