@@ -31,9 +31,9 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
 
-      - name: Sync monitoring directory
+      - name: Copy monitoring directory
         run: |
-          rsync -avz --delete -e "ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no" monitoring/ $SSH_USER@$MONITOR_SSH_HOST:/vagrant/monitoring
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no -r monitoring $SSH_USER@$MONITOR_SSH_HOST:/vagrant/
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
