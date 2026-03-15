@@ -2,7 +2,6 @@
 name: Deploy Monitoring
 
 on:
-  pull_request:
   workflow_dispatch:
 
 # Remember to set the following secrets in your repository's settings:
@@ -45,7 +44,7 @@ jobs:
         run: >
           ssh $SSH_USER@$MONITOR_SSH_HOST
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'cd /vagrant/monitoring && docker compose up -d'
+          'cd /vagrant/monitoring && docker compose up -d --build'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
