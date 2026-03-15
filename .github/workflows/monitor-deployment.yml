@@ -26,12 +26,14 @@ jobs:
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/do_ssh_key
           chmod 600 ~/.ssh/do_ssh_key
+          ssh-keyscan -H "$MONITOR_SSH_HOST" >> ~/.ssh/known_hosts
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      
+          MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
+
       - name: Sync monitoring directory
         run: |
-          rsync -avz --delete monitoring/ $SSH_USER@$MONITOR_SSH_HOST:/vagrant/monitoring
+          rsync -avz --delete -e "ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no" monitoring/ $SSH_USER@$MONITOR_SSH_HOST:/vagrant/monitoring
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
