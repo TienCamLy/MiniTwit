@@ -66,6 +66,10 @@ jobs:
           chmod 600 ~/.ssh/do_ssh_key
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: Add SSH host to known_hosts
+        run: |
+          ssh-keyscan "$TEMP_SSH_HOST" >> ~/.ssh/known_hosts
 
       - name: Deploy to server (using compose)
         run: >
