@@ -4,7 +4,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-storage:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -18,9 +18,9 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-temp}
     volumes:
       - grafana-storage:/var/lib/grafana
-      - ./monitoring/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
-      - ./monitoring/grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
   
 volumes:
   prometheus-storage:
