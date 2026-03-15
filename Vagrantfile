@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
   config.ssh.private_key_path = '~/.ssh/id_rsa'
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
 
-  config.vm.define "TEMP", primary: false do |server|
+  config.vm.define "webserver", primary: false do |server|
     server.vm.provider :digital_ocean do |provider|
       provider.ssh_key_name = ENV["SSH_KEY_NAME"]
       provider.token = ENV["DIGITAL_OCEAN_TOKEN"]
@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
       provider.privatenetworking = true
     end
 
-    server.vm.hostname = "TEMP"
+    server.vm.hostname = "webserver"
 
     server.vm.provision "shell", inline: <<-SHELL
       set -e
