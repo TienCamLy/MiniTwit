@@ -9,4 +9,4 @@ scrape_configs:
   - job_name: 'minitwit'
     scrape_interval: 30s
     static_configs:
-      - targets: ['razor-pages:8080']
+      - targets: ['157.230.30.175:8080']
