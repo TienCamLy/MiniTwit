@@ -1,0 +1,58 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Core.Interfaces;
+
+namespace Web.Pages;
+
+public class RegisterModel : PageModel
+{
+    private readonly IUserRepository _userRepository;
+
+    [BindProperty] public string Email { get; set; } = string.Empty;
+
+    [BindProperty] public string Username { get; set; } = string.Empty;
+
+    [BindProperty] public string Password { get; set; } = string.Empty;
+
+    [BindProperty] public string Password2 { get; set; } = string.Empty;
+    
+    public string Error { get; set; } = String.Empty;
+    public RegisterModel(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    public void OnGet()
+    {
+    }
+
+    public IActionResult OnPost()
+    {
+        if (string.IsNullOrEmpty(Username))
+            Error = "You have to enter a username";
+        
+        else if (string.IsNullOrEmpty(Email) || !Email.Contains("@"))
+            Error = "You have to enter a valid email address";
+        else if (string.IsNullOrEmpty(Password))
+            Error = "You have to enter a password";
+        else if (Password != Password2)
+            Error = "The two passwords do not match";
+        else if (_userRepository.GetUserByUsername(Username) != null)
+            Error = "The username is already taken";
+        else
+        {
+            try
+            {
+                _userRepository.CreateUser(Username, Email, Password);
+                TempData["FlashMessage"] = "You were successfully registered and can login now";
+                return RedirectToPage("/Login");
+            }
+            catch (ArgumentException ex)
+            {
+                Error = ex.Message;
+            }
+        }
+        return Page();
+    }
+}

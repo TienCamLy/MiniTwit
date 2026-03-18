@@ -14,6 +14,35 @@ app-down-build: # Delete all volumes and rebuild the app
 	make app-down && \
 	make app-build
 
+# Install EF Tools
+install-ef-tools:
+	dotnet tool install --global dotnet-ef
+
+# Database Migrations from root directory
+db-migrate:
+	dotnet ef migrations add $(name) \
+		--context MiniTwitContext \
+		--project razor-pages/Infrastructure \
+		--startup-project razor-pages/Web && \
+	dotnet ef database update \
+    	--context MiniTwitContext \
+    	--project razor-pages/Infrastructure \
+    	--startup-project razor-pages/Web
+
+# Database remove migrations from root directory
+db-remove-migration:
+	dotnet ef migrations remove \
+		--context MiniTwitContext \
+		--project razor-pages/Infrastructure \
+		--startup-project razor-pages/Web
+
+# Database Migration Update from root directory
+db-update:
+	dotnet ef database update \
+		--context MiniTwitContext \
+		--project razor-pages/Infrastructure \
+		--startup-project razor-pages/Web
+
 # API Stub Build and Run
 API-generate:
 	docker run --rm -v "$$(pwd):/local" openapitools/openapi-generator-cli:v7.19.0 \
@@ -37,6 +66,10 @@ provision-digital-ocean:
 clean-digital-ocean:
 	vagrant destroy && \
 	rm -rf .vagrant
+
+# Monitoring Deployment to Digital Ocean
+monitor-build:
+	cd monitoring && docker compose up --build
 
 # Tests
 test-api-simulator: # requires SIM_API_CREDENTIALS to be set in environment variable SIM_API_CREDENTIALS
