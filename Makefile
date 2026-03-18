@@ -83,7 +83,13 @@ test-spell-checker:
 	cd razor-pages && \
 	codespell
 
-run-all-tests: test-api-simulator test-spell-checker
+test-c-sharp-linting:
+	printf "\n\nRunning C# linting tests...\n" && \
+	dotnet format --verify-no-changes razor-pages/Infrastructure/ && \
+	dotnet format --verify-no-changes razor-pages/Web/ && \
+	dotnet format --verify-no-changes razor-pages/Core/
+
+run-all-tests: test-api-simulator test-spell-checker test-c-sharp-linting
 
 build-and-test: # requires SIM_API_CREDENTIALS to be set in environment variable SIM_API_CREDENTIALS
 	printf "Building and testing Docker image...\n" && \
@@ -91,3 +97,9 @@ build-and-test: # requires SIM_API_CREDENTIALS to be set in environment variable
 	make run-all-tests && \
 	printf "\n\nStopping and removing Docker container...\n" && \
 	make app-down
+
+# Local auto-linting
+auto-lint:
+	dotnet format razor-pages/Infrastructure/ && \
+	dotnet format razor-pages/Web/ && \
+	dotnet format razor-pages/Core/
