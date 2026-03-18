@@ -20,16 +20,6 @@ import sqlite3
 
 
 CSV_FILENAME = "./minitwit_scenario.csv"
-USERNAME = "simulator"
-PWD = "super_safe!"
-CREDENTIALS = ":".join([USERNAME, PWD]).encode("ascii")
-ENCODED_CREDENTIALS = base64.b64encode(CREDENTIALS).decode()
-HEADERS = {
-    "Connection": "close",
-    "Content-Type": "application/json",
-    f"Authorization": f"Basic {ENCODED_CREDENTIALS}",
-}
-
 
 def get_actions():
 
@@ -102,7 +92,12 @@ def get_actions():
                 print(traceback.format_exc())
 
 
-def main(host, max_actions=None):
+def main(host, token, max_actions=None):
+    HEADERS = {
+        "Connection": "close",
+        "Content-Type": "application/json",
+        f"Authorization": f"Basic {token}",
+    }
     total_actions = 0
     for action, delay in get_actions():
         if max_actions and total_actions >= max_actions:
@@ -355,9 +350,10 @@ def main(host, max_actions=None):
 
 if __name__ == "__main__":
     host = sys.argv[1]
-    max_actions = int(sys.argv[2]) if len(sys.argv) > 2 else None
+    token = sys.argv[2]
+    max_actions = int(sys.argv[3]) if len(sys.argv) > 3 else None
     start_time = datetime.now()
-    total_actions = main(host, max_actions)
+    total_actions = main(host, token, max_actions)
     if max_actions and total_actions != max_actions:
         print(f"Simulation failed in {datetime.now() - start_time} seconds.")
         print(f"Expected {max_actions} actions, but only ran {total_actions} actions successfully")

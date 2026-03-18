@@ -1,3 +1,8 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
 # Razor Pages App
 app-build: # Rebuilds the app without deleting volumes
 	docker compose up --build --detach
@@ -34,10 +39,10 @@ clean-digital-ocean:
 	rm -rf .vagrant
 
 # Tests
-test-api-simulator:
+test-api-simulator: # requires SIM_API_CREDENTIALS to be set in environment variable SIM_API_CREDENTIALS
 	printf "\n\nRunning API simulator tests...\n" && \
 	cd API_Spec && \
-	python minitwit_simulator.py http://localhost:8080 2000
+	python minitwit_simulator.py http://localhost:8080 $(SIM_API_CREDENTIALS) 2000
 
 test-spell-checker:
 	printf "\n\nRunning spell checker tests...\n" && \
@@ -47,7 +52,7 @@ test-spell-checker:
 
 run-all-tests: test-api-simulator test-spell-checker
 
-build-and-test:
+build-and-test: # requires SIM_API_CREDENTIALS to be set in environment variable SIM_API_CREDENTIALS
 	printf "Building and testing Docker image...\n" && \
 	make app-build && \
 	make run-all-tests && \

@@ -21,6 +21,10 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v2
+      
+      - name: Set environment variables
+        run: |
+          echo "SIM_API_CREDENTIALS=${{ secrets.SIM_API_CREDENTIALS }}" > .env
 
       - name: Build and test Docker image
         run: |
