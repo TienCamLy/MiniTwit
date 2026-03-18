@@ -58,3 +58,7 @@ provision-digital-ocean:
 clean-digital-ocean:
 	vagrant destroy && \
 	rm -rf .vagrant
+
+# Monitoring Deployment to Digital Ocean
+monitor-build:
+	cd monitoring && docker compose up --build
