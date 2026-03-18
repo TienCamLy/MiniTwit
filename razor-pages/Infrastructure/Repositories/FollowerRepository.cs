@@ -5,6 +5,7 @@ using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
+
 public class FollowerRepository : IFollowerRepository
 {
     private readonly MiniTwitContext _context;
@@ -38,9 +39,9 @@ public class FollowerRepository : IFollowerRepository
     {
         var sourceUser = _context.Users.SingleOrDefault(u => u.Id == sourceId);
         var targetUser = _context.Users.SingleOrDefault(u => u.Id == targetId);
-        
+
         if (sourceUser == null || targetUser == null) throw new Exception("User not found");
-        
+
         var alreadyFollowing = _context.Followers.Any(f => f.SourceId == sourceId && f.TargetId == targetId);
         if (alreadyFollowing) return;
 
@@ -59,9 +60,9 @@ public class FollowerRepository : IFollowerRepository
     {
         var sourceUser = _context.Users.SingleOrDefault(u => u.Id == sourceId);
         var targetUser = _context.Users.SingleOrDefault(u => u.Id == targetId);
-        
+
         if (sourceUser == null || targetUser == null) throw new Exception("User not found");
-        
+
         var alreadyFollowing = _context.Followers.Any(f => f.SourceId == sourceId && f.TargetId == targetId);
         if (!alreadyFollowing) return;
 

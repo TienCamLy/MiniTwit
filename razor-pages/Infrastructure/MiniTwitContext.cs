@@ -10,7 +10,7 @@ public class MiniTwitContext : IdentityDbContext<User, IdentityRole<int>, int>
     // public DbSet<User> Users => Set<User>(); (implicit)
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Follower> Followers => Set<Follower>();
-    
+
     public MiniTwitContext(DbContextOptions<MiniTwitContext> options) : base(options)
     {
     }
@@ -18,7 +18,7 @@ public class MiniTwitContext : IdentityDbContext<User, IdentityRole<int>, int>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         modelBuilder.Entity<Follower>()
             .HasKey(f => new { f.SourceId, f.TargetId });
     }

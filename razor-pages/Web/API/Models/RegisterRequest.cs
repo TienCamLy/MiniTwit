@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 using Web.API.Converters;
 
 namespace Web.API.Models
-{ 
+{
     /// <summary>
     /// 
     /// </summary>
@@ -31,7 +31,7 @@ namespace Web.API.Models
         /// </summary>
         /// <value>Username</value>
         [Required]
-        [DataMember(Name="username", EmitDefaultValue=false)]
+        [DataMember(Name = "username", EmitDefaultValue = false)]
         public required string Username { get; set; }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Web.API.Models
         /// </summary>
         /// <value>Email address</value>
         [Required]
-        [DataMember(Name="email", EmitDefaultValue=false)]
+        [DataMember(Name = "email", EmitDefaultValue = false)]
         public required string Email { get; set; }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Web.API.Models
         /// </summary>
         /// <value>Password</value>
         [Required]
-        [DataMember(Name="pwd", EmitDefaultValue=false)]
+        [DataMember(Name = "pwd", EmitDefaultValue = false)]
         public required string Pwd { get; set; }
 
         /// <summary>
@@ -96,17 +96,17 @@ namespace Web.API.Models
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     Username == other.Username ||
                     Username != null &&
                     Username.Equals(other.Username)
-                ) && 
+                ) &&
                 (
                     Email == other.Email ||
                     Email != null &&
                     Email.Equals(other.Email)
-                ) && 
+                ) &&
                 (
                     Pwd == other.Pwd ||
                     Pwd != null &&
@@ -124,18 +124,18 @@ namespace Web.API.Models
             {
                 var hashCode = 41;
                 // Suitable nullity checks etc, of course :)
-                    if (Username != null)
+                if (Username != null)
                     hashCode = hashCode * 59 + Username.GetHashCode();
-                    if (Email != null)
+                if (Email != null)
                     hashCode = hashCode * 59 + Email.GetHashCode();
-                    if (Pwd != null)
+                if (Pwd != null)
                     hashCode = hashCode * 59 + Pwd.GetHashCode();
                 return hashCode;
             }
         }
 
         #region Operators
-        #pragma warning disable 1591
+#pragma warning disable 1591
 
         public static bool operator ==(RegisterRequest left, RegisterRequest right)
         {
@@ -147,7 +147,7 @@ namespace Web.API.Models
             return !Equals(left, right);
         }
 
-        #pragma warning restore 1591
+#pragma warning restore 1591
         #endregion Operators
     }
 }

@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 using Web.API.Converters;
 
 namespace Web.API.Models
-{ 
+{
     /// <summary>
     /// 
     /// </summary>
@@ -32,7 +32,7 @@ namespace Web.API.Models
         /// <value>Text content of the message</value>
         /* <example>Hello, World!</example> */
         [Required]
-        [DataMember(Name="content", EmitDefaultValue=false)]
+        [DataMember(Name = "content", EmitDefaultValue = false)]
         public required string Content { get; set; }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Web.API.Models
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     Content == other.Content ||
                     Content != null &&
@@ -97,14 +97,14 @@ namespace Web.API.Models
             {
                 var hashCode = 41;
                 // Suitable nullity checks etc, of course :)
-                    if (Content != null)
+                if (Content != null)
                     hashCode = hashCode * 59 + Content.GetHashCode();
                 return hashCode;
             }
         }
 
         #region Operators
-        #pragma warning disable 1591
+#pragma warning disable 1591
 
         public static bool operator ==(PostMessage left, PostMessage right)
         {
@@ -116,7 +116,7 @@ namespace Web.API.Models
             return !Equals(left, right);
         }
 
-        #pragma warning restore 1591
+#pragma warning restore 1591
         #endregion Operators
     }
 }

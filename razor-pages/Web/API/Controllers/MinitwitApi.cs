@@ -25,27 +25,27 @@ using Web.Pages;
 using Core.Interfaces;
 
 namespace Web.API.Controllers
-{ 
+{
     /// <summary>
     /// 
     /// </summary>
     [ApiController]
     public class MinitwitApiController : ControllerBase
-    { 
-		private readonly IMessageRepository _messageRepository;
-    	private readonly IUserRepository _userRepository;
-    	private readonly IFollowerRepository _followerRepository;
+    {
+        private readonly IMessageRepository _messageRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IFollowerRepository _followerRepository;
         private static int _latest;
-        
-		public MinitwitApiController(
-        	IMessageRepository messageRepository, 
-        	IUserRepository userRepository, 
-        	IFollowerRepository followerRepository)
-    	{
-        	_messageRepository = messageRepository;
-        	_userRepository = userRepository;
-        	_followerRepository = followerRepository;
-    	}
+
+        public MinitwitApiController(
+            IMessageRepository messageRepository,
+            IUserRepository userRepository,
+            IFollowerRepository followerRepository)
+        {
+            _messageRepository = messageRepository;
+            _userRepository = userRepository;
+            _followerRepository = followerRepository;
+        }
 
         /// <summary>
         /// 
@@ -64,20 +64,20 @@ namespace Web.API.Controllers
         [SwaggerOperation("GetFollow")]
         [SwaggerResponse(statusCode: 200, type: typeof(FollowsResponse), description: "Success")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult GetFollow([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no)
+        public virtual IActionResult GetFollow([FromRoute(Name = "username")][Required] string username, [FromHeader(Name = "Authorization")][Required()] string authorization, [FromQuery(Name = "latest")] int? latest, [FromQuery(Name = "no")] int? no)
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
-            
+
             var user = _userRepository.GetUserByUsername(username);
             if (user == null)
                 return UserNotFound();
 
             var followers = _followerRepository.GetFollowedUsers(user.Id).Select(u => u.UserName).ToList();
-            
+
             if (latest.HasValue)
                 _latest = latest.Value;
-            
+
             return new ObjectResult(new FollowsResponse { Follows = followers }) { StatusCode = 200 };
         }
 
@@ -124,18 +124,18 @@ namespace Web.API.Controllers
         [SwaggerOperation("GetMessages")]
         [SwaggerResponse(statusCode: 200, type: typeof(List<ApiMessage>), description: "Success")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult GetMessages([FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no,[FromQuery] int page = 1)
+        public virtual IActionResult GetMessages([FromHeader(Name = "Authorization")][Required()] string authorization, [FromQuery(Name = "latest")] int? latest, [FromQuery(Name = "no")] int? no, [FromQuery] int page = 1)
         {
 
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
-            
+
             var domainMessages = _messageRepository.GetPublicTimelinePage(page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
-            
+
             if (latest.HasValue)
                 _latest = latest.Value;
-            
+
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
@@ -156,7 +156,7 @@ namespace Web.API.Controllers
         [SwaggerOperation("GetMessagesPerUser")]
         [SwaggerResponse(statusCode: 200, type: typeof(List<ApiMessage>), description: "Success")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult GetMessagesPerUser([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromQuery (Name = "latest")]int? latest, [FromQuery (Name = "no")]int? no,[FromQuery] int page = 1)
+        public virtual IActionResult GetMessagesPerUser([FromRoute(Name = "username")][Required] string username, [FromHeader(Name = "Authorization")][Required()] string authorization, [FromQuery(Name = "latest")] int? latest, [FromQuery(Name = "no")] int? no, [FromQuery] int page = 1)
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
@@ -166,10 +166,10 @@ namespace Web.API.Controllers
 
             var domainMessages = _messageRepository.GetUserTimelinePage(username, page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
-            
+
             if (latest.HasValue)
                 _latest = latest.Value;
-            
+
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
@@ -190,10 +190,10 @@ namespace Web.API.Controllers
         [ValidateModelState]
         [SwaggerOperation("PostFollow")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult PostFollow([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromBody]FollowAction payload, [FromQuery (Name = "latest")]int? latest)
+        public virtual IActionResult PostFollow([FromRoute(Name = "username")][Required] string username, [FromHeader(Name = "Authorization")][Required()] string authorization, [FromBody] FollowAction payload, [FromQuery(Name = "latest")] int? latest)
         {
             if (!ValidateAuthorization(authorization))
-                return Unauthorized(); 
+                return Unauthorized();
 
             if (string.IsNullOrEmpty(payload?.Follow) && string.IsNullOrEmpty(payload?.Unfollow))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
@@ -221,7 +221,7 @@ namespace Web.API.Controllers
                 _latest = latest.Value;
             else
                 _latest++;
-            
+
             return NoContent();
         }
 
@@ -241,7 +241,7 @@ namespace Web.API.Controllers
         [ValidateModelState]
         [SwaggerOperation("PostMessagesPerUser")]
         [SwaggerResponse(statusCode: 403, type: typeof(ErrorResponse), description: "Unauthorized - Must include correct Authorization header")]
-        public virtual IActionResult PostMessagesPerUser([FromRoute (Name = "username")][Required]string username, [FromHeader (Name = "Authorization")][Required()]string authorization, [FromBody]PostMessage payload, [FromQuery (Name = "latest")]int? latest)
+        public virtual IActionResult PostMessagesPerUser([FromRoute(Name = "username")][Required] string username, [FromHeader(Name = "Authorization")][Required()] string authorization, [FromBody] PostMessage payload, [FromQuery(Name = "latest")] int? latest)
         {
             if (!ValidateAuthorization(authorization))
                 return Unauthorized();
@@ -254,10 +254,10 @@ namespace Web.API.Controllers
                 return UserNotFound();
 
             _messageRepository.CreateMessage(user.Id, payload.Content);
-            
+
             if (latest.HasValue)
                 _latest = latest.Value;
-            
+
             return NoContent();
         }
 
@@ -275,32 +275,32 @@ namespace Web.API.Controllers
         [ValidateModelState]
         [SwaggerOperation("PostRegister")]
         [SwaggerResponse(statusCode: 400, type: typeof(ErrorResponse), description: "Bad Request | Possible reasons:  - missing username  - invalid email  - password missing  - username already taken")]
-        public virtual IActionResult PostRegister([FromBody]RegisterRequest payload, [FromQuery (Name = "latest")]int? latest)
+        public virtual IActionResult PostRegister([FromBody] RegisterRequest payload, [FromQuery(Name = "latest")] int? latest)
         {
-            var username =  payload.Username;
+            var username = payload.Username;
             var email = payload.Email;
             var password = payload.Pwd;
-            
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)) 
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Username or password is missing" });
-            
+
             if (string.IsNullOrEmpty(email) || !email.Contains('@'))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Invalid email" });
-            
+
             //TODO: 
             //if (Password != Password2)
             //    Error = "The two passwords do not match";
-            
-            if (_userRepository.GetUserByUsername(username) != null) 
+
+            if (_userRepository.GetUserByUsername(username) != null)
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "The username is already taken" });
 
             var hasher = new PasswordHasher<string>();
             var hash = hasher.HashPassword(username, password);
             _userRepository.CreateUser(username, email, hash);
-            
+
             if (latest.HasValue)
                 _latest = latest.Value;
-            
+
             return NoContent();
         }
 
@@ -308,8 +308,8 @@ namespace Web.API.Controllers
         {
             return authorization == $"Basic {Environment.GetEnvironmentVariable("API_TOKEN")}";
         }
-		
-		// TODO: Fix associated warning 
+
+        // TODO: Fix associated warning 
         private IActionResult Unauthorized()
         {
             return new ObjectResult(new ErrorResponse

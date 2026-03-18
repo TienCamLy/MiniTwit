@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
+
 public class UserRepository : IUserRepository
 {
     private readonly MiniTwitContext _context;
@@ -53,14 +54,14 @@ public class UserRepository : IUserRepository
         {
             return null;
         }
-        
+
         var hash = new PasswordHasher<User>();
         var verifyHashResult = hash.VerifyHashedPassword(user, user.PasswordHash, password);
         if (verifyHashResult == PasswordVerificationResult.Failed)
         {
             return null;
         }
-        
+
         return new UserDTO
         {
             Id = user.Id,
@@ -77,16 +78,16 @@ public class UserRepository : IUserRepository
         {
             throw new ArgumentException("User already exists: ", username);
         }
-        
-        var hash = new PasswordHasher<User>(); 
-        
+
+        var hash = new PasswordHasher<User>();
+
         var user = new User
         {
             UserName = username,
             Email = email,
             PasswordHash = hash.HashPassword(null, password),
         };
-            
+
         _context.Users.Add(user);
         _context.SaveChanges();
     }
@@ -99,12 +100,12 @@ public class UserRepository : IUserRepository
         {
             throw new ArgumentException("User not found");
         }
-        
-		var userMessages = _context.Messages.Where(m => m.Author == existingUser).ToList();
-		var followers = _context.Followers.Where(f => f.SourceId == userId || f.TargetId == userId).ToList();
-        
-		_context.Followers.RemoveRange(followers);
-		_context.Messages.RemoveRange(userMessages);
+
+        var userMessages = _context.Messages.Where(m => m.Author == existingUser).ToList();
+        var followers = _context.Followers.Where(f => f.SourceId == userId || f.TargetId == userId).ToList();
+
+        _context.Followers.RemoveRange(followers);
+        _context.Messages.RemoveRange(userMessages);
         _context.Users.Remove(existingUser);
 
         _context.SaveChanges();

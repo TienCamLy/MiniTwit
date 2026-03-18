@@ -16,7 +16,7 @@ public class RegisterModel : PageModel
     [BindProperty] public string Password { get; set; } = string.Empty;
 
     [BindProperty] public string Password2 { get; set; } = string.Empty;
-    
+
     public string Error { get; set; } = String.Empty;
     public RegisterModel(IUserRepository userRepository)
     {
@@ -31,7 +31,7 @@ public class RegisterModel : PageModel
     {
         if (string.IsNullOrEmpty(Username))
             Error = "You have to enter a username";
-        
+
         else if (string.IsNullOrEmpty(Email) || !Email.Contains("@"))
             Error = "You have to enter a valid email address";
         else if (string.IsNullOrEmpty(Password))

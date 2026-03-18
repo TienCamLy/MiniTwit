@@ -13,7 +13,7 @@ public class LogoutModel : PageModel
         // Clear the existing external cookie
         await HttpContext.SignOutAsync(
             CookieAuthenticationDefaults.AuthenticationScheme);
-        
+
         TempData["FlashMessage"] = "You were logged out";
         return RedirectToPage("/PublicTimeline");
     }

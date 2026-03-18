@@ -250,7 +250,7 @@ namespace Infrastructure.Migrations
                 name: "IX_Messages_AuthorId",
                 table: "Messages",
                 column: "AuthorId");
-            
+
             migrationBuilder.Sql(@"
                 INSERT INTO AspNetUsers (Id, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnd, LockoutEnabled, AccessFailedCount)
                 SELECT user_id, username, UPPER(username), email, UPPER(email), 0, pw_hash, NULL, NULL, NULL, 0, 0, NULL, 0, 0 FROM user;");

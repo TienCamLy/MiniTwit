@@ -28,7 +28,7 @@ public class LoginModel : PageModel
     {
         _userRepository = userRepository;
     }
-    
+
     public void OnGet()
     {
     }
@@ -79,10 +79,10 @@ public class LoginModel : PageModel
                 };
 
                 await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme, 
-                    new ClaimsPrincipal(claimsIdentity), 
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
                     authProperties);
-                
+
                 LoginSuccess.Inc();
                 TempData["FlashMessage"] = "You were logged in";
                 return Redirect("/");

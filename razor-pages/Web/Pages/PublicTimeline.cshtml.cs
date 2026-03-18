@@ -13,7 +13,7 @@ public class PublicTimelineModel : PageModel
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
 
     [FromQuery(Name = "page")]
-    public int Page { get; set; } = 1; 
+    public int Page { get; set; } = 1;
     public int TotalMessages { get; set; }
     public int TotalPages { get; set; }
 
