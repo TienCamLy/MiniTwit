@@ -77,24 +77,26 @@ test-api-simulator: # requires SIM_API_CREDENTIALS to be set in environment vari
 	cd API_Spec && \
 	python minitwit_simulator.py http://localhost:8080 $(SIM_API_CREDENTIALS) 2000
 
-test-spell-checker:
+lint-spell-checker:
 	printf "\n\nRunning spell checker tests...\n" && \
 	pip install codespell && \
 	cd razor-pages && \
 	codespell
 
-test-c-sharp-linting:
+lint-c-sharp:
 	printf "\n\nRunning C# linting tests...\n" && \
 	dotnet format --verify-no-changes razor-pages/Infrastructure/ && \
 	dotnet format --verify-no-changes razor-pages/Web/ && \
 	dotnet format --verify-no-changes razor-pages/Core/
 
-run-all-tests: test-api-simulator test-spell-checker test-c-sharp-linting
+test-all: test-api-simulator
+lint-all: lint-spell-checker lint-c-sharp
+run-all-validations: test-all lint-all
 
 build-and-test: # requires SIM_API_CREDENTIALS to be set in environment variable SIM_API_CREDENTIALS
 	printf "Building and testing Docker image...\n" && \
 	make app-build && \
-	make run-all-tests && \
+	make run-all-validations && \
 	printf "\n\nStopping and removing Docker container...\n" && \
 	make app-down
 
