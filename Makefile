@@ -4,7 +4,8 @@ ifneq (,$(wildcard ./.env))
 endif
 
 # Razor Pages App
-app-build: # Rebuilds the app without deleting volumes
+app-build: # Rebuilds the app without deleting volumes, ensuring the network is not present before hand
+	-docker network rm minitwit-network && \ 
 	docker compose up --build --detach
 
 app-down: # Delete all volumes
@@ -74,8 +75,13 @@ monitor-build:
 # Tests
 test-api-simulator: # requires SIM_API_CREDENTIALS to be set in environment variable SIM_API_CREDENTIALS
 	printf "\n\nRunning API simulator tests...\n" && \
-	cd API_Spec && \
+	cd tests/API_Spec && \
 	python minitwit_simulator.py http://localhost:8080 $(SIM_API_CREDENTIALS) 2000
+
+test-ui-selenium: 
+	printf "\n\nRunning UI selenium tests...\n" && \
+	cd tests/selenium && \
+	docker compose up --build --abort-on-container-exit --exit-code-from tests
 
 lint-spell-checker:
 	printf "\n\nRunning spell checker tests...\n" && \
@@ -89,7 +95,7 @@ lint-c-sharp:
 	dotnet format --verify-no-changes razor-pages/Web/ && \
 	dotnet format --verify-no-changes razor-pages/Core/
 
-test-all: test-api-simulator
+test-all: test-api-simulator test-ui-selenium
 lint-all: lint-spell-checker lint-c-sharp
 run-all-validations: test-all lint-all
 
