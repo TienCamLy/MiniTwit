@@ -1,0 +1,34 @@
+services:
+
+  selenium:
+    #image: seleniarm/standalone-chromium:latest
+    image: selenium/standalone-chrome:latest
+    shm_size: "2g" # Shared memory allocated to building Docker images
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - minitwit-network
+
+  tests:
+    depends_on:
+      selenium:
+        condition: service_healthy
+    build:
+      context: . # builds dockerfiles from the specified folder, here base folder
+      dockerfile: Dockerfile
+    environment:
+      # With containers on the same network, use the service names instead of IPs
+      - SELENIUM_REMOTE_URL=http://selenium:4444/wd/hub # Selenium WebDriver endpoint
+      - GUI_URL=http://razor-pages:8080/register # Navigate to registration page
+    networks:
+      - minitwit-network
+
+# for communication between selenium, tests and razor-pages containers
+networks:
+  minitwit-network:
+    name: "minitwit-network"
+    external: true # assuming it is created by the root compose file beforehand
