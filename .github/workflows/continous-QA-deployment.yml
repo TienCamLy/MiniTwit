@@ -32,11 +32,15 @@ jobs:
 
       - name: Set up Docker Buildx (for docker compose)
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
-      
+
       - name: Create .env file for compose
-        run: echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
+        run: |
+          echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
+          echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
+          CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
+      
       
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
