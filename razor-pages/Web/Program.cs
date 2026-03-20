@@ -19,14 +19,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-var connString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-if (string.IsNullOrEmpty(connString))
-{
-    // This will print to your docker logs and stop the crash with a clear message
-    throw new InvalidOperationException("CRITICAL: Connection string 'DefaultConnection' is null or empty!");
-}
-
 // Add sql server
 builder.Services.AddDbContext<MiniTwitContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DEFAULTCONNECTION"), npgsqlOptions => 
