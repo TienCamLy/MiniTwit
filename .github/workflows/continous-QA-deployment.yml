@@ -34,7 +34,9 @@ jobs:
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
       
       - name: Create .env file for compose
-        run: echo "API_TOKEN=${{ secrets.API_TOKEN }}" > razor-pages/Web/.env
+        run: echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
       
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
@@ -54,7 +56,8 @@ jobs:
         run: >
           ssh $SSH_USER@$SSH_HOST
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && cd /vagrant && docker compose pull && docker compose up -d --remove-orphans'
+          'export DOCKER_USERNAME=$DOCKER_USERNAME && cd /vagrant && docker compose pull && docker compose up -d --remove-orphans'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
