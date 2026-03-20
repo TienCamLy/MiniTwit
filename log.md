@@ -32,6 +32,7 @@
 * Metric service and metrics endpoint for Prometheus; dashboard.json for Grafana.
 * Data migration from legacy user/message/follower tables into EF/Identity schema.
 * Workflow deploy trigger and .env file location for deployment.
+* Migrated to PostgreSQL database from SQLite
 
 ### Week 7 – DevOps & repo polish (Mar 13 – Mar 19)
 * Chore: split app and monitoring layout; workflow env path for compose.
@@ -43,7 +44,9 @@
 * Security / hygiene: dropped obsolete `python-version` usage and addressed prominent security findings (#39).
 
 ### Week 8 – PR validation & consolidated tests (Mar 20 – Mar 26)
+* Add new droplet for running test-deployments to avoid failing on PROD.
 * GitHub Actions **PR validation** workflow: on pull requests to `main`, run `make build-and-test` (Docker build + tests + lints).
 * **`tests/` layout:** API simulator scenario moved to `tests/API_Spec/`; simulator uses **`API_TOKEN`** from `.env` / secrets instead of hardcoded credentials.
 * **Selenium UI tests** under `tests/selenium/` with Dockerfile and compose; Makefile targets `test-ui-selenium`, `test-api-simulator`, `test-all`, `lint-c-sharp`, `lint-all`, `run-all-validations`, `build-and-test`; C# formatting/lint via `dotnet format`.
 * Root **`compose.yaml` / Makefile** updated so app build, API simulator, and Selenium tests run consistently in CI and locally.
+* Merged monitoring and restructure branches; added PR template.

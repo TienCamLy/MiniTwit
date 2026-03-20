@@ -71,6 +71,7 @@ data/
 .secrets
 .vagrant/*
 monitoring/.vagrant/*
+tests/test-droplet/.vagrant/*
 
 # Environment variables
 .env
