@@ -73,10 +73,10 @@ monitor-build:
 	cd monitoring && docker compose up --build
 
 # Tests
-test-api-simulator: # requires SIM_API_CREDENTIALS to be set in environment variable SIM_API_CREDENTIALS
+test-api-simulator: # requires API_TOKEN to be set in environment variable API_TOKEN
 	printf "\n\nRunning API simulator tests...\n" && \
 	cd tests/API_Spec && \
-	python minitwit_simulator.py http://localhost:8080 $(SIM_API_CREDENTIALS) 2000
+	python minitwit_simulator.py http://localhost:8080 $(API_TOKEN) 2000
 
 test-ui-selenium: 
 	printf "\n\nRunning UI selenium tests...\n" && \
@@ -99,7 +99,7 @@ test-all: test-api-simulator test-ui-selenium
 lint-all: lint-spell-checker lint-c-sharp
 run-all-validations: test-all lint-all
 
-build-and-test: # requires SIM_API_CREDENTIALS to be set in environment variable SIM_API_CREDENTIALS
+build-and-test: # requires API_TOKEN to be set in environment variable API_TOKEN
 	printf "Building and testing Docker image...\n" && \
 	make app-build && \
 	make run-all-validations && \
