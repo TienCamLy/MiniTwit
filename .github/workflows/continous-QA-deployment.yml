@@ -1,20 +1,12 @@
 ---
-name: Continuous Deployment
+name: QA Deployment
 
 on:
-  push:
-    # Run workflow every time something is pushed to the main branch
-    #branches:
-    #  - main
-    #  - master
-    
-    # Run workflow every time a new tag is pushed to the main branch
-    tags:
-      - '*'
-
-  # allow manual triggers for now too
+  pull_request:
+    branches:
+      - main
+  # allow manual triggers too
   workflow_dispatch:
-    manual: true
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -22,8 +14,7 @@ on:
 # DOCKER_PASSWORD
 # SSH_USER
 # SSH_KEY
-# SSH_HOST
-# CONNECTIONSTRING
+# SSH_HOST_TEST
 
 jobs:
   build:
@@ -40,23 +31,18 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set up Docker Buildx (for docker compose)
-#        uses: docker/setup-buildx-action@v3
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
       
       - name: Create .env file for compose
-        run: |
-          echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
-          echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
+        run: echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
-          CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
-        
       
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          IMAGE_NAME: minitwitimage
+          IMAGE_NAME: testminitwit
 
       - name: Configure SSH
         run: |
@@ -73,4 +59,4 @@ jobs:
           'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && cd /vagrant && docker compose pull && docker compose up -d --remove-orphans'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
