@@ -65,6 +65,12 @@ jobs:
           chmod 600 ~/.ssh/do_ssh_key
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+      - name: Copy .env file to server
+        run: scp ./razor-pages/Web/.env $SSH_USER@$SSH_HOST:/vagrant/razor-pages/Web/.env -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
 
       - name: Deploy to server (using compose)
         run: >
