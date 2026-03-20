@@ -32,6 +32,7 @@
 * Metric service and metrics endpoint for Prometheus; dashboard.json for Grafana.
 * Data migration from legacy user/message/follower tables into EF/Identity schema.
 * Workflow deploy trigger and .env file location for deployment.
+* Migrated to PostgreSQL database from SQLite
 
 ### Week 7 – DevOps & repo polish (Mar 13 – Mar 19)
 * Chore: split app and monitoring layout; workflow env path for compose.
