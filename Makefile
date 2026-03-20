@@ -5,7 +5,7 @@ endif
 
 # Razor Pages App
 app-build: # Rebuilds the app without deleting volumes, ensuring the network is not present before hand
-	-docker network rm minitwit-network && \ 
+	-docker network rm minitwit-network && \
 	docker compose up --build --detach
 
 app-down: # Delete all volumes
@@ -71,6 +71,22 @@ clean-digital-ocean:
 # Monitoring Deployment to Digital Ocean
 monitor-build:
 	cd monitoring && docker compose up --build
+
+# Create local postgres database for testing
+install-postgres:
+	@echo "macOS:  brew install postgresql@18 && brew services start postgresql@18" && \
+	sudo apt update && sudo apt install -y postgresql
+
+PSQL ?= psql -d postgres
+
+create-postgres-database:
+	createdb defaultdb && \
+	$(PSQL) -c "CREATE ROLE ci_tester WITH LOGIN PASSWORD 'ci_tester';" && \
+	$(PSQL) -c "GRANT ALL PRIVILEGES ON DATABASE defaultdb TO ci_tester;"
+
+clean-postgres-database:
+	dropdb defaultdb && \
+	$(PSQL) -c "DROP ROLE IF EXISTS ci_tester;"
 
 # Tests
 test-api-simulator: # requires API_TOKEN to be set in environment variable API_TOKEN
