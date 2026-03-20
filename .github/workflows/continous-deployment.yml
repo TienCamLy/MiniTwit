@@ -67,7 +67,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         
       - name: Copy .env file to server
-        run: scp ./razor-pages/Web/.env $SSH_USER@$SSH_HOST:../vagrant/razor-pages/Web/.env
+        run: scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env $SSH_USER@$SSH_HOST:/vagrant/razor-pages/Web/.env
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
