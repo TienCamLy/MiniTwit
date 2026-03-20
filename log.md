@@ -36,3 +36,6 @@
 ### Week 7 – DevOps & repo polish (Mar 13 – Mar 19)
 * Chore: split app and monitoring layout; workflow env path for compose.
 * Merged monitoring and restructure branches; added PR template.
+
+### Week 8 - Logging (Mar 20 - Mar 26)
+* Add new droplet for running test-deployments to avoid failing on PROD.
