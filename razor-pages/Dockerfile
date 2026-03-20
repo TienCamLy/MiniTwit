@@ -1,6 +1,7 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 RUN mkdir -p /app/keys && chown -R $APP_UID:$APP_UID /app/keys && chmod 700 /app/keys
+RUN mkdir -p /app/data && chown -R $APP_UID:$APP_UID /app/data
 
 USER $APP_UID
 EXPOSE 8080
@@ -25,6 +26,7 @@ RUN dotnet publish "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:Use
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY razor-pages/minitwit.db /app/data/minitwit.db
 USER root
 RUN chown -R $APP_UID:$APP_UID /app
 USER $APP_UID

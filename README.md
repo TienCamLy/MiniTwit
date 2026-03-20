@@ -99,7 +99,5 @@ This choice was made on the basis of picking a programming language that half of
 
 We find Razor Pages to be a good choice, as it supports HTML templating similar to how Jinja is used within Flask applications. One of the main challenges was keeping track of the logged in user within a session, as each bit of code for each page was siloed in its own .cs file. We managed to keep common things common, such as Layout and database functionality, such that the page-specific code mere constituted the functionality of each page-function from the Flask application.
 
-When migrating to another database, PostgreSQL was chosen as it was an available option as a managed database on DigitalOcean, and PostgreSQL is convenient to integrate with EF Core.
-
 ### Choice of Deployment Infrastructure
 We choose to use GitHub Actions to deploy our application, as it is a native functionality that does not require additional setup. For this project, we are not dependent on 100% uptimes and do not mind the 1 minute runtime of our workflow. Keeping the deployment within GitHub also means we do not have to expand our tech stack with additional tools and connections, which would otherwise increase the complexity unnecessarily for the project scope.

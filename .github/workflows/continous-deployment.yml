@@ -23,7 +23,6 @@ on:
 # SSH_USER
 # SSH_KEY
 # SSH_HOST
-# CONNECTIONSTRING
 
 jobs:
   build:
@@ -44,13 +43,9 @@ jobs:
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
       
       - name: Create .env file for compose
-        run: |
-          echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
-          echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
+        run: echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
-          CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
-        
       
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
@@ -65,12 +60,6 @@ jobs:
           chmod 600 ~/.ssh/do_ssh_key
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        
-      - name: Copy .env file to server
-        run: scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env $SSH_USER@$SSH_HOST:/vagrant/razor-pages/Web/.env
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
 
       - name: Deploy to server (using compose)
         run: >

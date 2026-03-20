@@ -19,10 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-// Add postgreSQL server
+// Add sql server
 builder.Services.AddDbContext<MiniTwitContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DEFAULTCONNECTION"), npgsqlOptions => 
-        { npgsqlOptions.CommandTimeout(180); }));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add repositories to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
