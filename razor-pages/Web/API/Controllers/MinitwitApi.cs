@@ -67,11 +67,11 @@ namespace Web.API.Controllers
         public virtual IActionResult GetFollow([FromRoute(Name = "username")][Required] string username, [FromHeader(Name = "Authorization")][Required()] string authorization, [FromQuery(Name = "latest")] int? latest, [FromQuery(Name = "no")] int? no)
         {
             if (!ValidateAuthorization(authorization))
-                return Unauthorized();
+                return ApiUnauthorized();
 
             var user = _userRepository.GetUserByUsername(username);
             if (user == null)
-                return UserNotFound();
+                return ApiUserNotFound();
 
             var followers = _followerRepository.GetFollowedUsers(user.Id).Select(u => u.UserName).ToList();
 
@@ -128,7 +128,7 @@ namespace Web.API.Controllers
         {
 
             if (!ValidateAuthorization(authorization))
-                return Unauthorized();
+                return ApiUnauthorized();
 
             var domainMessages = _messageRepository.GetPublicTimelinePage(page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
@@ -159,10 +159,10 @@ namespace Web.API.Controllers
         public virtual IActionResult GetMessagesPerUser([FromRoute(Name = "username")][Required] string username, [FromHeader(Name = "Authorization")][Required()] string authorization, [FromQuery(Name = "latest")] int? latest, [FromQuery(Name = "no")] int? no, [FromQuery] int page = 1)
         {
             if (!ValidateAuthorization(authorization))
-                return Unauthorized();
+                return ApiUnauthorized();
 
             if (_userRepository.GetUserByUsername(username) == null)
-                return UserNotFound();
+                return ApiUserNotFound();
 
             var domainMessages = _messageRepository.GetUserTimelinePage(username, page);
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
@@ -193,7 +193,7 @@ namespace Web.API.Controllers
         public virtual IActionResult PostFollow([FromRoute(Name = "username")][Required] string username, [FromHeader(Name = "Authorization")][Required()] string authorization, [FromBody] FollowAction payload, [FromQuery(Name = "latest")] int? latest)
         {
             if (!ValidateAuthorization(authorization))
-                return Unauthorized();
+                return ApiUnauthorized();
 
             if (string.IsNullOrEmpty(payload?.Follow) && string.IsNullOrEmpty(payload?.Unfollow))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Body must contain either follow or unfollow" });
@@ -205,12 +205,12 @@ namespace Web.API.Controllers
 
             var who = _userRepository.GetUserByUsername(username);
             if (who == null)
-                return UserNotFound();
+                return ApiUserNotFound();
 
             var targetUsername = hasFollow ? payload.Follow! : payload.Unfollow!;
             var whom = _userRepository.GetUserByUsername(targetUsername);
             if (whom == null)
-                return UserNotFound();
+                return ApiUserNotFound();
 
             if (hasFollow)
                 _followerRepository.FollowUser(who.Id, whom.Id);
@@ -244,14 +244,14 @@ namespace Web.API.Controllers
         public virtual IActionResult PostMessagesPerUser([FromRoute(Name = "username")][Required] string username, [FromHeader(Name = "Authorization")][Required()] string authorization, [FromBody] PostMessage payload, [FromQuery(Name = "latest")] int? latest)
         {
             if (!ValidateAuthorization(authorization))
-                return Unauthorized();
+                return ApiUnauthorized();
 
             if (string.IsNullOrEmpty(payload?.Content))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Content is required" });
 
             var user = _userRepository.GetUserByUsername(username);
             if (user == null)
-                return UserNotFound();
+                return ApiUserNotFound();
 
             _messageRepository.CreateMessage(user.Id, payload.Content);
 
@@ -309,19 +309,18 @@ namespace Web.API.Controllers
             return authorization == $"Basic {Environment.GetEnvironmentVariable("API_TOKEN")}";
         }
 
-        // TODO: Fix associated warning 
-        private IActionResult Unauthorized()
+        private IActionResult ApiUnauthorized()
         {
-            return new ObjectResult(new ErrorResponse
+            return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse
             {
                 Status = 403,
                 ErrorMsg = "Unauthorized - Must include correct Authorization header"
             });
         }
 
-        private IActionResult UserNotFound()
+        private IActionResult ApiUserNotFound()
         {
-            return new ObjectResult(new ErrorResponse
+            return StatusCode(StatusCodes.Status404NotFound, new ErrorResponse
             {
                 Status = 404,
                 ErrorMsg = "User not found"
