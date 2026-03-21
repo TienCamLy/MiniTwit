@@ -3,6 +3,16 @@ ifneq (,$(wildcard ./.env))
     export
 endif
 
+# Debian/Ubuntu PostgreSQL uses peer auth on the Unix socket: connections default to a DB role
+# named like the OS user (e.g. runner), which does not exist. Run superuser CLI as postgres OS user.
+# Prefer GITHUB_ACTIONS over CI so a root .env that sets CI= does not break GitHub-hosted jobs.
+PG_SUPERUSER :=
+ifneq (,$(GITHUB_ACTIONS))
+    PG_SUPERUSER := sudo -u postgres
+else ifneq (,$(CI))
+    PG_SUPERUSER := sudo -u postgres
+endif
+
 # Razor Pages App
 app-build: # Rebuilds the app without deleting volumes, ensuring the network is not present before hand
 	docker compose up --build --detach
@@ -80,13 +90,13 @@ install-postgres:
 # Schema grants must run connected to defaultdb (not postgres), or you grant the wrong DB's public schema.
 # Requires POSTGRES_LOCAL_USER and POSTGRES_LOCAL_PASSWORD to be set in environment variables
 create-postgres-database:
-	psql -d postgres -c "CREATE ROLE $(POSTGRES_LOCAL_USER) WITH LOGIN PASSWORD '$(POSTGRES_LOCAL_PASSWORD)';" && \
-	createdb -O $(POSTGRES_LOCAL_USER) defaultdb
+	$(PG_SUPERUSER) psql -d postgres -c "CREATE ROLE $(POSTGRES_LOCAL_USER) WITH LOGIN PASSWORD '$(POSTGRES_LOCAL_PASSWORD)';" && \
+	$(PG_SUPERUSER) createdb -O $(POSTGRES_LOCAL_USER) defaultdb
 
 clean-postgres-database:
-	dropdb --if-exists defaultdb && \
-	psql -d postgres -c "REVOKE ALL PRIVILEGES ON SCHEMA public FROM $(POSTGRES_LOCAL_USER);" 2>/dev/null || true && \
-	psql -d postgres -c "DROP ROLE IF EXISTS $(POSTGRES_LOCAL_USER);"
+	$(PG_SUPERUSER) dropdb --if-exists defaultdb && \
+	$(PG_SUPERUSER) psql -d postgres -c "REVOKE ALL PRIVILEGES ON SCHEMA public FROM $(POSTGRES_LOCAL_USER);" 2>/dev/null || true && \
+	$(PG_SUPERUSER) psql -d postgres -c "DROP ROLE IF EXISTS $(POSTGRES_LOCAL_USER);"
 
 # Tests
 test-api-simulator: # requires API_TOKEN to be set in environment variable API_TOKEN
