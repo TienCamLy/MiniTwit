@@ -93,7 +93,7 @@ def main(host, token, max_actions=None):
     }
     total_actions = 0
     for action, delay in get_actions():
-        if max_actions and total_actions >= max_actions:
+        if max_actions and int(action["latest"]) >= max_actions:
             return total_actions
         try:
             # SWITCH ON TYPE
@@ -141,6 +141,8 @@ def main(host, token, max_actions=None):
                             ]
                         )
                     )
+                else:
+                    total_actions += 1
 
                 response.close()
 
@@ -175,6 +177,8 @@ def main(host, token, max_actions=None):
                             ]
                         )
                     )
+                else:
+                    total_actions += 1
 
                 response.close()
 
@@ -215,6 +219,8 @@ def main(host, token, max_actions=None):
                             ]
                         )
                     )
+                else:
+                    total_actions += 1
 
                 response.close()
 
@@ -255,6 +261,8 @@ def main(host, token, max_actions=None):
                             ]
                         )
                     )
+                else:
+                    total_actions += 1
 
                 response.close()
 
@@ -293,6 +301,8 @@ def main(host, token, max_actions=None):
                             ]
                         )
                     )
+                else:
+                    total_actions += 1
 
                 response.close()
 
@@ -311,8 +321,6 @@ def main(host, token, max_actions=None):
                         ]
                     )
                 )
-            
-            total_actions += 1
 
         except requests.exceptions.ConnectionError as e:
             ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
