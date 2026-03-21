@@ -18,14 +18,27 @@ jobs:
       - name: Upgrade pip
         run: |
           python -m pip install --upgrade pip
+      
+      - name: Install and Initialize Local PostgreSQL Database
+        run: |
+          make install-postgres
+          make create-postgres-database
 
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Set environment variables
+      - name: Create .env file for compose
         run: |
-          echo "API_TOKEN=${{ secrets.API_TOKEN }}" > .env
+          echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
+          echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          CONNECTIONSTRING: "Server=host.docker.internal;Database=defaultdb;User Id=ci_tester;Password=ci_tester;"
 
       - name: Build and test Docker image
         run: |
           make build-and-test
+      
+      - name: Clean up local PostgreSQL database
+        run: |
+          make clean-postgres-database
