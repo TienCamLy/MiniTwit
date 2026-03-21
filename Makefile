@@ -77,16 +77,15 @@ install-postgres:
 	@echo "macOS:  brew install postgresql@18 && brew services start postgresql@18" && \
 	sudo apt update && sudo apt install -y postgresql
 
-PSQL ?= psql -d postgres
-
+# Schema grants must run connected to defaultdb (not postgres), or you grant the wrong DB's public schema.
 create-postgres-database:
-	createdb defaultdb && \
-	$(PSQL) -c "CREATE ROLE ci_tester WITH LOGIN PASSWORD 'ci_tester';" && \
-	$(PSQL) -c "GRANT ALL PRIVILEGES ON DATABASE defaultdb TO ci_tester;"
+	psql -d postgres -c "CREATE ROLE ci_tester WITH LOGIN PASSWORD 'ci_tester';" && \
+	createdb -O ci_tester defaultdb
 
 clean-postgres-database:
-	dropdb defaultdb && \
-	$(PSQL) -c "DROP ROLE IF EXISTS ci_tester;"
+	dropdb --if-exists defaultdb && \
+	psql -d postgres -c "REVOKE ALL PRIVILEGES ON SCHEMA public FROM ci_tester;" 2>/dev/null || true && \
+	psql -d postgres -c "DROP ROLE IF EXISTS ci_tester;"
 
 # Tests
 test-api-simulator: # requires API_TOKEN to be set in environment variable API_TOKEN
