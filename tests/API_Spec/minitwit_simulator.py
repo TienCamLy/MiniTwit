@@ -84,6 +84,25 @@ def get_actions():
                 print("========================================")
                 print(traceback.format_exc())
 
+def handle_response(command, status_code, action_id, host, good_status_codes, total_actions):
+    if status_code in good_status_codes:
+        return total_actions + 1
+    else:
+        ts_str = datetime.strftime(
+            datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S"
+        )
+        print(
+            ",".join(
+                [
+                    ts_str,
+                    host,
+                    str(action_id),
+                    str(status_code),
+                    command,
+                ]
+            )
+        )
+        return total_actions
 
 def main(host, token, max_actions=None):
     HEADERS = {
@@ -123,26 +142,7 @@ def main(host, token, max_actions=None):
 
                 # error handling (204 success, 400 user exists)
                 # 400 user exists already but not an error to log
-                if not (
-                    (response.status_code == 204)
-                    or (response.status_code == 400)
-                ):
-                    ts_str = datetime.strftime(
-                        datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S"
-                    )
-                    print(
-                        ",".join(
-                            [
-                                ts_str,
-                                host,
-                                str(action["latest"]),
-                                str(response.status_code),
-                                command,
-                            ]
-                        )
-                    )
-                else:
-                    total_actions += 1
+                total_actions = handle_response(command, response.status_code, action["latest"], host, [204, 400], total_actions)
 
                 response.close()
 
@@ -162,23 +162,7 @@ def main(host, token, max_actions=None):
                 # error handling (200 success, 403 failure (no headers))
 
                 # 403 bad request
-                if response.status_code != 200:
-                    ts_str = datetime.strftime(
-                        datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S"
-                    )
-                    print(
-                        ",".join(
-                            [
-                                ts_str,
-                                host,
-                                str(action["latest"]),
-                                str(response.status_code),
-                                command,
-                            ]
-                        )
-                    )
-                else:
-                    total_actions += 1
+                total_actions = handle_response(command, response.status_code, action["latest"], host, [200], total_actions)
 
                 response.close()
 
@@ -204,23 +188,7 @@ def main(host, token, max_actions=None):
                 # error handling (204 success, 403 failure, 404 Not Found no user id)
 
                 # 403 unauthorized or 404 Not Found
-                if response.status_code != 204:
-                    ts_str = datetime.strftime(
-                        datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S"
-                    )
-                    print(
-                        ",".join(
-                            [
-                                ts_str,
-                                host,
-                                str(action["latest"]),
-                                str(response.status_code),
-                                command,
-                            ]
-                        )
-                    )
-                else:
-                    total_actions += 1
+                total_actions = handle_response(command, response.status_code, action["latest"], host, [204], total_actions)
 
                 response.close()
 
@@ -246,23 +214,7 @@ def main(host, token, max_actions=None):
                 # error handling (204 success, 403 failure, 404 Not Found no user id)
 
                 # 403 unauthorized or 404 Not Found
-                if response.status_code != 204:
-                    ts_str = datetime.strftime(
-                        datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S"
-                    )
-                    print(
-                        ",".join(
-                            [
-                                ts_str,
-                                host,
-                                str(action["latest"]),
-                                str(response.status_code),
-                                command,
-                            ]
-                        )
-                    )
-                else:
-                    total_actions += 1
+                total_actions = handle_response(command, response.status_code, action["latest"], host, [204], total_actions)
 
                 response.close()
 
@@ -286,23 +238,7 @@ def main(host, token, max_actions=None):
 
                 # error handling (204 success, 403 failure)
                 # 403 unauthorized
-                if response.status_code != 204:
-                    ts_str = datetime.strftime(
-                        datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S"
-                    )
-                    print(
-                        ",".join(
-                            [
-                                ts_str,
-                                host,
-                                str(action["latest"]),
-                                str(response.status_code),
-                                command,
-                            ]
-                        )
-                    )
-                else:
-                    total_actions += 1
+                total_actions = handle_response(command, response.status_code, action["latest"], host, [204], total_actions)
 
                 response.close()
 
