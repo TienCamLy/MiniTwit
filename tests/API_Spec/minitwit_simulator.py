@@ -104,6 +104,72 @@ def handle_response(command, status_code, action_id, host, good_status_codes, to
         )
         return total_actions
 
+class Action:
+    def __init__(self, command, action_id, host, action_data, headers, timeout=0.3):
+        self.command = command
+        self.action_id = action_id
+        self.host = host    
+        self.headers = headers
+        self.action_data = action_data
+        self.timeout = timeout
+    
+    def build_data(self):
+        # Building parameters
+        self.params = {"latest": self.action_id}
+        if self.command == "msgs":
+            self.params["no"] = self.action_data["no"]
+        
+        # Building data
+        if self.command == "register":
+            self.data = {
+                "username": self.action_data["username"],
+                "email": self.action_data["email"],
+                "pwd": self.action_data["pwd"],
+            }
+        elif self.command == "msgs":
+            self.data = {}
+        elif self.command == "follow":
+            self.data = {"follow": self.action_data["follow"]}
+        elif self.command == "unfollow":
+            self.data = {"unfollow": self.action_data["unfollow"]}
+        elif self.command == "tweet":
+            self.data = {"content": self.action_data["content"]}
+
+    def execute(self):
+        if self.command == "register":
+            return requests.post(
+                f"{self.host}/register",
+                data=json.dumps(self.data),
+                params=self.params,
+                headers=self.headers,
+                timeout=self.timeout,
+            )
+        elif self.command == "msgs":
+            return requests.post(
+                f"{self.host}/msgs",
+                params=self.params,
+                headers=self.headers,
+                timeout=self.timeout,
+            )
+        elif self.command == "follow" or self.command == "unfollow":
+            return requests.post(
+                f"{self.host}/fllws/{self.action_data['username']}",
+                data=json.dumps(self.data),
+                params=self.params,
+                headers=self.headers,
+                timeout=self.timeout,
+            )
+        elif self.command == "tweet":
+            return requests.post(
+                f"{self.host}/msgs/{self.action_data['username']}",
+                data=json.dumps(self.data),
+                params=self.params,
+                headers=self.headers,
+                timeout=self.timeout,
+            )
+        else:
+            raise ValueError(f"Unknown command: {self.command}")
+
 def main(host, token, max_actions=None):
     HEADERS = {
         "Connection": "close",
@@ -120,25 +186,9 @@ def main(host, token, max_actions=None):
 
             if command == "register":
 
-                # build url for request
-                url = f"{host}/register"
-
-                # Set parameters: latest
-                params = {"latest": action["latest"]}
-                # Set data: username, email, pwd
-                data = {
-                    "username": action["username"],
-                    "email": action["email"],
-                    "pwd": action["pwd"],
-                }
-
-                response = requests.post(
-                    url,
-                    data=json.dumps(data),
-                    params=params,
-                    headers=HEADERS,
-                    timeout=0.3,
-                )
+                action_builder = Action(command, action["latest"], host, action, HEADERS)
+                action_builder.build_data()
+                response = action_builder.execute()
 
                 # error handling (204 success, 400 user exists)
                 # 400 user exists already but not an error to log
@@ -148,16 +198,9 @@ def main(host, token, max_actions=None):
 
             elif command == "msgs":
 
-                # LIST method. Not used atm.
-                # build url for request
-                url = f"{host}/msgs"
-
-                # Set parameters: latest & no (amount)
-                params = {"latest": action["latest"], "no": action["no"]}
-
-                response = requests.post(
-                    url, params=params, headers=HEADERS, timeout=0.3
-                )
+                action_builder = Action(command, action["latest"], host, action, HEADERS)
+                action_builder.build_data()
+                response = action_builder.execute()
 
                 # error handling (200 success, 403 failure (no headers))
 
@@ -168,22 +211,9 @@ def main(host, token, max_actions=None):
 
             elif command == "follow":
 
-                # build url for request
-                username = action["username"]
-                url = f"{host}/fllws/{username}"
-
-                # Set parameters: latest
-                params = {"latest": action["latest"]}
-                # Set data: content
-                data = {"follow": action["follow"]}  # value for user to follow
-
-                response = requests.post(
-                    url,
-                    data=json.dumps(data),
-                    params=params,
-                    headers=HEADERS,
-                    timeout=0.3,
-                )
+                action_builder = Action(command, action["latest"], host, action, HEADERS)
+                action_builder.build_data()
+                response = action_builder.execute()
 
                 # error handling (204 success, 403 failure, 404 Not Found no user id)
 
@@ -194,22 +224,9 @@ def main(host, token, max_actions=None):
 
             elif command == "unfollow":
 
-                # build url for request
-                username = action["username"]
-                url = f"{host}/fllws/{username}"
-                # Set parameters: latest
-                params = {"latest": action["latest"]}
-                # Set data: content
-                # value for user to follow
-                data = {"unfollow": action["unfollow"]}
-
-                response = requests.post(
-                    url,
-                    data=json.dumps(data),
-                    params=params,
-                    headers=HEADERS,
-                    timeout=0.3,
-                )
+                action_builder = Action(command, action["latest"], host, action, HEADERS)
+                action_builder.build_data()
+                response = action_builder.execute()
 
                 # error handling (204 success, 403 failure, 404 Not Found no user id)
 
@@ -220,21 +237,9 @@ def main(host, token, max_actions=None):
 
             elif command == "tweet":
 
-                # build url for request
-                username = action["username"]
-                url = f"{host}/msgs/{username}"
-                # Set parameters: latest
-                params = {"latest": action["latest"]}
-                # Set data: content
-                data = {"content": action["content"]}
-
-                response = requests.post(
-                    url,
-                    data=json.dumps(data),
-                    params=params,
-                    headers=HEADERS,
-                    timeout=0.3,
-                )
+                action_builder = Action(command, action["latest"], host, action, HEADERS)
+                action_builder.build_data()
+                response = action_builder.execute()
 
                 # error handling (204 success, 403 failure)
                 # 403 unauthorized
