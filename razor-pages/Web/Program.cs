@@ -55,14 +55,24 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
+// HTTP-only Kestrel (e.g. Docker compose): skip HTTPS redirect so clients are not sent to an unused TLS port.
+var aspNetCoreUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? string.Empty;
+var httpsConfigured = aspNetCoreUrls.Contains("https:", StringComparison.OrdinalIgnoreCase);
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    if (httpsConfigured)
+    {
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
+    }
 }
 
-app.UseHttpsRedirection();
+if (httpsConfigured)
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseRouting();
 
