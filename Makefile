@@ -74,18 +74,19 @@ monitor-build:
 # Create local postgres database for testing
 install-postgres:
 	@echo "macOS:  brew install postgresql@18 && brew services start postgresql@18" && \
-	sudo apt update && sudo apt install -y postgresql
+	sudo apt update && sudo apt install -y postgresql && \
+	sudo service postgresql start
 
 # Schema grants must run connected to defaultdb (not postgres), or you grant the wrong DB's public schema.
 # Requires POSTGRES_LOCAL_USER and POSTGRES_LOCAL_PASSWORD to be set in environment variables
 create-postgres-database:
-	psql -d postgres -c "CREATE ROLE $POSTGRES_LOCAL_USER WITH LOGIN PASSWORD '$POSTGRES_LOCAL_PASSWORD';" && \
-	createdb -O $POSTGRES_LOCAL_USER defaultdb
+	psql -d postgres -c "CREATE ROLE $(POSTGRES_LOCAL_USER) WITH LOGIN PASSWORD '$(POSTGRES_LOCAL_PASSWORD)';" && \
+	createdb -O $(POSTGRES_LOCAL_USER) defaultdb
 
 clean-postgres-database:
 	dropdb --if-exists defaultdb && \
-	psql -d postgres -c "REVOKE ALL PRIVILEGES ON SCHEMA public FROM $POSTGRES_LOCAL_USER;" 2>/dev/null || true && \
-	psql -d postgres -c "DROP ROLE IF EXISTS $POSTGRES_LOCAL_USER;"
+	psql -d postgres -c "REVOKE ALL PRIVILEGES ON SCHEMA public FROM $(POSTGRES_LOCAL_USER);" 2>/dev/null || true && \
+	psql -d postgres -c "DROP ROLE IF EXISTS $(POSTGRES_LOCAL_USER);"
 
 # Tests
 test-api-simulator: # requires API_TOKEN to be set in environment variable API_TOKEN
