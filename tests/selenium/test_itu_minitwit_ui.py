@@ -24,7 +24,6 @@ application can be started with `docker-compose up`.
 Now, the test itself can be executed via: `pytest test_itu_minitwit_ui.py`.
 """
 
-# import pymongo
 import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -35,7 +34,6 @@ from selenium.webdriver.chrome.options import Options
 
 # Set in docker-compose
 GUI_URL = os.getenv("GUI_URL")
-# DB_URL = os.getenv("DB_URL")
 SELENIUM_REMOTE_URL = os.getenv("SELENIUM_REMOTE_URL") 
 
 def _create_driver():
@@ -48,7 +46,6 @@ def _register_user_via_gui(driver, data):
     driver.get(GUI_URL)
 
     wait = WebDriverWait(driver, 5)
-    buttons = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "actions")))
     input_fields = driver.find_elements(By.TAG_NAME, "input")
 
     for idx, str_content in enumerate(data):
@@ -60,9 +57,6 @@ def _register_user_via_gui(driver, data):
 
     return flashes
 
-
-# def _get_user_by_name(db_client, name):
-#     return db_client.test.user.find_one({"username": name})
 
 
 def test_register_user_via_gui():
@@ -80,23 +74,3 @@ def test_register_user_via_gui():
     # db_client = pymongo.MongoClient(DB_URL, serverSelectionTimeoutMS=5000)
     # db_client.test.user.delete_one({"username": "Me"})
 
-
-# def test_register_user_via_gui_and_check_db_entry():
-#     """
-#     This is an end-to-end test. Before registering a user via the UI, it checks that no such user exists in the
-#     database yet. After registering a user, it checks that the respective user appears in the database.
-#     """
-
-#     with _create_driver() as driver:
-#         db_client = pymongo.MongoClient(DB_URL, serverSelectionTimeoutMS=5000)
-
-#         assert _get_user_by_name(db_client, "Me") == None
-
-#         generated_msg = _register_user_via_gui(driver, ["Me", "me@some.where", "secure123", "secure123"])[0].text
-#         expected_msg = "You were successfully registered and can login now"
-#         assert generated_msg == expected_msg
-
-#         assert _get_user_by_name(db_client, "Me")["username"] == "Me"
-
-#         # cleanup, make test case idempotent
-#         db_client.test.user.delete_one({"username": "Me"})
