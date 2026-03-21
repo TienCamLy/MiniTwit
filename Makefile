@@ -5,7 +5,6 @@ endif
 
 # Razor Pages App
 app-build: # Rebuilds the app without deleting volumes, ensuring the network is not present before hand
-	-docker network rm minitwit-network && \
 	docker compose up --build --detach
 
 app-down: # Delete all volumes
