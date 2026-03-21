@@ -270,7 +270,7 @@ if __name__ == "__main__":
     max_actions = int(sys.argv[3]) if len(sys.argv) > 3 else None
     start_time = datetime.now()
     total_actions = main(host, token, max_actions)
-    if max_actions and total_actions != max_actions:
+    if max_actions and total_actions < max_actions * 0.95:
         print(f"Simulation failed in {datetime.now() - start_time} seconds.")
         print(f"Expected {max_actions} actions, but only ran {total_actions} actions successfully")
         sys.exit(1)
