@@ -102,6 +102,7 @@ clean-postgres-database:
 test-api-simulator: # requires API_TOKEN to be set in environment variable API_TOKEN
 	printf "\n\nRunning API simulator tests...\n" && \
 	cd tests/API_Spec && \
+	pip install -r requirements.txt && \
 	python minitwit_simulator.py http://localhost:8080 $(API_TOKEN) 2000
 
 test-ui-selenium: 
