@@ -5,19 +5,12 @@ $ python minitwit_simulator.py "http://localhost:5001"
 """
 
 import traceback
-import os
 import csv
 import sys
 import json
-import http
-import socket
-import base64
 import requests
 from time import sleep
 from datetime import datetime, timezone
-from contextlib import closing
-import sqlite3
-
 
 CSV_FILENAME = "./minitwit_scenario.csv"
 
