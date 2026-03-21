@@ -45,7 +45,6 @@ def _create_driver():
 def _register_user_via_gui(driver, data):
     driver.get(GUI_URL)
 
-    wait = WebDriverWait(driver, 5)
     input_fields = driver.find_elements(By.TAG_NAME, "input")
 
     for idx, str_content in enumerate(data):
