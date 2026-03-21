@@ -105,7 +105,7 @@ def handle_response(command, status_code, action_id, host, good_status_codes, to
         return total_actions
 
 class Action:
-    def __init__(self, command, action_id, host, action_data, headers, timeout=0.3):
+    def __init__(self, command, action_id, host, action_data, headers, timeout=0.6):
         self.command = command
         self.action_id = action_id
         self.host = host    
@@ -209,7 +209,7 @@ def main(host, token, max_actions=None):
 
                 response.close()
 
-            elif command == "follow":
+            elif command == "follow" or command == "unfollow" or command == "tweet":
 
                 action_builder = Action(command, action["latest"], host, action, HEADERS)
                 action_builder.build_data()
@@ -218,31 +218,6 @@ def main(host, token, max_actions=None):
                 # error handling (204 success, 403 failure, 404 Not Found no user id)
 
                 # 403 unauthorized or 404 Not Found
-                total_actions = handle_response(command, response.status_code, action["latest"], host, [204], total_actions)
-
-                response.close()
-
-            elif command == "unfollow":
-
-                action_builder = Action(command, action["latest"], host, action, HEADERS)
-                action_builder.build_data()
-                response = action_builder.execute()
-
-                # error handling (204 success, 403 failure, 404 Not Found no user id)
-
-                # 403 unauthorized or 404 Not Found
-                total_actions = handle_response(command, response.status_code, action["latest"], host, [204], total_actions)
-
-                response.close()
-
-            elif command == "tweet":
-
-                action_builder = Action(command, action["latest"], host, action, HEADERS)
-                action_builder.build_data()
-                response = action_builder.execute()
-
-                # error handling (204 success, 403 failure)
-                # 403 unauthorized
                 total_actions = handle_response(command, response.status_code, action["latest"], host, [204], total_actions)
 
                 response.close()
