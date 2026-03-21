@@ -23,6 +23,9 @@ jobs:
         run: |
           make install-postgres
           make create-postgres-database
+        env:
+          POSTGRES_LOCAL_USER: ${{ secrets.POSTGRES_LOCAL_USER }}
+          POSTGRES_LOCAL_PASSWORD: ${{ secrets.POSTGRES_LOCAL_PASSWORD }}
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -33,7 +36,7 @@ jobs:
           echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
-          CONNECTIONSTRING: "Server=host.docker.internal;Database=defaultdb;User Id=ci_tester;Password=ci_tester;"
+          CONNECTIONSTRING: "Server=host.docker.internal;Database=defaultdb;User Id=${{ secrets.POSTGRES_LOCAL_USER }};Password=${{ secrets.POSTGRES_LOCAL_PASSWORD }};"
 
       - name: Build and test Docker image
         run: |
@@ -42,3 +45,6 @@ jobs:
       - name: Clean up local PostgreSQL database
         run: |
           make clean-postgres-database
+        env:
+          POSTGRES_LOCAL_USER: ${{ secrets.POSTGRES_LOCAL_USER }}
+          POSTGRES_LOCAL_PASSWORD: ${{ secrets.POSTGRES_LOCAL_PASSWORD }}
