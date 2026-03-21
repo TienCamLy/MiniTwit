@@ -18,6 +18,9 @@ jobs:
       - name: Upgrade pip
         run: |
           python -m pip install --upgrade pip
+
+      - name: Checkout
+        uses: actions/checkout@v2
       
       - name: Install and Initialize Local PostgreSQL Database
         run: |
@@ -26,9 +29,6 @@ jobs:
         env:
           POSTGRES_LOCAL_USER: ${{ secrets.POSTGRES_LOCAL_USER }}
           POSTGRES_LOCAL_PASSWORD: ${{ secrets.POSTGRES_LOCAL_PASSWORD }}
-
-      - name: Checkout
-        uses: actions/checkout@v2
       
       - name: Create .env file for compose
         run: |
