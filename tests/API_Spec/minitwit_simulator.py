@@ -96,9 +96,8 @@ def main(host, token, max_actions=None):
     HEADERS = {
         "Connection": "close",
         "Content-Type": "application/json",
-        f"Authorization": f"Basic {token}",
+        "Authorization": f"Basic {token}",
     }
-    print(f"Headers: {HEADERS}")
     total_actions = 0
     for action, delay in get_actions():
         if max_actions and total_actions >= max_actions:
