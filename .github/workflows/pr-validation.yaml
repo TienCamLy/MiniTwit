@@ -41,6 +41,8 @@ jobs:
       - name: Build and test Docker image
         run: |
           make build-and-test
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
       
       - name: Clean up local PostgreSQL database
         run: |
