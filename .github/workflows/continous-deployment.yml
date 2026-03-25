@@ -47,10 +47,11 @@ jobs:
         run: |
           echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
           echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
+          echo "LOKI_URL=$LOKI_URL" >> promtail/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
-        
+          LOKI_URL: http://${{ secrets.MONITOR_SSH_HOST }}:3100/loki/api/v1/push
       
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
