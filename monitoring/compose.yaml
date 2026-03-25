@@ -10,6 +10,8 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
 
+  # Promtail runs on the application server (root compose.yaml) and pushes here.
+  # Restrict host firewall: allow TCP 3100 only from app server IPs.
   loki:
     image: grafana/loki:3.6.7
     container_name: loki
