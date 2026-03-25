@@ -21,7 +21,18 @@ services:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-  
+
+  loki:
+    image: grafana/loki:3.6.7
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+
 volumes:
   prometheus-storage:
   grafana-storage:
+  loki-data:
