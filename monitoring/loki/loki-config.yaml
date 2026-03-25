@@ -22,7 +22,7 @@ schema_config:
       schema: v11
       index:
         prefix: index_
-        period: 24h
+        period: 240h
 
 limits_config:
   reject_old_samples: true
