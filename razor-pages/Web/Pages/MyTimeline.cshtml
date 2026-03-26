@@ -15,7 +15,7 @@
         <h3>What's on your mind @User.Identity?.Name?</h3>
         <form method="post" asp-page-handler="CreateMessage">
             <p>
-                <input type="text" name="text" size="60"><!--
+                <input type="text" name="text" size="60" maxlength="500"><!--
                 --><input type="submit" value="Share">
             </p>
         </form>
