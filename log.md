@@ -39,4 +39,5 @@
 * Merged monitoring and restructure branches; added PR template.
 
 ### Week 8 - Logging (Mar 20 - Mar 26)
-* Add new droplet for running test-deployments to avoid failing on PROD.
+* Added new droplet for running test-deployments to avoid failing on PROD.
+* Added limit to message length to avoid potential performance issues. 
