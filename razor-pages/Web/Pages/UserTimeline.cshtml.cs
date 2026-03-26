@@ -42,7 +42,7 @@ public class UserTimelineModel : PageModel
             if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
             {
                 var sessionUser = _userRepository.GetUserByUsername(User.Identity.Name);
-                Followed = sessionUser != null && userObj != null &&
+                Followed = sessionUser != null &&
                            _followerRepository.IsFollowed(sessionUser.Id, userObj.Id);
             }
             else
