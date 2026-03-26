@@ -40,3 +40,4 @@
 
 ### Week 8 - Logging (Mar 20 - Mar 26)
 * Add new droplet for running test-deployments to avoid failing on PROD.
+* Changed message publish date to show UTC+1
