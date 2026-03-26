@@ -287,9 +287,6 @@ namespace Web.API.Controllers
             if (string.IsNullOrEmpty(email) || !email.Contains('@'))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Invalid email" });
             
-            //TODO: 
-            //if (Password != Password2)
-            //    Error = "The two passwords do not match";
             
             if (_userRepository.GetUserByUsername(username) != null) 
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "The username is already taken" });
@@ -309,8 +306,7 @@ namespace Web.API.Controllers
             return authorization == $"Basic {Environment.GetEnvironmentVariable("API_TOKEN")}";
         }
 		
-		// TODO: Fix associated warning 
-        private IActionResult Unauthorized()
+        private new IActionResult Unauthorized()
         {
             return new ObjectResult(new ErrorResponse
             {

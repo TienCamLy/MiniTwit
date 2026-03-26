@@ -39,18 +39,18 @@
         }
     </ul>
     <div class="pagination">
-        @if (Model.Page - 5 > 1)
+        @if (Model.PageNumber - 5 > 1)
         {
             <a href="/public?Page=1" class="first">First</a>
         }
-        @if (Model.Page > 1)
+        @if (Model.PageNumber > 1)
         {
-            <a href="/?Page=@(Model.Page - 1)" class="prev">Previous</a>
+            <a href="/?Page=@(Model.PageNumber - 1)" class="prev">Previous</a>
         }
 
-        @for (int i = Math.Max(1, Model.Page - 5); i <= Math.Min(Model.TotalPages, Model.Page + 5); i++)
+        @for (int i = Math.Max(1, Model.PageNumber - 5); i <= Math.Min(Model.TotalPages, Model.PageNumber + 5); i++)
         {
-            if (i == Model.Page)
+            if (i == Model.PageNumber)
             {
                 <span class="current">@i</span>
             }
@@ -60,11 +60,11 @@
             }
         }
 
-        @if (Model.Page < Model.TotalPages)
+        @if (Model.PageNumber < Model.TotalPages)
         {
-            <a href="/?Page=@(Model.Page + 1)" class="next">Next</a>
+            <a href="/?Page=@(Model.PageNumber + 1)" class="next">Next</a>
         }
-        @if (Model.Page + 5 < Model.TotalPages)
+        @if (Model.PageNumber + 5 < Model.TotalPages)
         {
             <a href="/public?Page=@(Model.TotalPages)" class="last">Last</a>
         }

@@ -2,7 +2,6 @@ using Core.Interfaces;
 using Core.DTOs;
 using Infrastructure.Entities;
 using Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 public class MessageRepository : IMessageRepository
@@ -23,8 +22,8 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-				AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+				AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
 			.ToList();
     }
@@ -40,8 +39,8 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-				AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+				AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
 			.ToList();
     }
@@ -56,8 +55,8 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-				AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+				AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
 			.ToList();
     }
@@ -74,8 +73,8 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-				AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+				AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
 			.ToList();
     }
@@ -102,8 +101,8 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-                AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+                AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
             .ToList();
 
