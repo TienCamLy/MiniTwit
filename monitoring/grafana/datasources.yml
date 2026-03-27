@@ -6,8 +6,19 @@ datasources:
     url: http://prometheus:9090
     isDefault: true
 
+  - name: prometheus-dev
+    type: prometheus
+    url: http://prometheus-dev:9091
+    isDefault: true
+
   - name: Loki
     type: loki
     access: proxy
     url: http://loki:3100
+    editable: true
+
+  - name: Loki-dev
+    type: loki
+    access: proxy
+    url: http://loki-dev:3101
     editable: true

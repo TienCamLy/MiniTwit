@@ -9,6 +9,17 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    
+  prometheus-dev:
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9091"
+    volumes:
+      - ./prometheus-dev.yml:/etc/prometheus/prometheus.yml
+      - prometheus-storage-dev:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus-dev'
 
   # Promtail runs on the application server (root compose.yaml) and pushes here.
   # Restrict host firewall: allow TCP 3100 only from app server IPs.
@@ -31,7 +42,7 @@ services:
       - "3101:3101"
     volumes:
       - ./loki/loki-dev-config.yaml:/etc/loki/local-config.yaml
-      - loki-data:/loki
+      - loki-data-dev:/loki
     command: -config.file=/etc/loki/local-config.yaml
 
   grafana:
@@ -53,5 +64,7 @@ services:
 
 volumes:
   prometheus-storage:
+  prometheus-storage-dev:
   grafana-storage:
   loki-data:
+  loki-data-dev:
