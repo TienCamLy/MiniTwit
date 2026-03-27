@@ -1,5 +1,6 @@
 services:
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
@@ -9,7 +10,44 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-  
+    
+  prometheus-dev:
+    container_name: prometheus-dev
+    image: prom/prometheus:latest
+    ports:
+      - "9091:9091"
+    volumes:
+      - ./prometheus-dev.yml:/etc/prometheus/prometheus.yml
+      - prometheus-storage-dev:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.listen-address=0.0.0.0:9091'
+
+  # Promtail runs on the application server (root compose.yaml) and pushes here.
+  # Restrict host firewall: allow TCP 3100 only from app server IPs.
+  loki:
+    image: grafana/loki:3.6.7
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+
+  # Promtail runs on the application server (root compose.yaml) and pushes here.
+  # Restrict host firewall: allow TCP 3100 only from app server IPs.
+  loki-dev:
+    image: grafana/loki:3.6.7
+    container_name: loki-dev
+    ports:
+      - "3101:3101"
+    volumes:
+      - ./loki/loki-dev-config.yaml:/etc/loki/local-config.yaml
+      - loki-data-dev:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+
   grafana:
     image: grafana/grafana:latest
     ports:
@@ -21,7 +59,16 @@ services:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-  
+    depends_on:
+      - loki
+      - loki-dev
+      - prometheus
+      - prometheus-dev
+    restart: unless-stopped
+
 volumes:
   prometheus-storage:
+  prometheus-storage-dev:
   grafana-storage:
+  loki-data:
+  loki-data-dev:

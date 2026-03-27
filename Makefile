@@ -59,6 +59,6 @@ clean-digital-ocean:
 	vagrant destroy && \
 	rm -rf .vagrant
 
-# Monitoring Deployment to Digital Ocean
+# Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
 monitor-build:
 	cd monitoring && docker compose up --build
