@@ -103,3 +103,6 @@ When migrating to another database, PostgreSQL was chosen as it was an available
 
 ### Choice of Deployment Infrastructure
 We choose to use GitHub Actions to deploy our application, as it is a native functionality that does not require additional setup. For this project, we are not dependent on 100% uptimes and do not mind the 1 minute runtime of our workflow. Keeping the deployment within GitHub also means we do not have to expand our tech stack with additional tools and connections, which would otherwise increase the complexity unnecessarily for the project scope.
+
+### Choice of logging Infrastructure
+We use **Grafana Loki** with **Promtail** and visualize logs in **Grafana**, alongside our existing Prometheus setup. Loki indexes metadata (labels) rather than full log text, which keeps storage and operational cost reasonable for a course project while still supporting useful queries with **LogQL**. Promtail runs on each application droplet, discovers Docker containers via the host socket, and ships stdout/stderr logs to Loki over HTTP, while the monitoring server hosts Loki and Grafana so logs stay centralized without running heavy logging agents on the metrics box. This stack is well documented, fits naturally next to Grafana dashboards we already use, and aligns with our goal of observable deployments with minimal extra moving parts.
