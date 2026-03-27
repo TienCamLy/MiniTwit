@@ -1,5 +1,6 @@
 services:
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
@@ -11,6 +12,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
     
   prometheus-dev:
+    container_name: prometheus-dev
     image: prom/prometheus:latest
     ports:
       - "9091:9091"
@@ -19,7 +21,8 @@ services:
       - prometheus-storage-dev:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus-dev'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.listen-address=0.0.0.0:9091'
 
   # Promtail runs on the application server (root compose.yaml) and pushes here.
   # Restrict host firewall: allow TCP 3100 only from app server IPs.
@@ -60,6 +63,7 @@ services:
       - loki
       - loki-dev
       - prometheus
+      - prometheus-dev
     restart: unless-stopped
 
 volumes:

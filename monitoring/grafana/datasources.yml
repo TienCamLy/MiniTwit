@@ -9,7 +9,6 @@ datasources:
   - name: prometheus-dev
     type: prometheus
     url: http://prometheus-dev:9091
-    isDefault: true
 
   - name: Loki
     type: loki
