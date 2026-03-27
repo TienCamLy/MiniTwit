@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 120s
+  evaluation_interval: 120s
+
+  external_labels:
+    monitor: 'monitor'
+
+scrape_configs:
+  - job_name: 'minitwit-dev'
+    scrape_interval: 120s
+    static_configs:
+      - targets: ['157.230.24.184:8080']

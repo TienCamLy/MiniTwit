@@ -12,6 +12,20 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:8080
     volumes:
       - keys-volume:/app/keys
-  
+
+  promtail:
+    image: grafana/promtail:3.6.7
+    container_name: promtail
+    restart: unless-stopped
+    env_file:
+      - ./promtail/.env
+    volumes:
+      - ./promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command:
+      - -config.file=/etc/promtail/config.yaml
+      - -config.expand-env=true
+
 volumes:
   keys-volume:

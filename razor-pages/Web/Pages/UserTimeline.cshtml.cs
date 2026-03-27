@@ -17,7 +17,7 @@ public class UserTimelineModel : PageModel
     public bool Followed { get; set; } = false;
     public string? Error { get; set; }
     [FromQuery(Name = "page")]
-    public int Page { get; set; } = 1;
+    public int PageNumber { get; set; } = 1;
     
     public UserTimelineModel(
         IMessageRepository messageRepository, 
@@ -32,19 +32,23 @@ public class UserTimelineModel : PageModel
     public void OnGet(string user, string? error = null)
     {
         var userObj = _userRepository.GetUserByUsername(user);
-        Messages = _messageRepository.GetUserTimeline(userObj.Id);
-        Username = user;
-        //maybe used for paginator
-        ViewData["Page"] = Page;
+        if (userObj != null)
+        {
+            Messages = _messageRepository.GetUserTimeline(userObj.Id);
+            Username = user;
+            //maybe used for paginator
+            ViewData["Page"] = PageNumber;
 
-        if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
-        {
-            var sessionUser = _userRepository.GetUserByUsername(User.Identity.Name);
-            Followed = sessionUser != null && userObj != null && _followerRepository.IsFollowed(sessionUser.Id, userObj.Id);
-        }
-        else
-        {
-            Followed = false;
+            if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
+            {
+                var sessionUser = _userRepository.GetUserByUsername(User.Identity.Name);
+                Followed = sessionUser != null &&
+                           _followerRepository.IsFollowed(sessionUser.Id, userObj.Id);
+            }
+            else
+            {
+                Followed = false;
+            }
         }
 
         Error = error;

@@ -3,7 +3,6 @@ using Core.DTOs;
 using Infrastructure.Entities;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 public class UserRepository : IUserRepository
@@ -25,12 +24,12 @@ public class UserRepository : IUserRepository
         return new UserDTO
         {
             Id = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
+            UserName = user.UserName!,
+            Email = user.Email!,
         };
     }
 
-    public UserDTO GetUserByUsername(string username)
+    public UserDTO? GetUserByUsername(string username)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == username);
         if (user == null)
@@ -41,12 +40,12 @@ public class UserRepository : IUserRepository
         return new UserDTO
         {
             Id = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
+            UserName = user.UserName!,
+            Email = user.Email!,
         };
     }
 
-    public UserDTO Login(string username, string password)
+    public UserDTO? Login(string username, string password)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == username);
         if (user == null)
@@ -55,7 +54,7 @@ public class UserRepository : IUserRepository
         }
         
         var hash = new PasswordHasher<User>();
-        var verifyHashResult = hash.VerifyHashedPassword(user, user.PasswordHash, password);
+        var verifyHashResult = hash.VerifyHashedPassword(user, user.PasswordHash!, password);
         if (verifyHashResult == PasswordVerificationResult.Failed)
         {
             return null;
@@ -64,8 +63,8 @@ public class UserRepository : IUserRepository
         return new UserDTO
         {
             Id = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
+            UserName = user.UserName!,
+            Email = user.Email!,
         };
     }
 
@@ -84,7 +83,7 @@ public class UserRepository : IUserRepository
         {
             UserName = username,
             Email = email,
-            PasswordHash = hash.HashPassword(null, password),
+            PasswordHash = hash.HashPassword(null!, password),
         };
             
         _context.Users.Add(user);

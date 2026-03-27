@@ -9,8 +9,6 @@ namespace Web.Pages;
 public class MyTimelineModel : PageModel
 {
     private readonly IMessageRepository _messageRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IFollowerRepository _followerRepository;
     
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
     
@@ -18,7 +16,7 @@ public class MyTimelineModel : PageModel
     public string Text { get; set; } = "";
     
     [FromQuery(Name = "page")]
-    public int Page { get; set; } = 1;
+    public int PageNumber { get; set; } = 1;
     
     public int TotalPages { get; set; }
     
@@ -30,14 +28,12 @@ public class MyTimelineModel : PageModel
         IFollowerRepository followerRepository)
     {
         _messageRepository = messageRepository;
-        _userRepository = userRepository;
-        _followerRepository = followerRepository;
     }
     public IActionResult OnGet()
     {
         if (User.Identity?.IsAuthenticated != true || User.Identity.Name == null) return Redirect("/public");
         
-        Messages = _messageRepository.GetMyTimeline(UserId, Page);
+        Messages = _messageRepository.GetMyTimeline(UserId, PageNumber);
         
         var totalMessages = _messageRepository.GetUserTimelineCount(Username);
         TotalPages = (int)Math.Ceiling((double)totalMessages / 10);
