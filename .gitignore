@@ -75,3 +75,4 @@ tests/test-droplet/.vagrant/*
 
 # Environment variables
 .env
+promtail/.env

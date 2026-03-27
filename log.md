@@ -40,4 +40,9 @@
 
 ### Week 8 - Logging (Mar 20 - Mar 26)
 * Add new droplet for running test-deployments to avoid failing on PROD.
+* **Loki:** Added `monitoring/loki/loki-config.yaml` and `loki-dev-config.yaml` for Grafana Loki 3.6.x (tsdb / v13, `http_listen_address: 0.0.0.0`). Extended `monitoring/compose.yaml` with `loki`, `loki-dev`, and `prometheus-dev` (dev Prometheus on host port 9091 with `--web.listen-address=0.0.0.0:9091`; TSDB path aligned with the `/prometheus` volume).
+* **Grafana:** Updated `datasources.yml` so grafana now contains an instance for prod and dev alike.
+* **Promtail:** Root `compose.yaml` runs Promtail beside the app; added `promtail/promtail-config.yaml` (Docker service discovery → remote Loki), `promtail/env.example`, and ignored `promtail/.env` in `.gitignore`.
+* Created new dashboards to show the Loki loggings of PROD and DEV.
+* Added Up-time metrics to monitoring dashboards
 * Changed message publish date to show UTC+1

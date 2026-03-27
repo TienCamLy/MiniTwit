@@ -47,11 +47,12 @@ jobs:
         run: |
           echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
           echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
+          echo "LOKI_URL=$LOKI_URL" > promtail/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
-        
-      
+          LOKI_URL: http://${{ secrets.MONITOR_SSH_HOST }}:3100/loki/api/v1/push
+
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
         env:
@@ -66,8 +67,13 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         
-      - name: Copy .env file to server
-        run: scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env $SSH_USER@$SSH_HOST:/vagrant/razor-pages/Web/.env
+      - name: Copy .env files to server
+        run: |
+          ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" 'mkdir -p /vagrant/promtail'
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env "${SSH_USER}@${SSH_HOST}:/vagrant/razor-pages/Web/.env"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/.env "${SSH_USER}@${SSH_HOST}:/vagrant/promtail/.env"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/promtail-config.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/promtail/promtail-config.yaml"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./compose.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/compose.yaml"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
