@@ -64,6 +64,7 @@ jobs:
           ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" 'mkdir -p /vagrant/promtail'
           scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env "${SSH_USER}@${SSH_HOST}:/vagrant/razor-pages/Web/.env"
           scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/.env "${SSH_USER}@${SSH_HOST}:/vagrant/promtail/.env"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./compose.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/compose.yaml"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
