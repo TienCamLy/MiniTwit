@@ -2,12 +2,16 @@ using Core.Interfaces;
 using Core.DTOs;
 using Infrastructure.Entities;
 using Infrastructure.Context;
+using TimeZoneConverter;
 
 namespace Infrastructure.Repositories;
 public class MessageRepository : IMessageRepository
 {
     private readonly MiniTwitContext _context;
     private const int MessagesPerPage = 10;
+    private readonly TimeZoneInfo _cetZone = TZConvert.GetTimeZoneInfo("Central European Standard Time");
+    private const string DateFormat = "yyyy-MM-dd HH:mm:ss";
+
     public MessageRepository(MiniTwitContext context)
     {
         _context = context;
@@ -21,7 +25,7 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
 				AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })
@@ -38,7 +42,7 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
 				AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })
@@ -54,7 +58,7 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
 				AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })
@@ -72,7 +76,7 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
 				AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })
@@ -100,7 +104,7 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
                 AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })

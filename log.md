@@ -46,3 +46,4 @@
 * Added limit to message length to avoid potential performance issues. 
 * Created new dashboards to show the Loki loggings of PROD and DEV.
 * Added Up-time metrics to monitoring dashboards
+* Changed message publish date to show UTC+1
