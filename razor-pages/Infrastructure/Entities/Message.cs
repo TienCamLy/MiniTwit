@@ -8,7 +8,8 @@ public class Message
 	
 	public required User Author { get; set; }
     public required int AuthorId { get; set; }
-	
+    
+    [MaxLength(500)] // Sets a limit in the DB
     public required string Text { get; set; }
     public required DateTime PubDate { get; set; }
 
