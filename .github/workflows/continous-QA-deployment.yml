@@ -40,6 +40,7 @@ jobs:
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
+          LOKI_URL: http://${{ secrets.MONITOR_SSH_HOST }}:3101/loki/api/v1/push
       
       
       - name: Build & push minitwit image
