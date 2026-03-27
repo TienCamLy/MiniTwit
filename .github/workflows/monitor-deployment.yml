@@ -40,11 +40,14 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
 
+      # Grafana reads provisioning (datasources/dashboards) only at process start, and `compose up`
+      # often skips recreating containers when only bind-mounted files change. Pull refreshes :latest
+      # tags. ${GRAFANA_PASSWORD@Q} safely quotes the secret for the remote shell (runner expands it).
       - name: Deploy to server (using compose)
-        run: >
-          ssh $SSH_USER@$MONITOR_SSH_HOST
-          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'export GRAFANA_PASSWORD=${GRAFANA_PASSWORD} && cd /vagrant/monitoring && docker compose up -d --build'
+        run: |
+          ssh "${SSH_USER}@${MONITOR_SSH_HOST}" \
+            -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no \
+            "export GRAFANA_PASSWORD=${GRAFANA_PASSWORD@Q} && cd /vagrant/monitoring && docker compose up -d --force-recreate"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
