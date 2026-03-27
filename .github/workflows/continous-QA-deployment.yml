@@ -33,17 +33,18 @@ jobs:
       - name: Set up Docker Buildx (for docker compose)
         run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
 
+      # promtail/.env must be copied to the QA droplet; Promtail only reads it on the server, not from CI.
       - name: Create .env file for compose
         run: |
           echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
           echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
-          echo "LOKI_URL=$LOKI_URL" >> promtail/.env
+          echo "LOKI_URL=$LOKI_URL" > promtail/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
+          # loki-dev on the monitoring stack (host port 3101). Open TCP 3101 from this QA droplet on the monitor firewall.
           LOKI_URL: http://${{ secrets.MONITOR_SSH_HOST }}:3101/loki/api/v1/push
-      
-      
+
       - name: Build & push minitwit image
         run: docker compose build && docker compose push
         env:
@@ -58,8 +59,11 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           
-      - name: Copy .env file to server
-        run: scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env $SSH_USER@$SSH_HOST:/vagrant/razor-pages/Web/.env
+      - name: Copy .env files to server
+        run: |
+          ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" 'mkdir -p /vagrant/promtail'
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env "${SSH_USER}@${SSH_HOST}:/vagrant/razor-pages/Web/.env"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/.env "${SSH_USER}@${SSH_HOST}:/vagrant/promtail/.env"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
@@ -68,7 +72,7 @@ jobs:
         run: >
           ssh $SSH_USER@$SSH_HOST
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && cd /vagrant && export IMAGE_NAME=testminitwit && docker compose pull && docker compose up -d --remove-orphans'
+          'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} && cd /vagrant && export IMAGE_NAME=testminitwit && docker compose pull && docker compose up -d --remove-orphans --force-recreate --build'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
