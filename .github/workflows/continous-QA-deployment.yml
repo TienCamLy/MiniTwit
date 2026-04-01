@@ -41,7 +41,7 @@ jobs:
           echo "LOKI_URL=$LOKI_URL" > promtail/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
-          CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
+          CONNECTIONSTRING: ${{ secrets.TESTCONNECTIONSTRING }}
           # loki-dev on the monitoring stack (host port 3101). Open TCP 3101 from this QA droplet on the monitor firewall.
           LOKI_URL: http://${{ secrets.MONITOR_SSH_HOST }}:3101/loki/api/v1/push
 

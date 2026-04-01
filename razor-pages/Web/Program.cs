@@ -1,7 +1,6 @@
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Context;
-
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
@@ -20,8 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 // Add postgreSQL server
+var connectionStringName = builder.Configuration.GetValue<bool>("ISLOCALDEVELOPMENT") ? "TESTCONNECTION" : "DEFAULTCONNECTION";
 builder.Services.AddDbContext<MiniTwitContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DEFAULTCONNECTION"), npgsqlOptions => 
+    options.UseNpgsql(builder.Configuration.GetConnectionString(connectionStringName), npgsqlOptions => 
         { npgsqlOptions.CommandTimeout(180); }));
 
 // Add repositories to the container.

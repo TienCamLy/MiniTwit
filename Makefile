@@ -1,10 +1,10 @@
 # Razor Pages App
 app-build: # Rebuilds the app without deleting volumes
-	docker compose up --build
+	ISLOCALDEVELOPMENT=true docker compose up --build
 
 app-down-build: # Delete all volumes and rebuild the app
 	docker compose down -v && \
-	docker compose up --build
+	ISLOCALDEVELOPMENT=true docker compose up --build
 
 # Install EF Tools
 install-ef-tools:
