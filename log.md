@@ -47,3 +47,8 @@
 * Created new dashboards to show the Loki loggings of PROD and DEV.
 * Added Up-time metrics to monitoring dashboards
 * Changed message publish date to show UTC+1
+
+### Week 9 - Docker Swarm (Mar 27 - Apr 9)
+* Added local development connecting to test database and ensured QA workflow connects to the test database as well.
+
+### Week 10 (Apr 10 - Apr 16)
