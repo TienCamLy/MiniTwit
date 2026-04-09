@@ -1,6 +1,6 @@
 services:
   razor-pages:
-    image: ${DOCKER_USERNAME:-local}/${IMAGE_NAME:-minitwitimage}:latest
+    image: ${DOCKER_USERNAME:-local}/${IMAGE_NAME:-minitwitimage}:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: razor-pages/Dockerfile
@@ -11,15 +11,26 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:8080
       - ISLOCALDEVELOPMENT=${ISLOCALDEVELOPMENT:-false}
+      - CONNECTIONSTRINGS__DEFAULTCONNECTION=${CONNECTIONSTRING}
+      - API_TOKEN=${API_TOKEN}
+      - LOKI_URL=${MONITOR_SSH_HOST}
     volumes:
       - keys-volume:/app/keys
+    deploy:
+      replicas: 3
+      update_config:
+        delay: 10s
+        order: start-first
+      placement:
+        constraints:
+          - "node.role==manager"
+          - "node.hostname!=minitwit-db"
+          - "node.hostname!=minitwit-test-db"
 
   promtail:
     image: grafana/promtail:3.6.7
-    container_name: promtail
-    restart: unless-stopped
-    env_file:
-      - ./promtail/.env
+    environment:
+      - LOKI_URL=${LOKI_URL}
     volumes:
       - ./promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -27,6 +38,10 @@ services:
     command:
       - -config.file=/etc/promtail/config.yaml
       - -config.expand-env=true
+    deploy:
+      mode: global 
+      restart_policy:
+        condition: on-failure
 
 volumes:
   keys-volume:
