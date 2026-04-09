@@ -48,10 +48,10 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build & push minitwit image
-          run: |
-            docker buildx build --platform linux/amd64 \
-              -t ${{ secrets.DOCKER_USERNAME }}/minitwitimage:${{ github.sha }}\
-              -f razor-pages/Dockerfile . --push
+        run: |
+          docker buildx build --platform linux/amd64 \
+            -t ${{ secrets.DOCKER_USERNAME }}/minitwitimage:${{ github.sha }} \
+            -f razor-pages/Dockerfile . --push
 
       - name: Configure SSH
         run: |
@@ -86,7 +86,7 @@ jobs:
            export CONNECTIONSTRING='${{ secrets.CONNECTIONSTRING }}' &&
            export LOKI_URL='http://${{ secrets.MONITOR_SSH_HOST }}:3100/loki/api/v1/push' &&
            cd /vagrant &&  
-           docker stack deploy -c compose.yaml minitwit"
+           docker stack deploy --with-registry-auth --resolve-image always -c compose.yaml minitwit"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
