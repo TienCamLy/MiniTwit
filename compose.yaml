@@ -23,7 +23,6 @@ services:
         order: start-first
       placement:
         constraints:
-          - "node.role==manager"
           - "node.hostname!=minitwit-db"
           - "node.hostname!=minitwit-test-db"
 
