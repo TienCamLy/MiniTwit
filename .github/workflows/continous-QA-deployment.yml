@@ -80,7 +80,7 @@ jobs:
         run: >
           ssh $SSH_USER@$SSH_HOST
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} 
+          'export DOCKER_USERNAME='"$DOCKER_USERNAME"' 
           && cd /vagrant 
           && export IMAGE_NAME=testminitwit 
           && docker compose -f compose-test.yaml pull 
@@ -88,3 +88,4 @@ jobs:
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
