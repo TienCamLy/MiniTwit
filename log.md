@@ -52,3 +52,4 @@
 * Added local development connecting to test database and ensured QA workflow connects to the test database as well.
 
 ### Week 10 (Apr 10 - Apr 16)
+* Added function to get message count for the MyTimeline page, and fixed paginator functionality for both MyTimeline and UserTimeline. 
