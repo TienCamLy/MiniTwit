@@ -54,3 +54,4 @@
 ### Week 10 (Apr 10 - Apr 16)
 * **Grafana monitoring dashboard (PROD):** Reworked `monitoring/grafana/dashboards/dashboard.json` for a clearer layout. Where appropriate, panels now use **rates** instead of raw **totals** so traffic and counters are easier to interpret over time. Added **subsections / row groupings** so visuals are easier to scan and to separate concerns when analysing monitoring data.
 * **Monitor deployment workflow:** Dropped **`--force-recreate`** (and rely on `docker compose up -d --build` without recreating all services) so Prometheus/Loki/Grafana **named volumes** are not wiped on each deploy.
+* Implemented SonarQube's security recommendation to not expand secrets inside run blocks, instead expanding it in an environment block and referencing that in the run. 
