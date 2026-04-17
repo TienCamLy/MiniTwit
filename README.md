@@ -106,3 +106,26 @@ We choose to use GitHub Actions to deploy our application, as it is a native fun
 
 ### Choice of logging Infrastructure
 We use **Grafana Loki** with **Promtail** and visualize logs in **Grafana**, alongside our existing Prometheus setup. Loki indexes metadata (labels) rather than full log text, which keeps storage and operational cost reasonable for a course project while still supporting useful queries with **LogQL**. Promtail runs on each application droplet, discovers Docker containers via the host socket, and ships stdout/stderr logs to Loki over HTTP, while the monitoring server hosts Loki and Grafana so logs stay centralized without running heavy logging agents on the metrics box. This stack is well documented, fits naturally next to Grafana dashboards we already use, and aligns with our goal of observable deployments with minimal extra moving parts.
+
+### Choice of Update Strategy
+
+We choose to use **Rolling Updates** with Docker Swarm.
+
+#### Motivation
+
+Rolling updates allow us to deploy new versions of the MiniTwit application **without downtime** by gradually replacing running containers with updated ones. Instead of stopping the entire system containers are updated one at a time. This ensures that the service remains available throughout the deployment.
+
+This strategy fits well with our system because:
+- We are using Docker Swarm, which already supports rolling updates
+- Our application uses containers making it easy to run multiple instances simultaneously
+- It does not require running a second system, which keeps resources low and simplifies our setup
+
+#### Tradeoffs
+
+Rolling updates are simple and efficient but they come with some limitations:
+- Multiple versions of the application may run at the same time during deployment
+- Rollbacks are slower compared to blue-green deployment, as containers must be updated again
+
+#### Why not Blue-Green Deployment?
+
+An alternative strategy is blue-green deployment, which provides instant rollback and avoids running mixed versions. However, it requires maintaining two identical systems and to switch traffic between them. Given our setup and project scope, this added complexity is not worth it
