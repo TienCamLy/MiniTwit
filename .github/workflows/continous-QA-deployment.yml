@@ -12,9 +12,15 @@ on:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
 # DOCKER_USERNAME
 # DOCKER_PASSWORD
+
 # SSH_USER
-# SSH_KEY
+# SSH_PRIVATE_KEY
+# SSH_HOST
 # SSH_HOST_TEST
+# MONITOR_SSH_HOST
+
+# TESTCONNECTIONSTRING
+# API_TOKEN
 
 jobs:
   build:
@@ -46,7 +52,7 @@ jobs:
           LOKI_URL: http://${{ secrets.MONITOR_SSH_HOST }}:3101/loki/api/v1/push
 
       - name: Build & push minitwit image
-        run: docker compose build && docker compose push
+        run: docker compose -f compose-test.yaml build && docker compose -f compose-test.yaml push
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           IMAGE_NAME: testminitwit
@@ -58,14 +64,14 @@ jobs:
           chmod 600 ~/.ssh/do_ssh_key
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          
+
       - name: Copy .env files to server
         run: |
           ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" 'mkdir -p /vagrant/promtail'
           scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env "${SSH_USER}@${SSH_HOST}:/vagrant/razor-pages/Web/.env"
           scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/.env "${SSH_USER}@${SSH_HOST}:/vagrant/promtail/.env"
           scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/promtail-config.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/promtail/promtail-config.yaml"
-          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./compose.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/compose.yaml"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./compose-test.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/compose-test.yaml"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
@@ -74,7 +80,11 @@ jobs:
         run: >
           ssh $SSH_USER@$SSH_HOST
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          'export DOCKER_USERNAME='"$DOCKER_USERNAME"' && cd /vagrant && export IMAGE_NAME=testminitwit && docker compose pull && docker compose up -d --remove-orphans --force-recreate'
+          'export DOCKER_USERNAME='"$DOCKER_USERNAME"' 
+          && cd /vagrant 
+          && export IMAGE_NAME=testminitwit 
+          && docker compose -f compose-test.yaml pull 
+          && docker compose -f compose-test.yaml up -d --remove-orphans --force-recreate'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
