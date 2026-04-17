@@ -5,6 +5,10 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - chore/docker-swarm
+      
   # allow manual triggers too
   workflow_dispatch:
 
