@@ -100,6 +100,7 @@ public class MessageRepository : IMessageRepository
                         _context.Followers.Any(f => f.SourceId == userId && f.TargetId == m.AuthorId))
             .OrderByDescending(m => m.PubDate)
             .Skip((page - 1) * MessagesPerPage)
+            .Take(MessagesPerPage)
             .Select(m => new MessageDTO
             {
                 Id = m.Id,
@@ -110,6 +111,16 @@ public class MessageRepository : IMessageRepository
             })
             .ToList();
 
+        return messages;
+    }
+
+    public int GetMyTimelineCount(int userId)
+    {
+        var messages = _context.Messages
+            .Where(m => m.AuthorId == userId ||
+                        _context.Followers.Any(f => f.SourceId == userId && f.TargetId == m.AuthorId))
+            .Count();
+        
         return messages;
     }
 
