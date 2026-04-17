@@ -11,6 +11,8 @@ public class UserTimelineModel : PageModel
     private readonly IMessageRepository _messageRepository;
     private readonly IUserRepository _userRepository;
     private readonly IFollowerRepository _followerRepository;
+
+    private const int MessagesPerPage = 10;
     
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
     public string Username { get; set; } = string.Empty;
@@ -41,7 +43,7 @@ public class UserTimelineModel : PageModel
             Messages = _messageRepository.GetUserTimelinePage(userObj.UserName, PageNumber);
 
             TotalMessages = _messageRepository.GetUserTimelineCount(userObj.UserName);
-            TotalPages = (int)Math.Ceiling((double)TotalMessages / 10);
+            TotalPages = (int)Math.Ceiling((double)TotalMessages / MessagesPerPage);
 
             if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
             {

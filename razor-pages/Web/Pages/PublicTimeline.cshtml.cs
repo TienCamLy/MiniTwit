@@ -9,6 +9,8 @@ public class PublicTimelineModel : PageModel
 {
     private readonly IMessageRepository _messageRepository;
 
+    private const int MessagesPerPage = 10;
+
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
 
     [FromQuery(Name = "page")]
@@ -26,6 +28,6 @@ public class PublicTimelineModel : PageModel
         Messages = _messageRepository.GetPublicTimelinePage(PageNumber);
 
         TotalMessages = _messageRepository.GetPublicTimelineCount();
-        TotalPages = (int)Math.Ceiling((double)TotalMessages / 10);
+        TotalPages = (int)Math.Ceiling((double)TotalMessages / MessagesPerPage);
     }
 }
