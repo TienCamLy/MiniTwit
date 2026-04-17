@@ -12,7 +12,7 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:8081
       - ISLOCALDEVELOPMENT=${ISLOCALDEVELOPMENT:-false}
     volumes:
-      - keys-volume-test:/app/keys
+      - keys-volume:/app/keys
 
   promtail:
     image: grafana/promtail:3.6.7
