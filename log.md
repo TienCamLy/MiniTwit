@@ -58,3 +58,4 @@
 
 ### Week 11 (Apr 17 - Apr 23)
 * **Monitor deployment / Grafana:** After `docker compose up -d --build`, the workflow now runs **`docker compose restart grafana`** so Grafana reloads provisioning on every deploy. Otherwise the Grafana container often stayed running when only bind-mounted dashboard JSON changed, so dashboards stored in the **`grafana-storage`** volume did not pick up repo updates.
+* Implemented SonarQube's security recommendation to not expand secrets inside run blocks, instead expanding it in an environment block and referencing that in the run. 
