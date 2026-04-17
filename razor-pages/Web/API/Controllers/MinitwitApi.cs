@@ -245,8 +245,6 @@ namespace Web.API.Controllers
 
             if (latest.HasValue)
                 WriteLatestId(latest.Value);
-            else
-                IncrementLatestId();
             
             return NoContent();
         }
