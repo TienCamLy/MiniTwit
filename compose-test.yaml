@@ -29,4 +29,4 @@ services:
       - -config.expand-env=true
 
 volumes:
-  keys-volume:
+  keys-volume-test:
