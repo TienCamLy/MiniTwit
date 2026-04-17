@@ -45,7 +45,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
 
       - name: Build & push minitwit image
         run: |
