@@ -87,7 +87,7 @@ jobs:
            export IMAGE_TAG='${{ github.sha }}' && 
            export API_TOKEN='"$API_TOKEN"' &&
            export CONNECTIONSTRING='"$CONNECTIONSTRING"' &&
-           export LOKI_URL='http://'"$MONITOR_SSH_HOST"':3100/loki/api/v1/push' &&
+           export LOKI_URL='https://'"$MONITOR_SSH_HOST"':3100/loki/api/v1/push' &&
            cd /vagrant &&  
            docker stack deploy --with-registry-auth --resolve-image always -c compose.yaml minitwit"
         env:
