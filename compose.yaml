@@ -14,6 +14,7 @@ services:
       - CONNECTIONSTRINGS__DEFAULTCONNECTION=${CONNECTIONSTRING}
       - API_TOKEN=${API_TOKEN}
       - LOKI_URL=${MONITOR_SSH_HOST}
+      - DOCKER_USERNAME=${DOCKER_USERNAME}
     volumes:
       - keys-volume:/app/keys
     deploy:
