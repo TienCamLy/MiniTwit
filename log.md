@@ -50,6 +50,7 @@
 
 ### Week 9 - Docker Swarm (Mar 27 - Apr 9)
 * Added local development connecting to test database and ensured QA workflow connects to the test database as well.
+* Added Docker Swarm, such it contains three replicas. The PROD droplet functions as the manager node, while the two other droplets act as worker nodes.  
 
 ### Week 10 (Apr 10 - Apr 16)
 * **Grafana monitoring dashboard (PROD):** Reworked `monitoring/grafana/dashboards/dashboard.json` for a clearer layout. Where appropriate, panels now use **rates** instead of raw **totals** so traffic and counters are easier to interpret over time. Added **subsections / row groupings** so visuals are easier to scan and to separate concerns when analysing monitoring data.
@@ -58,4 +59,6 @@
 
 ### Week 11 (Apr 17 - Apr 23)
 * **Monitor deployment / Grafana:** After `docker compose up -d --build`, the workflow now runs **`docker compose restart grafana`** so Grafana reloads provisioning on every deploy. Otherwise the Grafana container often stayed running when only bind-mounted dashboard JSON changed, so dashboards stored in the **`grafana-storage`** volume did not pick up repo updates.
-* **Simulator `/latest` in PostgreSQL:** Replaced the API controller’s **`static int _latest`** with a **`SimulatorLatest`** entity (singleton row `Id = 1`, column **`latest_id`**), **`DbSet<SimulatorLatest> SimulatorLatestState`** on **`MiniTwitContext`**, fluent configuration (`ValueGeneratedNever` on `Id`, seeded `LatestId = 0`), and migration **`SimulatorLatestState`**. **`MinitwitApiController`** now injects **`MiniTwitContext`**, reads/writes that row for **`GET /latest`** and all **`?latest=`** query handling (including increment when **`POST /fllws/{username}`** omits `latest`), so the value survives restarts and works across multiple app instances.
+* Implemented SonarQube's security recommendation to not expand secrets inside run blocks, instead expanding it in an environment block and referencing that in the run. 
+* Changed CI/CD workflow to handle the Docker Swarm changes. 
+* **Simulator `latest` counter:** Dropped the in-memory static field; the value now lives in Postgres (`SimulatorLatest`, one row, `latest_id`, EF migration). Endpoints read and update that row, so it survives restarts and stays shared when several instances talk to the same database.
