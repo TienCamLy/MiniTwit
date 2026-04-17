@@ -23,6 +23,9 @@ using Web.API.Models;
 using Web.API.Converters;
 using Web.Pages;
 using Core.Interfaces;
+using Infrastructure.Context;
+using Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Web.API.Controllers
 { 
@@ -35,17 +38,40 @@ namespace Web.API.Controllers
 		private readonly IMessageRepository _messageRepository;
     	private readonly IUserRepository _userRepository;
     	private readonly IFollowerRepository _followerRepository;
-        private static int _latest;
+        private readonly MiniTwitContext _db;
         
 		public MinitwitApiController(
         	IMessageRepository messageRepository, 
         	IUserRepository userRepository, 
-        	IFollowerRepository followerRepository)
+        	IFollowerRepository followerRepository,
+            MiniTwitContext db)
     	{
         	_messageRepository = messageRepository;
         	_userRepository = userRepository;
         	_followerRepository = followerRepository;
+            _db = db;
     	}
+
+        private int ReadLatestId() =>
+            _db.SimulatorLatestState.AsNoTracking()
+                .Where(r => r.Id == SimulatorLatest.SingletonRowId)
+                .Select(r => r.LatestId)
+                .FirstOrDefault();
+
+        private void WriteLatestId(int value)
+        {
+            var row = _db.SimulatorLatestState.Find(SimulatorLatest.SingletonRowId);
+            if (row is null)
+            {
+                _db.SimulatorLatestState.Add(new SimulatorLatest { Id = SimulatorLatest.SingletonRowId, LatestId = value });
+            }
+            else
+            {
+                row.LatestId = value;
+            }
+            _db.SaveChanges();
+        }
+
 
         /// <summary>
         /// 
@@ -76,7 +102,7 @@ namespace Web.API.Controllers
             var followers = _followerRepository.GetFollowedUsers(user.Id).Select(u => u.UserName).ToList();
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                WriteLatestId(latest.Value);
             
             return new ObjectResult(new FollowsResponse { Follows = followers }) { StatusCode = 200 };
         }
@@ -99,7 +125,7 @@ namespace Web.API.Controllers
             {
                 var response = new LatestValue
                 {
-                    Latest = _latest
+                    Latest = ReadLatestId()
                 };
                 return new ObjectResult(response) { StatusCode = 200 };
             }
@@ -134,7 +160,7 @@ namespace Web.API.Controllers
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                WriteLatestId(latest.Value);
             
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
@@ -168,7 +194,7 @@ namespace Web.API.Controllers
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                WriteLatestId(latest.Value);
             
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
@@ -218,9 +244,9 @@ namespace Web.API.Controllers
                 _followerRepository.UnfollowUser(who.Id, whom.Id);
 
             if (latest.HasValue)
-                _latest = latest.Value;
+                WriteLatestId(latest.Value);
             else
-                _latest++;
+                IncrementLatestId();
             
             return NoContent();
         }
@@ -256,7 +282,7 @@ namespace Web.API.Controllers
             _messageRepository.CreateMessage(user.Id, payload.Content);
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                WriteLatestId(latest.Value);
             
             return NoContent();
         }
@@ -296,7 +322,7 @@ namespace Web.API.Controllers
             _userRepository.CreateUser(username, email, hash);
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                WriteLatestId(latest.Value);
             
             return NoContent();
         }
