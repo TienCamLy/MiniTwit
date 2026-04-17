@@ -72,6 +72,20 @@ namespace Web.API.Controllers
             _db.SaveChanges();
         }
 
+        private void IncrementLatestId()
+        {
+            var row = _db.SimulatorLatestState.Find(SimulatorLatest.SingletonRowId);
+            if (row is null)
+            {
+                _db.SimulatorLatestState.Add(new SimulatorLatest { Id = SimulatorLatest.SingletonRowId, LatestId = 0 });
+            }
+            else
+            {
+                row.LatestId++;
+            }
+            _db.SaveChanges();
+        }
+
 
         /// <summary>
         /// 
@@ -245,6 +259,8 @@ namespace Web.API.Controllers
 
             if (latest.HasValue)
                 WriteLatestId(latest.Value);
+            else:
+                IncrementLatestId();
             
             return NoContent();
         }
