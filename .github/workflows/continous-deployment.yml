@@ -85,7 +85,7 @@ jobs:
           "export DOCKER_USERNAME='"$DOCKER_USERNAME"' && 
            export IMAGE_NAME='minitwitimage' &&
            export IMAGE_TAG='${{ github.sha }}' && 
-           export API_TOKEN='"API_TOKEN"' &&
+           export API_TOKEN='"$API_TOKEN"' &&
            export CONNECTIONSTRING='"$CONNECTIONSTRING"' &&
            export LOKI_URL='http://'"$MONITOR_SSH_HOST"':3100/loki/api/v1/push' &&
            cd /vagrant &&  
