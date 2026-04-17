@@ -50,7 +50,7 @@ jobs:
       - name: Build & push minitwit image
         run: |
           docker buildx build --platform linux/amd64 \
-            -t '"$DOCKER_USERNAME"'/minitwitimage:${{ github.sha }} \
+            -t $DOCKER_USERNAME/minitwitimage:${{ github.sha }} \
             -f razor-pages/Dockerfile . --push
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
