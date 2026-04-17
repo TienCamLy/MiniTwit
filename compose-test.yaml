@@ -1,5 +1,5 @@
 services:
-  razor-pages:
+  razor-pages-test:
     image: ${DOCKER_USERNAME:-local}/${IMAGE_NAME:-testminitwit}:latest
     build:
       context: .
@@ -14,7 +14,7 @@ services:
     volumes:
       - keys-volume:/app/keys
 
-  promtail:
+  promtail-test:
     image: grafana/promtail:3.6.7
     container_name: promtail
     restart: unless-stopped
