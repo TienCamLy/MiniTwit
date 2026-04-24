@@ -43,3 +43,10 @@ services:
 
 volumes:
   keys-volume:
+
+networks:
+  default:
+    driver: overlay
+    ipam:
+      config:
+        - subnet: 10.20.0.0/24
