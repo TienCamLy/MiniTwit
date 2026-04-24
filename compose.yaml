@@ -13,7 +13,7 @@ services:
       - ISLOCALDEVELOPMENT=${ISLOCALDEVELOPMENT:-false}
       - CONNECTIONSTRINGS__DEFAULTCONNECTION=${CONNECTIONSTRING}
       - API_TOKEN=${API_TOKEN}
-      - LOKI_URL=${PROD_LOKI_URL}
+      - PROD_LOKI_URL=${PROD_LOKI_URL}
       - DOCKER_USERNAME=${DOCKER_USERNAME}
     volumes:
       - keys-volume:/app/keys
@@ -30,14 +30,12 @@ services:
   promtail:
     image: grafana/promtail:3.6.7
     environment:
-      - LOKI_URL=${LOKI_URL}
+      - PROD_LOKI_URL=${PROD_LOKI_URL}
     volumes:
-      - ./promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
+      - /vagrant/promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-    command:
-      - -config.file=/etc/promtail/config.yaml
-      - -config.expand-env=true
+    command: [ "-config.file=/etc/promtail/config.yaml", "-config.expand-env=true" ]
     deploy:
       mode: global 
       restart_policy:
