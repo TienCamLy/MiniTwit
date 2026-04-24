@@ -44,11 +44,11 @@ jobs:
       # often leaves the Grafana container running when only bind-mounted JSON changes, so the DB
       # never refreshes. Restart Grafana after each deploy so provisioning overwrites dashboards
       # from the repo. ${GRAFANA_PASSWORD@Q} safely quotes the secret for the remote shell.
-      - name: Deploy to server (using compose)
+      - name: Deploy to server (using stack deploy)
         run: |
           ssh "${SSH_USER}@${MONITOR_SSH_HOST}" \
             -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no \
-            "export GRAFANA_PASSWORD=${GRAFANA_PASSWORD@Q} && cd /vagrant/monitoring && docker compose up -d --build && docker compose restart grafana"
+            "export GRAFANA_PASSWORD=${GRAFANA_PASSWORD@Q} && cd /vagrant/monitoring && docker stack deploy -c monitoring-compose.yaml monitoring"a"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}

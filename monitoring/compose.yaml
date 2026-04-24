@@ -1,18 +1,19 @@
 services:
   prometheus:
-    container_name: prometheus
     image: prom/prometheus:v3.10.0
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - /vagrant/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-storage:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    deploy:
+      placement:
+        constraints: [node.hostname == webserver-monitoring]
     
   prometheus-dev:
-    container_name: prometheus-dev
     image: prom/prometheus:v3.10.0
     ports:
       - "9091:9091"
@@ -28,19 +29,20 @@ services:
   # Restrict host firewall: allow TCP 3100 only from app server IPs.
   loki:
     image: grafana/loki:3.6.7
-    container_name: loki
     ports:
       - "3100:3100"
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
     command: -config.file=/etc/loki/local-config.yaml
+    deploy:
+      placement:
+        constraints: [ node.hostname == webserver-monitoring ]
 
   # Promtail runs on the application server (root compose.yaml) and pushes here.
   # Restrict host firewall: allow TCP 3100 only from app server IPs.
   loki-dev:
     image: grafana/loki:3.6.7
-    container_name: loki-dev
     ports:
       - "3101:3101"
     volumes:
@@ -65,6 +67,10 @@ services:
       - prometheus
       - prometheus-dev
     restart: unless-stopped
+    deploy:
+      placement:
+        constraints: [ node.hostname == webserver-monitoring ]
+
 
 volumes:
   prometheus-storage:
