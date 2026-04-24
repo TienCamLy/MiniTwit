@@ -63,3 +63,4 @@
 * Removed login_success/failure metrics and their associated graph in grafana as they ceased to work, were redundant, and were primarily implemented as a basic first graph example to test grafana. 
 * Implemented SonarQube's security recommendation to not expand secrets inside run blocks, instead expanding it in an environment block and referencing that in the run. 
 * Changed CI/CD workflow to handle the Docker Swarm changes. 
+* **Simulator `latest` counter:** Dropped the in-memory static field; the value now lives in Postgres (`SimulatorLatest`, one row, `latest_id`, EF migration). Endpoints read and update that row, so it survives restarts and stays shared when several instances talk to the same database.

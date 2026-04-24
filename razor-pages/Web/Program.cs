@@ -28,6 +28,7 @@ builder.Services.AddDbContext<MiniTwitContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
+builder.Services.AddScoped<ISimulatorLatestRepository, SimulatorLatestRepository>();
 
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))

@@ -35,16 +35,18 @@ namespace Web.API.Controllers
 		private readonly IMessageRepository _messageRepository;
     	private readonly IUserRepository _userRepository;
     	private readonly IFollowerRepository _followerRepository;
-        private static int _latest;
+        private readonly ISimulatorLatestRepository _simulatorLatest;
         
 		public MinitwitApiController(
         	IMessageRepository messageRepository, 
         	IUserRepository userRepository, 
-        	IFollowerRepository followerRepository)
+        	IFollowerRepository followerRepository,
+            ISimulatorLatestRepository simulatorLatest)
     	{
         	_messageRepository = messageRepository;
         	_userRepository = userRepository;
         	_followerRepository = followerRepository;
+            _simulatorLatest = simulatorLatest;
     	}
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace Web.API.Controllers
             var followers = _followerRepository.GetFollowedUsers(user.Id).Select(u => u.UserName).ToList();
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                _simulatorLatest.SetLatestId(latest.Value);
             
             return new ObjectResult(new FollowsResponse { Follows = followers }) { StatusCode = 200 };
         }
@@ -99,7 +101,7 @@ namespace Web.API.Controllers
             {
                 var response = new LatestValue
                 {
-                    Latest = _latest
+                    Latest = _simulatorLatest.GetLatestId()
                 };
                 return new ObjectResult(response) { StatusCode = 200 };
             }
@@ -134,7 +136,7 @@ namespace Web.API.Controllers
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                _simulatorLatest.SetLatestId(latest.Value);
             
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
@@ -168,7 +170,7 @@ namespace Web.API.Controllers
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                _simulatorLatest.SetLatestId(latest.Value);
             
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
@@ -218,9 +220,9 @@ namespace Web.API.Controllers
                 _followerRepository.UnfollowUser(who.Id, whom.Id);
 
             if (latest.HasValue)
-                _latest = latest.Value;
+                _simulatorLatest.SetLatestId(latest.Value);
             else
-                _latest++;
+                _simulatorLatest.IncrementLatestId();
             
             return NoContent();
         }
@@ -256,7 +258,7 @@ namespace Web.API.Controllers
             _messageRepository.CreateMessage(user.Id, payload.Content);
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                _simulatorLatest.SetLatestId(latest.Value);
             
             return NoContent();
         }
@@ -296,7 +298,7 @@ namespace Web.API.Controllers
             _userRepository.CreateUser(username, email, hash);
             
             if (latest.HasValue)
-                _latest = latest.Value;
+                _simulatorLatest.SetLatestId(latest.Value);
             
             return NoContent();
         }
