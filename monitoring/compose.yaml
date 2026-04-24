@@ -24,6 +24,9 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.listen-address=0.0.0.0:9091'
+    deploy:
+      placement:
+        constraints: [ node.hostname == webserver-monitoring ]
 
   # Promtail runs on the application server (root compose.yaml) and pushes here.
   # Restrict host firewall: allow TCP 3100 only from app server IPs.
@@ -49,6 +52,9 @@ services:
       - ./loki/loki-dev-config.yaml:/etc/loki/local-config.yaml
       - loki-data-dev:/loki
     command: -config.file=/etc/loki/local-config.yaml
+    deploy:
+      placement:
+        constraints: [ node.hostname == webserver-monitoring ]
 
   grafana:
     image: grafana/grafana:12.4.0
@@ -61,15 +67,11 @@ services:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-    depends_on:
-      - loki
-      - loki-dev
-      - prometheus
-      - prometheus-dev
-    restart: unless-stopped
     deploy:
       placement:
         constraints: [ node.hostname == webserver-monitoring ]
+      restart_policy:
+        condition: any
 
 
 volumes:
