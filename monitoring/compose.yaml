@@ -12,6 +12,8 @@ services:
     deploy:
       placement:
         constraints: [node.hostname == webserver-monitoring]
+      networks:
+        - monitor_net
   
   prometheus-dev:
     image: prom/prometheus:v3.10.0
@@ -27,6 +29,8 @@ services:
     deploy:
       placement:
         constraints: [node.hostname == webserver-monitoring]
+      networks:
+        - monitor_net
 
   loki:
     image: grafana/loki:3.6.7
@@ -39,6 +43,8 @@ services:
     deploy:
       placement:
         constraints: [node.hostname == webserver-monitoring]
+      networks:
+        - monitor_net
 
   loki-dev:
     image: grafana/loki:3.6.7
@@ -51,6 +57,8 @@ services:
     deploy:
       placement:
         constraints: [node.hostname == webserver-monitoring]
+      networks:
+        - monitor_net
 
   grafana:
     image: grafana/grafana:12.4.0
@@ -67,6 +75,8 @@ services:
         constraints: [node.hostname == webserver-monitoring]
       restart_policy:
         condition: any
+      networks:
+        - monitor_net
 
 volumes:
   prometheus-storage:
@@ -74,3 +84,8 @@ volumes:
   grafana-storage:
   loki-data:
   loki-data-dev:
+
+networks:
+  monitor_net:
+    driver: overlay
+    attachable: true
