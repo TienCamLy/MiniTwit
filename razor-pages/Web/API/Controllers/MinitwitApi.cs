@@ -308,7 +308,7 @@ namespace Web.API.Controllers
             return authorization == $"Basic {Environment.GetEnvironmentVariable("API_TOKEN")}";
         }
 		
-        private new IActionResult Unauthorized()
+        private IActionResult ApiUnauthorized()
         {
             return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse
             {

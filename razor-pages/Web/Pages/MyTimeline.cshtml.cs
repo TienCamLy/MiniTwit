@@ -9,9 +9,6 @@ namespace Web.Pages;
 public class MyTimelineModel : PageModel
 {
     private readonly IMessageRepository _messageRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IFollowerRepository _followerRepository;
-
 
     private const int MessagesPerPage = 10;
     
@@ -27,10 +24,7 @@ public class MyTimelineModel : PageModel
 
     private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
     private string Username => User.FindFirst(ClaimTypes.Name)!.Value;
-    public MyTimelineModel(
-        IMessageRepository messageRepository,
-        IUserRepository userRepository,
-        IFollowerRepository followerRepository)
+    public MyTimelineModel(IMessageRepository messageRepository)
     {
         _messageRepository = messageRepository;
     }
