@@ -12,13 +12,18 @@ public class UserTimelineModel : PageModel
     private readonly IUserRepository _userRepository;
     private readonly IFollowerRepository _followerRepository;
 
+    private const int MessagesPerPage = 10;
+    
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
     public string Username { get; set; } = string.Empty;
     public bool Followed { get; set; } = false;
     public string? Error { get; set; }
-    [FromQuery(Name = "page")]
-    public int Page { get; set; } = 1;
 
+    [FromQuery(Name = "page")]
+    public int PageNumber { get; set; } = 1;
+    public int TotalMessages { get; set; }
+    public int TotalPages { get; set; }
+    
     public UserTimelineModel(
         IMessageRepository messageRepository,
         IUserRepository userRepository,
@@ -32,19 +37,24 @@ public class UserTimelineModel : PageModel
     public void OnGet(string user, string? error = null)
     {
         var userObj = _userRepository.GetUserByUsername(user);
-        Messages = _messageRepository.GetUserTimeline(userObj.Id);
-        Username = user;
-        //maybe used for paginator
-        ViewData["Page"] = Page;
+        if (userObj != null)
+        {
+            Username = user;
+            Messages = _messageRepository.GetUserTimelinePage(userObj.UserName, PageNumber);
 
-        if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
-        {
-            var sessionUser = _userRepository.GetUserByUsername(User.Identity.Name);
-            Followed = sessionUser != null && userObj != null && _followerRepository.IsFollowed(sessionUser.Id, userObj.Id);
-        }
-        else
-        {
-            Followed = false;
+            TotalMessages = _messageRepository.GetUserTimelineCount(userObj.UserName);
+            TotalPages = (int)Math.Ceiling((double)TotalMessages / MessagesPerPage);
+
+            if (User.Identity?.IsAuthenticated == true && !string.IsNullOrEmpty(User.Identity.Name))
+            {
+                var sessionUser = _userRepository.GetUserByUsername(User.Identity.Name);
+                Followed = sessionUser != null &&
+                           _followerRepository.IsFollowed(sessionUser.Id, userObj.Id);
+            }
+            else
+            {
+                Followed = false;
+            }
         }
 
         Error = error;

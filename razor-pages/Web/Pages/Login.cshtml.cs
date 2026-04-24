@@ -19,11 +19,6 @@ public class LoginModel : PageModel
     [BindProperty] public string Password { get; set; } = String.Empty;
     public string Error { get; set; } = string.Empty;
 
-    private static readonly Counter LoginSuccess = Metrics
-        .CreateCounter("login_success_total", "Total number of successful logins");
-    private static readonly Counter LoginFailure = Metrics
-        .CreateCounter("login_failure_total", "Total number of failed logins");
-
     public LoginModel(IUserRepository userRepository)
     {
         _userRepository = userRepository;
@@ -82,14 +77,12 @@ public class LoginModel : PageModel
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
-
-                LoginSuccess.Inc();
+                
                 TempData["FlashMessage"] = "You were logged in";
                 return Redirect("/");
             }
             else
             {
-                LoginFailure.Inc();
                 Error = "Invalid username or password";
             }
         }

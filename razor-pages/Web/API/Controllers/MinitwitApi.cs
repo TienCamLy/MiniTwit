@@ -31,21 +31,23 @@ namespace Web.API.Controllers
     /// </summary>
     [ApiController]
     public class MinitwitApiController : ControllerBase
-    {
-        private readonly IMessageRepository _messageRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IFollowerRepository _followerRepository;
-        private static int _latest;
-
-        public MinitwitApiController(
-            IMessageRepository messageRepository,
-            IUserRepository userRepository,
-            IFollowerRepository followerRepository)
-        {
-            _messageRepository = messageRepository;
-            _userRepository = userRepository;
-            _followerRepository = followerRepository;
-        }
+    { 
+		private readonly IMessageRepository _messageRepository;
+    	private readonly IUserRepository _userRepository;
+    	private readonly IFollowerRepository _followerRepository;
+        private readonly ISimulatorLatestRepository _simulatorLatest;
+        
+		public MinitwitApiController(
+        	IMessageRepository messageRepository, 
+        	IUserRepository userRepository, 
+        	IFollowerRepository followerRepository,
+            ISimulatorLatestRepository simulatorLatest)
+    	{
+        	_messageRepository = messageRepository;
+        	_userRepository = userRepository;
+        	_followerRepository = followerRepository;
+            _simulatorLatest = simulatorLatest;
+    	}
 
         /// <summary>
         /// 
@@ -76,8 +78,8 @@ namespace Web.API.Controllers
             var followers = _followerRepository.GetFollowedUsers(user.Id).Select(u => u.UserName).ToList();
 
             if (latest.HasValue)
-                _latest = latest.Value;
-
+                _simulatorLatest.SetLatestId(latest.Value);
+            
             return new ObjectResult(new FollowsResponse { Follows = followers }) { StatusCode = 200 };
         }
 
@@ -99,7 +101,7 @@ namespace Web.API.Controllers
             {
                 var response = new LatestValue
                 {
-                    Latest = _latest
+                    Latest = _simulatorLatest.GetLatestId()
                 };
                 return new ObjectResult(response) { StatusCode = 200 };
             }
@@ -134,8 +136,8 @@ namespace Web.API.Controllers
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
 
             if (latest.HasValue)
-                _latest = latest.Value;
-
+                _simulatorLatest.SetLatestId(latest.Value);
+            
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
@@ -168,8 +170,8 @@ namespace Web.API.Controllers
             var apiMessages = domainMessages.Select(ApiConverters.ToApiMessage).ToList();
 
             if (latest.HasValue)
-                _latest = latest.Value;
-
+                _simulatorLatest.SetLatestId(latest.Value);
+            
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
@@ -218,10 +220,10 @@ namespace Web.API.Controllers
                 _followerRepository.UnfollowUser(who.Id, whom.Id);
 
             if (latest.HasValue)
-                _latest = latest.Value;
+                _simulatorLatest.SetLatestId(latest.Value);
             else
-                _latest++;
-
+                _simulatorLatest.IncrementLatestId();
+            
             return NoContent();
         }
 
@@ -256,8 +258,8 @@ namespace Web.API.Controllers
             _messageRepository.CreateMessage(user.Id, payload.Content);
 
             if (latest.HasValue)
-                _latest = latest.Value;
-
+                _simulatorLatest.SetLatestId(latest.Value);
+            
             return NoContent();
         }
 
@@ -286,12 +288,9 @@ namespace Web.API.Controllers
 
             if (string.IsNullOrEmpty(email) || !email.Contains('@'))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Invalid email" });
-
-            //TODO: 
-            //if (Password != Password2)
-            //    Error = "The two passwords do not match";
-
-            if (_userRepository.GetUserByUsername(username) != null)
+            
+            
+            if (_userRepository.GetUserByUsername(username) != null) 
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "The username is already taken" });
 
             var hasher = new PasswordHasher<string>();
@@ -299,8 +298,8 @@ namespace Web.API.Controllers
             _userRepository.CreateUser(username, email, hash);
 
             if (latest.HasValue)
-                _latest = latest.Value;
-
+                _simulatorLatest.SetLatestId(latest.Value);
+            
             return NoContent();
         }
 
@@ -308,8 +307,8 @@ namespace Web.API.Controllers
         {
             return authorization == $"Basic {Environment.GetEnvironmentVariable("API_TOKEN")}";
         }
-
-        private IActionResult ApiUnauthorized()
+		
+        private new IActionResult Unauthorized()
         {
             return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse
             {

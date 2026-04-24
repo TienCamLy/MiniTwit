@@ -251,7 +251,6 @@ namespace Infrastructure.Migrations
                 name: "IX_Messages_AuthorId",
                 table: "Messages",
                 column: "AuthorId");
-
         }
 
         /// <inheritdoc />

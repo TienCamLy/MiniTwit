@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(MiniTwitContext))]
-    partial class MiniTwitContextModelSnapshot : ModelSnapshot
+    [Migration("20260326202400_LimitMessageLength")]
+    partial class LimitMessageLength
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,27 +67,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("Infrastructure.Entities.SimulatorLatest", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("LatestId")
-                        .HasColumnType("integer")
-                        .HasColumnName("latest_id");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SimulatorLatest", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LatestId = 0
-                        });
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.User", b =>

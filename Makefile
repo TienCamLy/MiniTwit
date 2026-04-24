@@ -14,11 +14,11 @@ else ifneq (,$(CI))
 endif
 
 # Razor Pages App
-app-build: # Rebuilds the app without deleting volumes, ensuring the network is not present before hand
-	docker compose up --build --detach
-
 app-down: # Delete all volumes
 	docker compose down -v
+
+app-build: # Rebuilds the app without deleting volumes
+	ISLOCALDEVELOPMENT=true docker compose up --build
 
 app-down-build: # Delete all volumes and rebuild the app
 	make app-down && \
@@ -77,7 +77,7 @@ clean-digital-ocean:
 	vagrant destroy && \
 	rm -rf .vagrant
 
-# Monitoring Deployment to Digital Ocean
+# Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
 monitor-build:
 	cd monitoring && docker compose up --build
 

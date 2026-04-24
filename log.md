@@ -43,10 +43,35 @@
 * **Removed legacy Python MiniTwit** from the repo (C# app is the single source); SonarCube-driven cleanups on API models, repositories, and pages (#39 and related).
 * Security / hygiene: dropped obsolete `python-version` usage and addressed prominent security findings (#39).
 
-### Week 8 – PR validation & consolidated tests (Mar 20 – Mar 26)
-* Add new droplet for running test-deployments to avoid failing on PROD.
+### Week 8 - Logging (Mar 20 - Mar 26)
+* Added new droplet for running test-deployments to avoid failing on PROD.
+* **Loki:** Added `monitoring/loki/loki-config.yaml` and `loki-dev-config.yaml` for Grafana Loki 3.6.x (tsdb / v13, `http_listen_address: 0.0.0.0`). Extended `monitoring/compose.yaml` with `loki`, `loki-dev`, and `prometheus-dev` (dev Prometheus on host port 9091 with `--web.listen-address=0.0.0.0:9091`; TSDB path aligned with the `/prometheus` volume).
+* **Grafana:** Updated `datasources.yml` so grafana now contains an instance for prod and dev alike.
+* **Promtail:** Root `compose.yaml` runs Promtail beside the app; added `promtail/promtail-config.yaml` (Docker service discovery → remote Loki), `promtail/env.example`, and ignored `promtail/.env` in `.gitignore`.
+* Added limit to message length to avoid potential performance issues. 
+* Created new dashboards to show the Loki loggings of PROD and DEV.
+* Added Up-time metrics to monitoring dashboards
+* Changed message publish date to show UTC+1
+
+### Week 9 - Docker Swarm (Mar 27 - Apr 9)
+* Added local development connecting to test database and ensured QA workflow connects to the test database as well.
+* Added Docker Swarm, such it contains three replicas. The PROD droplet functions as the manager node, while the two other droplets act as worker nodes.  
+
+### Week 10 (Apr 10 - Apr 16)
+* **Grafana monitoring dashboard (PROD):** Reworked `monitoring/grafana/dashboards/dashboard.json` for a clearer layout. Where appropriate, panels now use **rates** instead of raw **totals** so traffic and counters are easier to interpret over time. Added **subsections / row groupings** so visuals are easier to scan and to separate concerns when analysing monitoring data.
+* **Monitor deployment workflow:** Dropped **`--force-recreate`** (and rely on `docker compose up -d --build` without recreating all services) so Prometheus/Loki/Grafana **named volumes** are not wiped on each deploy.
+* Specified versions for prometheus and grafana for project version consistency, so as to avoid sudden issues arising from updates to them.
+* Added function to get message count for the MyTimeline page, and fixed paginator functionality for both MyTimeline and UserTimeline. 
+
+### Week 11 (Apr 17 - Apr 23)
+* **Monitor deployment / Grafana:** After `docker compose up -d --build`, the workflow now runs **`docker compose restart grafana`** so Grafana reloads provisioning on every deploy. Otherwise the Grafana container often stayed running when only bind-mounted dashboard JSON changed, so dashboards stored in the **`grafana-storage`** volume did not pick up repo updates.
+* Removed login_success/failure metrics and their associated graph in grafana as they ceased to work, were redundant, and were primarily implemented as a basic first graph example to test grafana. 
+* Implemented SonarQube's security recommendation to not expand secrets inside run blocks, instead expanding it in an environment block and referencing that in the run. 
+* Changed CI/CD workflow to handle the Docker Swarm changes. 
+* **Simulator `latest` counter:** Dropped the in-memory static field; the value now lives in Postgres (`SimulatorLatest`, one row, `latest_id`, EF migration). Endpoints read and update that row, so it survives restarts and stays shared when several instances talk to the same database.
+
+### Week 12 (Apr 24 - Apr 30)
 * GitHub Actions **PR validation** workflow: on pull requests to `main`, run `make build-and-test` (Docker build + tests + lints).
 * **`tests/` layout:** API simulator scenario moved to `tests/API_Spec/`; simulator uses **`API_TOKEN`** from `.env` / secrets instead of hardcoded credentials.
 * **Selenium UI tests** under `tests/selenium/` with Dockerfile and compose; Makefile targets `test-ui-selenium`, `test-api-simulator`, `test-all`, `lint-c-sharp`, `lint-all`, `run-all-validations`, `build-and-test`; C# formatting/lint via `dotnet format`.
 * Root **`compose.yaml` / Makefile** updated so app build, API simulator, and Selenium tests run consistently in CI and locally.
-* Merged monitoring and restructure branches; added PR template.

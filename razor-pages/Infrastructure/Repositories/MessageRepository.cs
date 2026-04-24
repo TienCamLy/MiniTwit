@@ -2,7 +2,7 @@ using Core.Interfaces;
 using Core.DTOs;
 using Infrastructure.Entities;
 using Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
+using TimeZoneConverter;
 
 namespace Infrastructure.Repositories;
 
@@ -10,6 +10,9 @@ public class MessageRepository : IMessageRepository
 {
     private readonly MiniTwitContext _context;
     private const int MessagesPerPage = 10;
+    private readonly TimeZoneInfo _cetZone = TZConvert.GetTimeZoneInfo("Central European Standard Time");
+    private const string DateFormat = "yyyy-MM-dd HH:mm:ss";
+
     public MessageRepository(MiniTwitContext context)
     {
         _context = context;
@@ -23,9 +26,9 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-                AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
+				AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
             .ToList();
     }
@@ -40,9 +43,9 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-                AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
+				AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
             .ToList();
     }
@@ -56,9 +59,9 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-                AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
+				AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
             .ToList();
     }
@@ -74,9 +77,9 @@ public class MessageRepository : IMessageRepository
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-                AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
+				AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
             .ToList();
     }
@@ -98,16 +101,27 @@ public class MessageRepository : IMessageRepository
                         _context.Followers.Any(f => f.SourceId == userId && f.TargetId == m.AuthorId))
             .OrderByDescending(m => m.PubDate)
             .Skip((page - 1) * MessagesPerPage)
+            .Take(MessagesPerPage)
             .Select(m => new MessageDTO
             {
                 Id = m.Id,
                 Text = m.Text,
-                PubDate = m.PubDate.ToString("yyyy-MM-dd HH:mm:ss"),
-                AuthorName = m.Author.UserName,
-                AuthorEmail = m.Author.Email
+                PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
+                AuthorName = m.Author.UserName!,
+                AuthorEmail = m.Author.Email!
             })
             .ToList();
 
+        return messages;
+    }
+
+    public int GetMyTimelineCount(int userId)
+    {
+        var messages = _context.Messages
+            .Where(m => m.AuthorId == userId ||
+                        _context.Followers.Any(f => f.SourceId == userId && f.TargetId == m.AuthorId))
+            .Count();
+        
         return messages;
     }
 

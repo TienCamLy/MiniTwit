@@ -8,12 +8,13 @@ namespace Web.Pages;
 public class PublicTimelineModel : PageModel
 {
     private readonly IMessageRepository _messageRepository;
-    private const int _messagesPerPage = 10;
+
+    private const int MessagesPerPage = 10;
 
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
 
     [FromQuery(Name = "page")]
-    public int Page { get; set; } = 1;
+    public int PageNumber { get; set; } = 1; 
     public int TotalMessages { get; set; }
     public int TotalPages { get; set; }
 
@@ -24,9 +25,9 @@ public class PublicTimelineModel : PageModel
 
     public void OnGet()
     {
-        Messages = _messageRepository.GetPublicTimelinePage(Page);
+        Messages = _messageRepository.GetPublicTimelinePage(PageNumber);
 
         TotalMessages = _messageRepository.GetPublicTimelineCount();
-        TotalPages = (int)Math.Ceiling((double)TotalMessages / _messagesPerPage);
+        TotalPages = (int)Math.Ceiling((double)TotalMessages / MessagesPerPage);
     }
 }

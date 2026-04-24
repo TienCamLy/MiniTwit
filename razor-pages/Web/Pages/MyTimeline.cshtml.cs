@@ -12,14 +12,17 @@ public class MyTimelineModel : PageModel
     private readonly IUserRepository _userRepository;
     private readonly IFollowerRepository _followerRepository;
 
+
+    private const int MessagesPerPage = 10;
+    
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
 
     [BindProperty]
     public string Text { get; set; } = "";
 
     [FromQuery(Name = "page")]
-    public int Page { get; set; } = 1;
-
+    public int PageNumber { get; set; } = 1;
+    public int TotalMessages { get; set; }
     public int TotalPages { get; set; }
 
     private int UserId => int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
@@ -30,17 +33,15 @@ public class MyTimelineModel : PageModel
         IFollowerRepository followerRepository)
     {
         _messageRepository = messageRepository;
-        _userRepository = userRepository;
-        _followerRepository = followerRepository;
     }
     public IActionResult OnGet()
     {
         if (User.Identity?.IsAuthenticated != true || User.Identity.Name == null) return Redirect("/public");
-
-        Messages = _messageRepository.GetMyTimeline(UserId, Page);
-
-        var totalMessages = _messageRepository.GetUserTimelineCount(Username);
-        TotalPages = (int)Math.Ceiling((double)totalMessages / 10);
+        
+        Messages = _messageRepository.GetMyTimeline(UserId, PageNumber);
+        
+        TotalMessages = _messageRepository.GetMyTimelineCount(UserId);
+        TotalPages = (int)Math.Ceiling((double)TotalMessages / MessagesPerPage);
 
         return Page();
     }

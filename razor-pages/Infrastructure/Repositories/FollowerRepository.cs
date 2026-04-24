@@ -2,7 +2,6 @@ using Core.Interfaces;
 using Core.DTOs;
 using Infrastructure.Entities;
 using Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -22,8 +21,8 @@ public class FollowerRepository : IFollowerRepository
             .Select<User, UserDTO>(u => new UserDTO
             {
                 Id = u.Id,
-                UserName = u.UserName,
-                Email = u.Email,
+                UserName = u.UserName!,
+                Email = u.Email!,
             })
             .ToList();
 
