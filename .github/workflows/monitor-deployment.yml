@@ -48,7 +48,7 @@ jobs:
         run: |
           ssh "${SSH_USER}@${MONITOR_SSH_HOST}" \
             -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no \
-            "export GRAFANA_PASSWORD=${GRAFANA_PASSWORD@Q} && cd /vagrant/monitoring && docker stack deploy -c monitoring-compose.yaml monitoring"a"
+            "export GRAFANA_PASSWORD=${GRAFANA_PASSWORD@Q} && cd /vagrant/monitoring && docker stack deploy -c monitoring-compose.yaml monitoring"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
