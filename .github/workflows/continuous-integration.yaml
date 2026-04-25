@@ -34,11 +34,12 @@ jobs:
         run: |
           echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
           echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
-          echo "LOKI_URL=$DEV_LOKI_URL" > promtail/.env
+          echo "CONNECTIONSTRINGS__TESTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
+          echo "LOKI_URL=$LOKI_URL" > promtail/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: "Server=host.docker.internal;Database=defaultdb;User Id=${{ secrets.POSTGRES_LOCAL_USER }};Password=${{ secrets.POSTGRES_LOCAL_PASSWORD }};"
-          DEV_LOKI_URL: ${{ secrets.DEV_LOKI_URL }}
+          LOKI_URL: http://${{ secrets.MONITOR_SSH_HOST }}:3101/loki/api/v1/push
 
       - name: Build and test Docker image
         run: |
