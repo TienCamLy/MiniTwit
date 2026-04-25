@@ -30,13 +30,15 @@ jobs:
           POSTGRES_LOCAL_USER: ${{ secrets.POSTGRES_LOCAL_USER }}
           POSTGRES_LOCAL_PASSWORD: ${{ secrets.POSTGRES_LOCAL_PASSWORD }}
       
-      - name: Create .env file for compose
+      - name: Create .env files for compose
         run: |
           echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
           echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
+          echo "LOKI_URL=$DEV_LOKI_URL" > promtail/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: "Server=host.docker.internal;Database=defaultdb;User Id=${{ secrets.POSTGRES_LOCAL_USER }};Password=${{ secrets.POSTGRES_LOCAL_PASSWORD }};"
+          DEV_LOKI_URL: ${{ secrets.DEV_LOKI_URL }}
 
       - name: Build and test Docker image
         run: |
