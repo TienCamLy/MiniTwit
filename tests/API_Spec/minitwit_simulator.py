@@ -8,11 +8,20 @@ import traceback
 import csv
 import sys
 import json
+import os
 import requests
 from time import sleep
+from time import perf_counter
 from datetime import datetime, timezone
 
 CSV_FILENAME = "./minitwit_scenario.csv"
+DEBUG_SIM = os.getenv("SIM_DEBUG", "0") == "1"
+
+
+def dbg(msg):
+    if DEBUG_SIM:
+        ts = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
+        print(f"[SIM-DEBUG] {ts} {msg}", flush=True)
 
 def get_actions():
 
@@ -105,7 +114,7 @@ def handle_response(command, status_code, action_id, host, good_status_codes, to
         return total_actions
 
 class Action:
-    def __init__(self, command, action_id, host, action_data, headers, timeout=0.6):
+    def __init__(self, command, action_id, host, action_data, headers, timeout=(2, 5)):
         self.command = command
         self.action_id = action_id
         self.host = host    
@@ -183,12 +192,23 @@ def main(host, token, max_actions=None):
         try:
             # SWITCH ON TYPE
             command = action["post_type"]
+            url_hint = {
+                "register": f"{host}/register",
+                "msgs": f"{host}/msgs",
+                "follow": f"{host}/fllws/{action['username']}",
+                "unfollow": f"{host}/fllws/{action['username']}",
+                "tweet": f"{host}/msgs/{action['username']}",
+            }.get(command, f"{host}/<unknown>")
 
             if command == "register":
 
                 action_builder = Action(command, action["latest"], host, action, HEADERS)
                 action_builder.build_data()
+                dbg(f"START id={action['latest']} cmd={command} url={url_hint}")
+                started_at = perf_counter()
                 response = action_builder.execute()
+                elapsed_ms = int((perf_counter() - started_at) * 1000)
+                dbg(f"DONE  id={action['latest']} cmd={command} status={response.status_code} dt_ms={elapsed_ms}")
 
                 # error handling (204 success, 400 user exists)
                 # 400 user exists already but not an error to log
@@ -200,7 +220,11 @@ def main(host, token, max_actions=None):
 
                 action_builder = Action(command, action["latest"], host, action, HEADERS)
                 action_builder.build_data()
+                dbg(f"START id={action['latest']} cmd={command} url={url_hint}")
+                started_at = perf_counter()
                 response = action_builder.execute()
+                elapsed_ms = int((perf_counter() - started_at) * 1000)
+                dbg(f"DONE  id={action['latest']} cmd={command} status={response.status_code} dt_ms={elapsed_ms}")
 
                 # error handling (200 success, 403 failure (no headers))
 
@@ -213,7 +237,11 @@ def main(host, token, max_actions=None):
 
                 action_builder = Action(command, action["latest"], host, action, HEADERS)
                 action_builder.build_data()
+                dbg(f"START id={action['latest']} cmd={command} url={url_hint}")
+                started_at = perf_counter()
                 response = action_builder.execute()
+                elapsed_ms = int((perf_counter() - started_at) * 1000)
+                dbg(f"DONE  id={action['latest']} cmd={command} status={response.status_code} dt_ms={elapsed_ms}")
 
                 # error handling (204 success, 403 failure, 404 Not Found no user id)
 
@@ -238,17 +266,27 @@ def main(host, token, max_actions=None):
                     )
                 )
 
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectTimeout:
+            ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
+            print(
+                ",".join([ts_str, host, str(action["latest"]), "ConnectTimeout"])
+            )
+        except requests.exceptions.ReadTimeout:
+            ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
+            print(
+                ",".join([ts_str, host, str(action["latest"]), "ReadTimeout"])
+            )
+        except requests.exceptions.Timeout:
+            ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
+            print(
+                ",".join([ts_str, host, str(action["latest"]), "Timeout"])
+            )
+        except requests.exceptions.ConnectionError:
             ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
             print(
                 ",".join(
                     [ts_str, host, str(action["latest"]), "ConnectionError"]
                 )
-            )
-        except requests.exceptions.ReadTimeout as e:
-            ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
-            print(
-                ",".join([ts_str, host, str(action["latest"]), "ReadTimeout"])
             )
         except Exception as e:
             print("========================================")
