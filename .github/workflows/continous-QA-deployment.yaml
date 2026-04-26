@@ -109,7 +109,7 @@ jobs:
           SQL
 
         env:
-          TESTCONNECTIONSTRING: ${{ secrets.TESTCONNECTIONSTRING }}
+          TESTCONNECTIONSTRING: ${{ secrets.PSQL_TESTCONNECTIONSTRING }}
 
       - name: Run tests
         run: |
