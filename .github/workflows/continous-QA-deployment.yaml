@@ -91,7 +91,7 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
       - name: Reset test database state before running tests
-        run:
+        run: |
           psql "$TESTCONNECTIONSTRING" <<'SQL'
           BEGIN;
           TRUNCATE TABLE
@@ -109,8 +109,7 @@ jobs:
           SQL
 
         env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
-          CONNECTIONSTRING: ${{ secrets.TESTCONNECTIONSTRING }}
+          TESTCONNECTIONSTRING: ${{ secrets.TESTCONNECTIONSTRING }}
 
       - name: Run tests
         run: |
