@@ -14,7 +14,8 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-    
+    networks: [monitoring_net]
+
   prometheus-dev:
     container_name: prometheus-dev
     image: prom/prometheus:v3.10.0
@@ -27,6 +28,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.listen-address=0.0.0.0:9091'
+    networks: [monitoring_net]
 
   # Promtail runs on the application server (root compose.yaml) and pushes here.
   # Restrict host firewall: allow TCP 3100 only from app server IPs.
@@ -39,6 +41,7 @@ services:
       - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
     command: -config.file=/etc/loki/local-config.yaml
+    networks: [monitoring_net]
 
   # Promtail runs on the application server (root compose.yaml) and pushes here.
   # Restrict host firewall: allow TCP 3100 only from app server IPs.
@@ -51,6 +54,7 @@ services:
       - ./loki/loki-dev-config.yaml:/etc/loki/local-config.yaml
       - loki-data-dev:/loki
     command: -config.file=/etc/loki/local-config.yaml
+    networks: [monitoring_net]
 
   grafana:
     image: grafana/grafana:12.4.0
@@ -68,6 +72,7 @@ services:
       - loki-dev
       - prometheus
       - prometheus-dev
+    networks: [monitoring_net]
     restart: unless-stopped
 
 volumes:
