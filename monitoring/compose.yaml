@@ -1,3 +1,7 @@
+networks:
+  monitoring_net:
+    driver: bridge
+
 services:
   prometheus:
     container_name: prometheus
