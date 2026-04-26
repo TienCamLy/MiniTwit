@@ -105,7 +105,7 @@ test-api-simulator: # requires API_TOKEN to be set in environment variable API_T
 	python tests/API_Spec/wait_for_port.py --port 8081 && \
 	cd tests/API_Spec && \
 	pip install -r requirements.txt && \
-	SIM_DEBUG=1 python minitwit_simulator.py http://127.0.0.1:8081 $(API_TOKEN) 20
+	SIM_DEBUG=1 python minitwit_simulator.py minitwit-test-db-do-user-33439110-0.m.db.ondigitalocean.com:25060 $(API_TOKEN) 20
 
 test-ui-selenium: 
 	printf "\n\nRunning UI selenium tests...\n" && \

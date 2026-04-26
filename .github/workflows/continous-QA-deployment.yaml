@@ -89,3 +89,29 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+      - name: Reset test database state before running tests
+        run:
+          psql "$TESTCONNECTIONSTRING" <<'SQL'
+          BEGIN;
+          TRUNCATE TABLE
+          "Followers",
+          "Messages",
+          "AspNetUserTokens",
+          "AspNetUserRoles",
+          "AspNetUserLogins",
+          "AspNetUserClaims",
+          "AspNetUsers"
+          RESTART IDENTITY CASCADE;
+          DELETE FROM "SimulatorLatest";
+          INSERT INTO "SimulatorLatest" ("Id", "latest_id") VALUES (1, 0);
+          COMMIT;
+          SQL
+
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          CONNECTIONSTRING: ${{ secrets.TESTCONNECTIONSTRING }}
+
+      - name: Run tests
+        run: |
+          make run-all-validations
