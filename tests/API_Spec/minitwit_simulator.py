@@ -192,13 +192,6 @@ def main(host, token, max_actions=None):
         try:
             # SWITCH ON TYPE
             command = action["post_type"]
-            url_hint = {
-                "register": f"{host}/register",
-                "msgs": f"{host}/msgs",
-                "follow": f"{host}/fllws/{action['username']}",
-                "unfollow": f"{host}/fllws/{action['username']}",
-                "tweet": f"{host}/msgs/{action['username']}",
-            }.get(command, f"{host}/<unknown>")
 
             if command == "register":
 
