@@ -116,3 +116,4 @@ jobs:
           make run-all-validations
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
+          GUI_URL: http://${{ secrets.SSH_HOST_TEST }}:8081/register
