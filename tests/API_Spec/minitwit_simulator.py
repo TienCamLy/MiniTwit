@@ -204,7 +204,6 @@ def main(host, token, max_actions=None):
 
                 action_builder = Action(command, action["latest"], host, action, HEADERS)
                 action_builder.build_data()
-                dbg(f"START id={action['latest']} cmd={command} url={url_hint}")
                 started_at = perf_counter()
                 response = action_builder.execute()
                 elapsed_ms = int((perf_counter() - started_at) * 1000)
@@ -220,7 +219,6 @@ def main(host, token, max_actions=None):
 
                 action_builder = Action(command, action["latest"], host, action, HEADERS)
                 action_builder.build_data()
-                dbg(f"START id={action['latest']} cmd={command} url={url_hint}")
                 started_at = perf_counter()
                 response = action_builder.execute()
                 elapsed_ms = int((perf_counter() - started_at) * 1000)
@@ -237,7 +235,6 @@ def main(host, token, max_actions=None):
 
                 action_builder = Action(command, action["latest"], host, action, HEADERS)
                 action_builder.build_data()
-                dbg(f"START id={action['latest']} cmd={command} url={url_hint}")
                 started_at = perf_counter()
                 response = action_builder.execute()
                 elapsed_ms = int((perf_counter() - started_at) * 1000)
@@ -266,28 +263,6 @@ def main(host, token, max_actions=None):
                     )
                 )
 
-        except requests.exceptions.ConnectTimeout:
-            ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
-            print(
-                ",".join([ts_str, host, str(action["latest"]), "ConnectTimeout"])
-            )
-        except requests.exceptions.ReadTimeout:
-            ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
-            print(
-                ",".join([ts_str, host, str(action["latest"]), "ReadTimeout"])
-            )
-        except requests.exceptions.Timeout:
-            ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
-            print(
-                ",".join([ts_str, host, str(action["latest"]), "Timeout"])
-            )
-        except requests.exceptions.ConnectionError:
-            ts_str = datetime.strftime(datetime.now(timezone.utc), "%Y-%m-%d %H:%M:%S")
-            print(
-                ",".join(
-                    [ts_str, host, str(action["latest"]), "ConnectionError"]
-                )
-            )
         except Exception as e:
             print("========================================")
             print(traceback.format_exc())
