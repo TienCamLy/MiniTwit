@@ -29,5 +29,5 @@ services:
 
 # for communication between selenium, tests and razor-pages containers
 networks:
-  minitwit-network:
+  test-network:
     name: "test-network"
