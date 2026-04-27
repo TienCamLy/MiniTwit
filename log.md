@@ -71,7 +71,10 @@
 * **Simulator `latest` counter:** Dropped the in-memory static field; the value now lives in Postgres (`SimulatorLatest`, one row, `latest_id`, EF migration). Endpoints read and update that row, so it survives restarts and stays shared when several instances talk to the same database.
 
 ### Week 12 (Apr 24 - Apr 30)
-* GitHub Actions **PR validation** workflow: on pull requests to `main`, run `make build-and-test` (Docker build + tests + lints).
+* GitHub Actions **PR validation** workflow: on pull requests to `main`, run `make test-all` (Docker build + tests).
 * **`tests/` layout:** API simulator scenario moved to `tests/API_Spec/`; simulator uses **`API_TOKEN`** from `.env` / secrets instead of hardcoded credentials.
-* **Selenium UI tests** under `tests/selenium/` with Dockerfile and compose; Makefile targets `test-ui-selenium`, `test-api-simulator`, `test-all`, `lint-c-sharp`, `lint-all`, `run-all-validations`, `build-and-test`; C# formatting/lint via `dotnet format`.
+* **Selenium UI tests** under `tests/selenium/` with Dockerfile and compose; Makefile targets `test-ui-selenium`, `test-api-simulator`, `test-all`.
 * Root **`compose.yaml` / Makefile** updated so app build, API simulator, and Selenium tests run consistently in CI and locally.
+* Simulator and UI tests now use a remote postgres-based db `minitwit-test-db` to run validation. The database tables are truncated at the beginning of each workflow ensuring state consistency.
+* Cleanup of unused images on `webserver-test` before running tests to address running out of space issues.
+* Added additional debug printouts to `test-api-simulator`
