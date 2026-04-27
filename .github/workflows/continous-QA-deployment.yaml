@@ -79,9 +79,9 @@ jobs:
       - name: Deploy to server (using compose)
         run: >
           ssh $SSH_USER@$SSH_HOST
-          docker image prune -a
           -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
           'export DOCKER_USERNAME='"$DOCKER_USERNAME"' 
+          && docker image prune -a
           && cd /vagrant 
           && export IMAGE_NAME=testminitwit 
           && docker compose -f compose-test.yaml pull 
