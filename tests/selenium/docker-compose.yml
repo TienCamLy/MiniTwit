@@ -23,7 +23,7 @@ services:
     environment:
       # With containers on the same network, use the service names instead of IPs
       - SELENIUM_REMOTE_URL=http://selenium:4444/wd/hub # Selenium WebDriver endpoint
-      - GUI_URL=http://razor-pages:8080/register # Navigate to registration page
+      - GUI_URL=http://${{ secrets.SSH_HOST_TEST }}:8081/register # Navigate to registration page
     networks:
       - minitwit-network
 
@@ -31,4 +31,3 @@ services:
 networks:
   minitwit-network:
     name: "minitwit-network"
-    external: true # assuming it is created by the root compose file beforehand
