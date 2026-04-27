@@ -100,12 +100,14 @@ clean-postgres-database:
 	$(PG_SUPERUSER) psql -d postgres -c "DROP ROLE IF EXISTS $(POSTGRES_LOCAL_USER);"
 
 # Tests
-test-api-simulator: # requires API_TOKEN to be set in environment variable API_TOKEN
+test-api-simulator: 
+# requires API_TOKEN to be set in environment variable API_TOKEN
+# requires TEST_GUI_IP to be set in environment variable TEST_GUI_IP
 	printf "\n\nRunning API simulator tests...\n" && \
-	python tests/API_Spec/wait_for_port.py --host 157.230.24.184 --port 8081 && \
+	python tests/API_Spec/wait_for_port.py --host $(TEST_GUI_IP) --port 8081 && \
 	cd tests/API_Spec && \
 	pip install -r requirements.txt && \
-	SIM_DEBUG=1 python minitwit_simulator.py http://157.230.24.184:8081 $(API_TOKEN) 200
+	SIM_DEBUG=1 python minitwit_simulator.py http://$(TEST_GUI_IP):8081 $(API_TOKEN) 200
 
 test-ui-selenium: 
 	printf "\n\nRunning UI selenium tests...\n" && \

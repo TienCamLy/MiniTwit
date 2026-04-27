@@ -23,7 +23,7 @@ services:
     environment:
       # With containers on the same network, use the service names instead of IPs
       - SELENIUM_REMOTE_URL=http://selenium:4444/wd/hub # Selenium WebDriver endpoint
-      - GUI_URL=${GUI_URL} # Navigate to registration page
+      - TEST_GUI_IP=${TEST_GUI_IP} # IP address of the test GUI
     networks:
       - test-network
 

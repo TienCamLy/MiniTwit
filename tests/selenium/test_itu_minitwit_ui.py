@@ -33,7 +33,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
 # Set in docker-compose
-GUI_URL = os.getenv("GUI_URL")
+TEST_GUI_IP = os.getenv("TEST_GUI_IP")
 SELENIUM_REMOTE_URL = os.getenv("SELENIUM_REMOTE_URL") 
 
 def _create_driver():
@@ -43,7 +43,8 @@ def _create_driver():
     return webdriver.Remote(command_executor = SELENIUM_REMOTE_URL, options = opts)
 
 def _register_user_via_gui(driver, data):
-    driver.get(GUI_URL)
+    registration_page = f"http://{TEST_GUI_IP}:8081/register"
+    driver.get(registration_page)
 
     input_fields = driver.find_elements(By.TAG_NAME, "input")
 
