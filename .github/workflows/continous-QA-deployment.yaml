@@ -118,3 +118,4 @@ jobs:
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           TEST_GUI_IP: ${{ secrets.SSH_HOST_TEST }}
+          REGISTRATION_PAGE: http://${{ secrets.SSH_HOST_TEST }}:8081/register
