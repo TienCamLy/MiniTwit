@@ -114,7 +114,7 @@ jobs:
 
       - name: Run tests
         run: |
-          make run-all-validations
+          make test-all
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           GUI_URL: http://${{ secrets.SSH_HOST_TEST }}:8081/register
