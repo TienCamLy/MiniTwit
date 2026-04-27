@@ -105,7 +105,7 @@ test-api-simulator: # requires API_TOKEN to be set in environment variable API_T
 	python tests/API_Spec/wait_for_port.py --host 157.230.24.184 --port 8081 && \
 	cd tests/API_Spec && \
 	pip install -r requirements.txt && \
-	SIM_DEBUG=1 python minitwit_simulator.py http://157.230.24.184:8081 $(API_TOKEN) 20
+	SIM_DEBUG=1 python minitwit_simulator.py http://157.230.24.184:8081 $(API_TOKEN) 200
 
 test-ui-selenium: 
 	printf "\n\nRunning UI selenium tests...\n" && \
@@ -124,7 +124,7 @@ lint-c-sharp:
 	dotnet format --verify-no-changes razor-pages/Web/ && \
 	dotnet format --verify-no-changes razor-pages/Core/
 
-test-all: test-api-simulator test-ui-selenium
+test-all: test-ui-selenium test-api-simulator
 lint-all: lint-spell-checker lint-c-sharp
 run-all-validations: test-all lint-all
 
