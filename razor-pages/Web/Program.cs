@@ -4,7 +4,7 @@ using Infrastructure.Context;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
-using Infrastructure.Context.Services;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 using Prometheus;
