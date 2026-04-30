@@ -15,7 +15,7 @@ public static partial class InputSanitizer
 
         var trim = input.Trim();
 
-        return HtmlRegex.IsMatch(input) ? throw new ArgumentException("HTML is not allowed") : trim;
+        return HtmlRegex.IsMatch(input) ? throw new ArgumentException("HTML is not allowed in input") : trim;
     }
 
     
