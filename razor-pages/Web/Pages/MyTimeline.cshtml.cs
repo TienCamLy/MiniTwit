@@ -45,9 +45,17 @@ public class MyTimelineModel : PageModel
     
     public IActionResult OnPostCreateMessage()
     {
-        if (string.IsNullOrEmpty(Text)) return RedirectToPage(); 
-        _messageRepository.CreateMessage(UserId, Text);
-        TempData["FlashMessage"] = "Your message was recorded";
+        if (string.IsNullOrEmpty(Text)) return RedirectToPage();
+        try
+        {
+            _messageRepository.CreateMessage(UserId, Text);
+            TempData["FlashMessage"] = "Your message was recorded";
+        }
+        catch (ArgumentException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+        
         return RedirectToPage();
     }
 }
