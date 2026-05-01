@@ -1,7 +1,8 @@
 # slim is a minimal python installation
 FROM python:3.12-slim 
 
-RUN pip install --only-binary :all: pytest==9.0.3 selenium==4.43.0 && useradd appuser
+COPY requirements.txt .
+RUN pip install --only-binary :all: -r requirements.txt && useradd appuser
 
 WORKDIR /tests
 RUN chown appuser:appuser /tests
