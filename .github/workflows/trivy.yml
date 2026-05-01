@@ -1,0 +1,29 @@
+name: Trivy Docker Image Scan
+
+on:
+  push:
+    branches:
+      - implementing-Nginx
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t minitwit-app ./razor-pages
+
+      - name: Run Trivy scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: minitwit-app
+          format: table
+          exit-code: 0
+          severity: CRITICAL,HIGH

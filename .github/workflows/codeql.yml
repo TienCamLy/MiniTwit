@@ -2,7 +2,7 @@ name: CodeQL Security Scan
 
 on:
   push:
-    branches: [ main, implementing-Nginx ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
