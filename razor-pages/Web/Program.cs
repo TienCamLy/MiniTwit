@@ -21,7 +21,7 @@ builder.Services.AddRazorPages();
 // Add postgreSQL server
 var connectionStringName = builder.Configuration.GetValue<bool>("ISLOCALDEVELOPMENT") ? "TESTCONNECTION" : "DEFAULTCONNECTION";
 builder.Services.AddDbContext<MiniTwitContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString(connectionStringName), npgsqlOptions => 
+    options.UseNpgsql(builder.Configuration.GetConnectionString(connectionStringName), npgsqlOptions =>
         { npgsqlOptions.CommandTimeout(180); }));
 
 // Add repositories to the container.

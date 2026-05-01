@@ -31,23 +31,23 @@ namespace Web.API.Controllers
     /// </summary>
     [ApiController]
     public class MinitwitApiController : ControllerBase
-    { 
-		private readonly IMessageRepository _messageRepository;
-    	private readonly IUserRepository _userRepository;
-    	private readonly IFollowerRepository _followerRepository;
+    {
+        private readonly IMessageRepository _messageRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IFollowerRepository _followerRepository;
         private readonly ISimulatorLatestRepository _simulatorLatest;
-        
-		public MinitwitApiController(
-        	IMessageRepository messageRepository, 
-        	IUserRepository userRepository, 
-        	IFollowerRepository followerRepository,
+
+        public MinitwitApiController(
+            IMessageRepository messageRepository,
+            IUserRepository userRepository,
+            IFollowerRepository followerRepository,
             ISimulatorLatestRepository simulatorLatest)
-    	{
-        	_messageRepository = messageRepository;
-        	_userRepository = userRepository;
-        	_followerRepository = followerRepository;
+        {
+            _messageRepository = messageRepository;
+            _userRepository = userRepository;
+            _followerRepository = followerRepository;
             _simulatorLatest = simulatorLatest;
-    	}
+        }
 
         /// <summary>
         /// 
@@ -79,7 +79,7 @@ namespace Web.API.Controllers
 
             if (latest.HasValue)
                 _simulatorLatest.SetLatestId(latest.Value);
-            
+
             return new ObjectResult(new FollowsResponse { Follows = followers }) { StatusCode = 200 };
         }
 
@@ -137,7 +137,7 @@ namespace Web.API.Controllers
 
             if (latest.HasValue)
                 _simulatorLatest.SetLatestId(latest.Value);
-            
+
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
@@ -171,7 +171,7 @@ namespace Web.API.Controllers
 
             if (latest.HasValue)
                 _simulatorLatest.SetLatestId(latest.Value);
-            
+
             return new ObjectResult(apiMessages) { StatusCode = 200 };
         }
 
@@ -223,7 +223,7 @@ namespace Web.API.Controllers
                 _simulatorLatest.SetLatestId(latest.Value);
             else
                 _simulatorLatest.IncrementLatestId();
-            
+
             return NoContent();
         }
 
@@ -259,7 +259,7 @@ namespace Web.API.Controllers
 
             if (latest.HasValue)
                 _simulatorLatest.SetLatestId(latest.Value);
-            
+
             return NoContent();
         }
 
@@ -288,9 +288,9 @@ namespace Web.API.Controllers
 
             if (string.IsNullOrEmpty(email) || !email.Contains('@'))
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "Invalid email" });
-            
-            
-            if (_userRepository.GetUserByUsername(username) != null) 
+
+
+            if (_userRepository.GetUserByUsername(username) != null)
                 return BadRequest(new ErrorResponse { Status = 400, ErrorMsg = "The username is already taken" });
 
             var hasher = new PasswordHasher<string>();
@@ -299,7 +299,7 @@ namespace Web.API.Controllers
 
             if (latest.HasValue)
                 _simulatorLatest.SetLatestId(latest.Value);
-            
+
             return NoContent();
         }
 
@@ -307,7 +307,7 @@ namespace Web.API.Controllers
         {
             return authorization == $"Basic {Environment.GetEnvironmentVariable("API_TOKEN")}";
         }
-		
+
         private IActionResult ApiUnauthorized()
         {
             return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse

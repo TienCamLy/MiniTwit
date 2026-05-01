@@ -12,7 +12,7 @@ public class MiniTwitContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<Follower> Followers => Set<Follower>();
     /// <summary>Singleton row <c>Id = 1</c>; persisted <c>latest_id</c> for the simulator API.</summary>
     public DbSet<SimulatorLatest> SimulatorLatestState => Set<SimulatorLatest>();
-    
+
     public MiniTwitContext(DbContextOptions<MiniTwitContext> options) : base(options)
     {
     }

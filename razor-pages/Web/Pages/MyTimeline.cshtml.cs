@@ -11,7 +11,7 @@ public class MyTimelineModel : PageModel
     private readonly IMessageRepository _messageRepository;
 
     private const int MessagesPerPage = 10;
-    
+
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
 
     [BindProperty]
@@ -31,9 +31,9 @@ public class MyTimelineModel : PageModel
     public IActionResult OnGet()
     {
         if (User.Identity?.IsAuthenticated != true || User.Identity.Name == null) return Redirect("/public");
-        
+
         Messages = _messageRepository.GetMyTimeline(UserId, PageNumber);
-        
+
         TotalMessages = _messageRepository.GetMyTimelineCount(UserId);
         TotalPages = (int)Math.Ceiling((double)TotalMessages / MessagesPerPage);
 

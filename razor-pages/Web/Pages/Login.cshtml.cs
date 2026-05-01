@@ -77,7 +77,7 @@ public class LoginModel : PageModel
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
                     authProperties);
-                
+
                 TempData["FlashMessage"] = "You were logged in";
                 return Redirect("/");
             }

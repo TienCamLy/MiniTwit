@@ -27,7 +27,7 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
-				AuthorName = m.Author.UserName!,
+                AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })
             .ToList();
@@ -44,7 +44,7 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
-				AuthorName = m.Author.UserName!,
+                AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })
             .ToList();
@@ -60,7 +60,7 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
-				AuthorName = m.Author.UserName!,
+                AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })
             .ToList();
@@ -78,7 +78,7 @@ public class MessageRepository : IMessageRepository
                 Id = m.Id,
                 Text = m.Text,
                 PubDate = TimeZoneInfo.ConvertTimeFromUtc(m.PubDate, _cetZone).ToString(DateFormat),
-				AuthorName = m.Author.UserName!,
+                AuthorName = m.Author.UserName!,
                 AuthorEmail = m.Author.Email!
             })
             .ToList();
@@ -121,7 +121,7 @@ public class MessageRepository : IMessageRepository
             .Where(m => m.AuthorId == userId ||
                         _context.Followers.Any(f => f.SourceId == userId && f.TargetId == m.AuthorId))
             .Count();
-        
+
         return messages;
     }
 

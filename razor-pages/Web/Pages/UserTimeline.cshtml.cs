@@ -13,7 +13,7 @@ public class UserTimelineModel : PageModel
     private readonly IFollowerRepository _followerRepository;
 
     private const int MessagesPerPage = 10;
-    
+
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
     public string Username { get; set; } = string.Empty;
     public bool Followed { get; set; } = false;
@@ -23,7 +23,7 @@ public class UserTimelineModel : PageModel
     public int PageNumber { get; set; } = 1;
     public int TotalMessages { get; set; }
     public int TotalPages { get; set; }
-    
+
     public UserTimelineModel(
         IMessageRepository messageRepository,
         IUserRepository userRepository,
