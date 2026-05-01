@@ -91,6 +91,25 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
+      - name: Install Docker Scout CLI (SonarQube safe)
+        run: |
+          mkdir -p $HOME/.docker/cli-plugins
+
+          curl --proto "=https" --tlsv1.2 -sSf -L \
+            https://github.com/docker/scout-cli/releases/latest/download/docker-scout-linux-amd64 \
+            -o $HOME/.docker/cli-plugins/docker-scout
+
+          chmod +x $HOME/.docker/cli-plugins/docker-scout
+
+          docker scout version || true
+
+      - name: Run Docker Scout CVE scan (SHIFT-LEFT)
+        run: |
+          docker scout cves minitwit-app:latest \
+            --only-severity critical,high \
+            --exit-code || true    
+
+
       - name: Reset test database state before running tests
         run: |
           psql "$TESTCONNECTIONSTRING" <<'SQL'
