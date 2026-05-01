@@ -64,3 +64,6 @@
 * Implemented SonarQube's security recommendation to not expand secrets inside run blocks, instead expanding it in an environment block and referencing that in the run. 
 * Changed CI/CD workflow to handle the Docker Swarm changes. 
 * **Simulator `latest` counter:** Dropped the in-memory static field; the value now lives in Postgres (`SimulatorLatest`, one row, `latest_id`, EF migration). Endpoints read and update that row, so it survives restarts and stays shared when several instances talk to the same database.
+
+### Week 13 (May 1 - May 6)
+* Added `.mailmap` file to consolidate authors into persons
