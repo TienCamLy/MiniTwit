@@ -58,12 +58,10 @@ builder.Services.AddRateLimiter(options =>
                 QueueLimit = 0,
                 Window = TimeSpan.FromMinutes(1)
             }));
+    options.RejectionStatusCode = 429;
 });
 
 var app = builder.Build();
-
-app.MapRazorPages();
-app.MapControllers().RequireRateLimiting("per-ip");
 
 // Apply migrations
 using (var scope = app.Services.CreateScope())
@@ -82,9 +80,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseRateLimiter(); // Enable rate limiter
-
 app.UseRouting();
+
+app.UseRateLimiter(); // Enable rate limiter
 
 app.UseMetricServer();
 app.UseHttpMetrics();
@@ -93,7 +91,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-app.MapRazorPages()
-    .WithStaticAssets();
+app.MapRazorPages().WithStaticAssets();
+app.MapControllers();
 
 app.Run();
