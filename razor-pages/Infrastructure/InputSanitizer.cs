@@ -4,7 +4,7 @@ namespace Infrastructure;
 
 public static partial class InputSanitizer
 {
-    [GeneratedRegex("<[^>]+>", RegexOptions.Compiled)]
+    [GeneratedRegex("<(\"[^\"]*\"|'[^']*'|[^'\">])*>", RegexOptions.Compiled)]
     private static partial Regex MyRegex();
     
     private static readonly Regex HtmlRegex = MyRegex();
