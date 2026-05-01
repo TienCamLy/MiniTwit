@@ -2,7 +2,7 @@ name: CodeQL Security Scan
 
 on:
   push:
-    branches: [ main, terraform ]
+    branches: [ main, implementing-Nginx ]
   pull_request:
     branches: [ main ]
 
