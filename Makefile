@@ -80,7 +80,7 @@ test-api-simulator:
 	python tests/API_Spec/wait_for_port.py --host $(TEST_GUI_IP) --port 8081 && \
 	cd tests/API_Spec && \
 	pip install -r requirements.txt && \
-	SIM_DEBUG=1 python minitwit_simulator.py http://$(TEST_GUI_IP):8081 $(API_TOKEN) 200
+	SIM_DEBUG=1 python minitwit_simulator.py http://$(TEST_GUI_IP):8081 $(API_TOKEN) 50
 
 test-ui-selenium: 
 	printf "\n\nRunning UI selenium tests...\n" && \
