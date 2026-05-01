@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Context;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 using Prometheus;
@@ -14,6 +16,14 @@ if (File.Exists(".env"))
     Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure ForwardedHeaders
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -43,10 +53,26 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 
+// Add rate limiter
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim() // Take client-ip (avoid proxies)
+                          ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 120,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
+
 var app = builder.Build();
 
 app.MapRazorPages();
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("per-ip");
 
 // Apply migrations
 using (var scope = app.Services.CreateScope())
@@ -64,6 +90,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseForwardedHeaders();
+app.UseRateLimiter(); // Enable rate limiter
 
 app.UseRouting();
 
