@@ -5,6 +5,7 @@ on:
     branches:
       - implementing-Nginx
       - main
+      - terraform
   pull_request:
     branches:
       - main
@@ -24,11 +25,10 @@ jobs:
         run: docker build -t minitwit-app ./razor-pages
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: minitwit-app
           format: table
           exit-code: "0"
-          severity: CRITICAL,HIGH
           ignore-unfixed: true
-          vuln-type: os,library
+          severity: CRITICAL,HIGH
