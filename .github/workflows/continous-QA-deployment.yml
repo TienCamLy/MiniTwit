@@ -88,6 +88,12 @@ jobs:
 
           docker scout version || true
 
+      - name: Run Docker Scout CVE scan (SHIFT-LEFT)
+        run: |
+          docker scout cves minitwit-app:latest \
+            --only-severity critical,high \
+            --exit-code || true    
+
       - name: Deploy to server (using compose)
         run: >
           ssh $SSH_USER@$SSH_HOST
