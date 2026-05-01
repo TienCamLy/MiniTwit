@@ -67,3 +67,6 @@
 
 ### Week 12 (Apr 24 - Apr 30)
 * **Security Assessment**: Implemented input sanitization for posts and user creation to prevent XSS attacks and added a rate limiter globally to minimize the maximum requests per minute based on IP address.
+
+### Week 13 (May 1 - May 6)
+* Added `.mailmap` file to consolidate authors into persons
