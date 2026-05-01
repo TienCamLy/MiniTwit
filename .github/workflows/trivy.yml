@@ -25,7 +25,7 @@ jobs:
         run: docker build -t minitwit-app ./razor-pages
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.24.0
         with:
           image-ref: minitwit-app
           format: table
