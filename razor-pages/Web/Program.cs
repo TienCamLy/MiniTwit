@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
 using Infrastructure.Services;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 using Prometheus;
@@ -16,14 +15,6 @@ if (File.Exists(".env"))
     Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Configure ForwardedHeaders
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
-{
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownIPNetworks.Clear();
-    options.KnownProxies.Clear();
-});
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -91,7 +82,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseForwardedHeaders();
 app.UseRateLimiter(); // Enable rate limiter
 
 app.UseRouting();
