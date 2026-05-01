@@ -5,7 +5,6 @@ on:
     branches:
       - implementing-Nginx
       - main
-      - terraform
   pull_request:
     branches:
       - main
@@ -16,13 +15,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@8c3b0a3d8b5d9b2c7f7f8a2b5d9c1e2f3a4b5c6d
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@f82d8f6b7f5c6a1d2e3f4a5b6c7d8e9f0a1b2c3d
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@465a8783c5b2c7f4a9d1e2f3a4b5c6d7e8f9a0b1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -30,9 +29,12 @@ jobs:
       - name: Build Docker image
         run: docker build -t minitwit-app:latest -f razor-pages/Dockerfile .
 
-      - name: Install Docker Scout CLI
+      - name: Install Docker Scout CLI (secure, pinned release)
         run: |
-          curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh
+          mkdir -p $HOME/.docker/cli-plugins
+          curl -sSL https://github.com/docker/scout-cli/releases/latest/download/docker-scout-linux-amd64 \
+            -o $HOME/.docker/cli-plugins/docker-scout
+          chmod +x $HOME/.docker/cli-plugins/docker-scout
           docker scout version
 
       - name: Run Docker Scout CVE scan (SHIFT-LEFT GATE)
