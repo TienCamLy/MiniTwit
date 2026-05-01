@@ -87,20 +87,35 @@ test-ui-selenium:
 	cd tests/selenium && \
 	docker compose up --build --abort-on-container-exit --exit-code-from tests
 
-lint-spell-checker:
+spell-checker:
 	printf "\n\nRunning spell checker tests...\n" && \
 	pip install codespell && \
 	cd razor-pages && \
 	codespell
 
-lint-c-sharp:
+c-sharp-code-formatter:
 	printf "\n\nRunning C# linting tests...\n" && \
 	dotnet format --verify-no-changes razor-pages/Infrastructure/ && \
 	dotnet format --verify-no-changes razor-pages/Web/ && \
 	dotnet format --verify-no-changes razor-pages/Core/
 
+hadolint-docker-linter: # runs as a docker container itself
+	printf "\n\n Running Docker linter...\n" && \
+	DOCKERFILES="$$(find . -type f \( -name 'Dockerfile' -o -name 'Dockerfile-*' -o -name '*.Dockerfile' \) -not -path './.git/*')" && \
+	if [ -z "$$DOCKERFILES" ]; then \
+		echo "No Dockerfiles found."; \
+		exit 0; \
+	fi && \
+	for dockerfile in $$DOCKERFILES; do \
+		echo "Linting $$dockerfile"; \
+		cat "$$dockerfile" | docker run --rm -i hadolint/hadolint; \
+	done
+
+meziantou-c-sharp-analyzer:
+
+
 test-all: test-ui-selenium test-api-simulator
-lint-all: lint-spell-checker lint-c-sharp
+lint-all: spell-checker c-sharp-code-formatter meziantou-c-sharp-analyzer hadolint-docker-linter
 run-all-validations: test-all lint-all
 
 build-and-test: # requires API_TOKEN to be set in environment variable API_TOKEN
