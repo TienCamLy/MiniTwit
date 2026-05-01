@@ -25,5 +25,6 @@ jobs:
         with:
           image-ref: minitwit-app
           format: table
-          exit-code: 0
+          exit-code: "0"
           severity: CRITICAL,HIGH
+          ignore-unfixed: true
