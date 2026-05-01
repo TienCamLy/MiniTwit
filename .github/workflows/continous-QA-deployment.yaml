@@ -115,7 +115,7 @@ jobs:
       - name: Run tests
         run: |
           export REGISTRATION_PAGE="http://${TEST_GUI_IP}:8081/register"
-          make test-all
+          make run-all-validations
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           TEST_GUI_IP: ${{ secrets.SSH_HOST_TEST }}
