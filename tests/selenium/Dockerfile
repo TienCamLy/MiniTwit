@@ -2,7 +2,7 @@
 FROM python:3.12-slim 
 
 COPY requirements.txt .
-RUN pip install --only-binary :all: -r requirements.txt && useradd appuser
+RUN pip install --only-binary :all: --require-hashes -r requirements.txt && useradd appuser
 
 WORKDIR /tests
 RUN chown appuser:appuser /tests
