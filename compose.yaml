@@ -4,9 +4,6 @@ services:
     build:
       context: .
       dockerfile: razor-pages/Dockerfile
-    # Lets the container reach Postgres on the host (localhost in .env is wrong inside the container)
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     ports:
       - "8080:8080"
     env_file:
