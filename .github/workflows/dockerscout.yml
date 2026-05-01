@@ -5,6 +5,7 @@ on:
     branches:
       - implementing-Nginx
       - main
+      - terraform
   pull_request:
     branches:
       - main
@@ -34,5 +35,5 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh
           docker scout version
 
-      - name: Run Docker Scout CVE scan
-        run: docker scout cves minitwit-app:latest --format table || true
+      - name: Run Docker Scout CVE scan (SHIFT-LEFT GATE)
+        run: docker scout cves minitwit-app:latest --only-severity critical,high --exit-code
