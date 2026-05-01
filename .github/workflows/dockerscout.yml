@@ -26,8 +26,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build image
-        run: docker build -t minitwit-app:latest -f ./razor-pages/Dockerfile ./razor-pages
+      - name: Build Docker image
+        run: docker build -t minitwit-app:latest -f razor-pages/Dockerfile .
 
       - name: Enable Docker Scout
         run: docker scout version
