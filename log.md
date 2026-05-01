@@ -78,3 +78,5 @@
 * Simulator and UI tests now use a remote postgres-based db `minitwit-test-db` to run validation. The database tables are truncated at the beginning of each workflow ensuring state consistency.
 * Cleanup of unused images on `webserver-test` before running tests to address running out of space issues.
 * Added additional debug printouts to `test-api-simulator`
+### Week 13 (May 1 - May 6)
+* Added `.mailmap` file to consolidate authors into persons
