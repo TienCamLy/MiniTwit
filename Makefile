@@ -100,7 +100,7 @@ c-sharp-code-formatter:
 	dotnet format --verify-no-changes razor-pages/Core/
 
 hadolint-docker-linter: # runs as a docker container itself
-	printf "\n\n Running Docker linter...\n" && \
+	printf "\n\n Running Docker linter tests...\n" && \
 	DOCKERFILES="$$(find . -type f \( -name 'Dockerfile' -o -name 'Dockerfile-*' -o -name '*.Dockerfile' \) -not -path './.git/*')" && \
 	if [ -z "$$DOCKERFILES" ]; then \
 		echo "No Dockerfiles found."; \
@@ -111,11 +111,15 @@ hadolint-docker-linter: # runs as a docker container itself
 		cat "$$dockerfile" | docker run --rm -i hadolint/hadolint; \
 	done
 
-meziantou-c-sharp-analyzer:
-
+roslynator-c-sharp-analyzer: # change --severity-level to "info" to get more diagnostics
+	printf "\n\nRunning C# analyzer tests...\n" && \
+	dotnet tool install -g roslynator.dotnet.cli
+	roslynator analyze razor-pages/Core/Core.csproj --severity-level warning
+	roslynator analyze razor-pages/Infrastructure/Infrastructure.csproj --severity-level warning
+	roslynator analyze razor-pages/Web/Web.csproj --severity-level warning
 
 test-all: test-ui-selenium test-api-simulator
-lint-all: spell-checker c-sharp-code-formatter meziantou-c-sharp-analyzer hadolint-docker-linter
+lint-all: spell-checker c-sharp-code-formatter roslynator-c-sharp-analyzer hadolint-docker-linter
 run-all-validations: test-all lint-all
 
 build-and-test: # requires API_TOKEN to be set in environment variable API_TOKEN

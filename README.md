@@ -134,6 +134,6 @@ An alternative strategy is blue-green deployment, which provides instant rollbac
 
 We use the following static analysis tools in our CI pipelines to improve code quality. None of these tools modifies code on their own; however, pull requests don't pass the quality gate if one of them issues errors.
 - **Dotnet Format**, a build-in .NET SDK code formatter. We use the default rules from the SDK-provided .editorconfig files to format our C# code in the `razor-pages` folder. If a pull request doesn't follow these rules, the tools issues an error and fails the CI pipeline. `make auto-lint` can be run to fix the errors, but it's not run on its own against the project repository.
-- **Meziantou.Analyzer**, a Roslyn analyzer that detects bugs, security issues, and best practices violations. 
+- **Roslynator**, a Roslyn-based analyzer (meaning deep understanding of C#) that detects bugs, security issues, and violations of best practices. Set to `--severity-level=warning` to limit the amount of diagnostics it produces by default. 
 - **Codespell**, a general spell-checker, ensuring the right spelling of common words within the entire codebase. Fails the pipeline if it finds errors such as "teh" ==> "the".
-- **Hadolint**, a Docker linter. Scans the repository for Dockerfiles, then runs the linter against each. 
+- **Hadolint**, a Docker linter. Scans the repository for Dockerfiles, then runs the linter against each. Runs with default `failure-threshold=info`.
