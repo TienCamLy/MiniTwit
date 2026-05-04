@@ -1,8 +1,9 @@
 # slim is a minimal python installation
 FROM python:3.12-slim 
 
+WORKDIR /tests/selenium
 COPY requirements.txt .
-RUN pip install --only-binary :all: --require-hashes -r requirements.txt && useradd appuser
+RUN pip install --no-cache-dir --only-binary :all: --require-hashes -r requirements.txt && useradd appuser
 
 WORKDIR /tests
 RUN chown appuser:appuser /tests
