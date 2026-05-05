@@ -2,10 +2,6 @@
 name: Deploy Monitoring
 
 on:
-  push:
-    branches:
-      - chore/loki-url
-
   workflow_dispatch:
 
 # Remember to set the following secrets in your repository's settings:
