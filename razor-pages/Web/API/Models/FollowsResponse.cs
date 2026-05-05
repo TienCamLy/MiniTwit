@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 using Web.API.Converters;
 
 namespace Web.API.Models
-{ 
+{
     /// <summary>
     /// 
     /// </summary>
@@ -31,7 +31,7 @@ namespace Web.API.Models
         /// </summary>
         /// <value>List of usernames the user is following</value>
         /* <example>[&quot;Helge&quot;,&quot;John&quot;]</example> */
-        [DataMember(Name="follows", EmitDefaultValue=false)]
+        [DataMember(Name = "follows", EmitDefaultValue = false)]
         public required List<string> Follows { get; set; }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Web.API.Models
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     Follows == other.Follows ||
                     Follows != null &&
@@ -97,14 +97,14 @@ namespace Web.API.Models
             {
                 var hashCode = 41;
                 // Suitable nullity checks etc, of course :)
-                    if (Follows != null)
+                if (Follows != null)
                     hashCode = hashCode * 59 + Follows.GetHashCode();
                 return hashCode;
             }
         }
 
         #region Operators
-        #pragma warning disable 1591
+#pragma warning disable 1591
 
         public static bool operator ==(FollowsResponse left, FollowsResponse right)
         {
@@ -116,7 +116,7 @@ namespace Web.API.Models
             return !Equals(left, right);
         }
 
-        #pragma warning restore 1591
+#pragma warning restore 1591
         #endregion Operators
     }
 }

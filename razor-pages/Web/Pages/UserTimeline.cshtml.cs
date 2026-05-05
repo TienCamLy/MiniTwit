@@ -13,7 +13,7 @@ public class UserTimelineModel : PageModel
     private readonly IFollowerRepository _followerRepository;
 
     private const int MessagesPerPage = 10;
-    
+
     public IEnumerable<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
     public string Username { get; set; } = string.Empty;
     public bool Followed { get; set; } = false;
@@ -23,17 +23,17 @@ public class UserTimelineModel : PageModel
     public int PageNumber { get; set; } = 1;
     public int TotalMessages { get; set; }
     public int TotalPages { get; set; }
-    
+
     public UserTimelineModel(
-        IMessageRepository messageRepository, 
-        IUserRepository userRepository, 
+        IMessageRepository messageRepository,
+        IUserRepository userRepository,
         IFollowerRepository followerRepository)
     {
         _messageRepository = messageRepository;
         _userRepository = userRepository;
         _followerRepository = followerRepository;
     }
-    
+
     public void OnGet(string user, string? error = null)
     {
         var userObj = _userRepository.GetUserByUsername(user);
@@ -59,11 +59,11 @@ public class UserTimelineModel : PageModel
 
         Error = error;
     }
-    
+
     public IActionResult OnPost(string user)
     {
         var identityName = User.Identity?.Name;
-        
+
         if (string.IsNullOrEmpty(identityName))
             Error = "You must be logged in to follow users";
         else
@@ -77,7 +77,7 @@ public class UserTimelineModel : PageModel
                 if (_followerRepository.IsFollowed(who.Id, whom.Id))
                 {
                     _followerRepository.UnfollowUser(who.Id, whom.Id);
-                    TempData["FlashMessage"] = $"You are no longer following \"{whom.UserName}\"";   
+                    TempData["FlashMessage"] = $"You are no longer following \"{whom.UserName}\"";
                 }
                 else
                 {

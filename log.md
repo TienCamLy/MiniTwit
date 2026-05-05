@@ -36,7 +36,12 @@
 
 ### Week 7 – DevOps & repo polish (Mar 13 – Mar 19)
 * Chore: split app and monitoring layout; workflow env path for compose.
-* Merged monitoring and restructure branches; added PR template.
+* Merged monitoring and restructure branches; continued deployment workflow fixes (SSH/options, known_hosts, env).
+* PostgreSQL migration was merged experimentally then **reverted** (#37); stayed on the existing SQLite + EF setup due to some parts not working.
+* Grafana dashboards updated for clearer layout / beautification (#36).
+* Added GitHub **pull request template** (#38);
+* **Removed legacy Python MiniTwit** from the repo (C# app is the single source); SonarCube-driven cleanups on API models, repositories, and pages (#39 and related).
+* Security / hygiene: dropped obsolete `python-version` usage and addressed prominent security findings (#39).
 
 ### Week 8 - Logging (Mar 20 - Mar 26)
 * Added new droplet for running test-deployments to avoid failing on PROD.
@@ -63,3 +68,16 @@
 * Removed login_success/failure metrics and their associated graph in grafana as they ceased to work, were redundant, and were primarily implemented as a basic first graph example to test grafana. 
 * Implemented SonarQube's security recommendation to not expand secrets inside run blocks, instead expanding it in an environment block and referencing that in the run. 
 * Changed CI/CD workflow to handle the Docker Swarm changes. 
+* **Simulator `latest` counter:** Dropped the in-memory static field; the value now lives in Postgres (`SimulatorLatest`, one row, `latest_id`, EF migration). Endpoints read and update that row, so it survives restarts and stays shared when several instances talk to the same database.
+
+### Week 12 (Apr 24 - Apr 30)
+* GitHub Actions **PR validation** workflow: on pull requests to `main`, run `make test-all` (Docker build + tests).
+* **`tests/` layout:** API simulator scenario moved to `tests/API_Spec/`; simulator uses **`API_TOKEN`** from `.env` / secrets instead of hardcoded credentials.
+* **Selenium UI tests** under `tests/selenium/` with Dockerfile and compose; Makefile targets `test-ui-selenium`, `test-api-simulator`, `test-all`.
+* Root **`compose.yaml` / Makefile** updated so app build, API simulator, and Selenium tests run consistently in CI and locally.
+* Simulator and UI tests now use a remote postgres-based db `minitwit-test-db` to run validation. The database tables are truncated at the beginning of each workflow ensuring state consistency.
+* Cleanup of unused images on `webserver-test` before running tests to address running out of space issues.
+* Added additional debug printouts to `test-api-simulator`
+### Week 13 (May 1 - May 6)
+* Added `.mailmap` file to consolidate authors into persons
+* Added two new static analysis tool to `continuous-QA-deployment`, `hadolint` for testing the linting of Dockerfiles and Roslynator for analyzing the C# code. 
