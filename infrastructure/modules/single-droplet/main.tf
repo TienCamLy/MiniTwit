@@ -24,19 +24,12 @@ resource "digitalocean_droplet" "single-droplet" {
 
   provisioner "remote-exec" {
     inline = [
-      # allow ports for docker swarm
-      "ufw allow 2377/tcp",
-      "ufw allow 7946",
-      "ufw allow 4789/udp",
       # ports for apps
       "ufw allow 80",
       "ufw allow 8080",
       "ufw allow 8888",
       # SSH
       "ufw allow 22",
-
-      # initialize docker swarm cluster
-      "docker swarm init --advertise-addr ${self.ipv4_address}"
     ]
   }
 }
