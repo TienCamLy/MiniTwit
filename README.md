@@ -61,6 +61,11 @@ sudo docker compose logs -f razor-pages
 ```
 
 ## New Deployment of Infrastructure using Terraform
+### Prerequisites
+1. An account within Digital Ocean
+2. A "Spaces Object Storage" S3 bucket inside Digital Ocean, to manage the backend of terraform.
+3. Terraform installation.
+
 ### Initializing the backend
 Run the following in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
@@ -76,6 +81,10 @@ Note, that in order to set up to providers some secrets are needed, which should
 1. Append a new line to the `*.tfvars` with `<var_name> = "<secret_value>"`
 2. Set an environment variable named `export TF_VAR_<var_name>="<secret_value>"`
 
+#### Secrets
+- `do_token` - a PAT token generated from within Digital Ocean
+
+#### Commands
 Once the secret variables are set up, you can run the following command in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
 terraform plan --var-file="[dev|prod].tfvars"
