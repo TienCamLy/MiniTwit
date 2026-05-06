@@ -37,7 +37,7 @@ variable "ssh_connection_timeout" {
   default     = "2m"
 }
 
-variable "file_source" {
+variable "compose_file_source" {
   type        = string
   description = "Local path to the file uploaded by the file provisioner (relative to this module's directory unless an absolute path is used)."
 }

@@ -18,8 +18,8 @@ resource "digitalocean_droplet" "single-droplet" {
   }
 
   provisioner "file" {
-    source      = var.file_source
-    destination = "/root/Dockerfile"
+    source      = var.compose_file_source
+    destination = "/root/compose.yaml"
   }
 
   provisioner "remote-exec" {
@@ -27,9 +27,12 @@ resource "digitalocean_droplet" "single-droplet" {
       # ports for apps
       "ufw allow 80",
       "ufw allow 8080",
-      "ufw allow 8888",
+      "ufw allow 8081",
       # SSH
       "ufw allow 22",
+
+      # start the services
+      "docker compose -f /root/compose.yaml up -d --build"
     ]
   }
 }

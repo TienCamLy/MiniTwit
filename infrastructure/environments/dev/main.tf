@@ -11,7 +11,7 @@ module "single-droplet" {
   region               = var.region
   pvt_key              = var.pvt_key
   ssh_key_fingerprints = [module.ssh_key_register.fingerprint]
-  file_source          = var.droplet_file_source
+  compose_file_source  = var.droplet_file_source
 }
 
 module "public_ip" {
