@@ -81,3 +81,4 @@
 ### Week 13 (May 1 - May 6)
 * Added `.mailmap` file to consolidate authors into persons
 * Added two new static analysis tool to `continuous-QA-deployment`, `hadolint` for testing the linting of Dockerfiles and Roslynator for analyzing the C# code. 
+* Reviewed the idempotence of our configuration files. Applied small changes to both Dockerfiles; reviewed both Vagrantfiles but found no issues; applied changes to the Makefile; updated the readme.
