@@ -60,6 +60,31 @@ cd /vagrant
 sudo docker compose logs -f razor-pages
 ```
 
+## New Deployment of Infrastructure using Terraform
+### Initializing the backend
+Run the following in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
+```
+export AWS_ACCESS_KEY_ID="<your_spaces_access_key>"
+export AWS_SECRET_ACCESS_KEY="<your_spaces_secret_key>"
+terraform init -backend-config=backend.tfvars
+```
+Note, that initializing the backend is the first step of any terraform process and is only done initially to ensure file structures and state files exist that can then be used in other terraform commands.
+
+### Provisioning and Planning using Terraform
+Once you have created new infrastructure resources or changed existing resources you can initially "plan" and later "apply" (provision) the resources and/or updates.
+Note, that in order to set up to providers some secrets are needed, which should be generated from source systems and can be provided in one of the following two ways:
+1. Append a new line to the `*.tfvars` with `<var_name> = "<secret_value>"`
+2. Set an environment variable named `export TF_VAR_<var_name>="<secret_value>"`
+
+Once the secret variables are set up, you can run the following command in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
+```
+terraform plan --var-file="[dev|prod].tfvars"
+```
+If the resource modification look as you expect, you can provision them:
+```
+terraform apply --var-file="[dev|prod].tfvars"
+```
+
 ## DevOps Principles
 The group adheres to the "*Three Ways*" characterizing DevOps (from "The DevOps Handbook") by the following:
 - **Flow**:
