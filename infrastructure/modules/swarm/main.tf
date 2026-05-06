@@ -1,0 +1,187 @@
+# Code obtained from exercise repo https://github.com/itu-devops/itu-minitwit-docker-swarm-teraform/blob/master/minitwit_swarm_cluster.tf
+#  _                _
+# | | ___  __ _  __| | ___ _ __
+# | |/ _ \/ _` |/ _` |/ _ \ '__|
+# | |  __/ (_| | (_| |  __/ |
+# |_|\___|\__,_|\__,_|\___|_|
+
+# create cloud vm
+resource "digitalocean_droplet" "minitwit-swarm-leader" {
+  image  = var.droplet_image // ubuntu-22-04-x64
+  name   = var.swarm_leader_name
+  region = var.region
+  size   = var.droplet_size
+  # add public ssh key so we can access the machine
+  ssh_keys = var.ssh_key_fingerprints
+
+  # specify a ssh connection
+  connection {
+    user        = "root"
+    host        = self.ipv4_address
+    type        = "ssh"
+    private_key = file(var.pvt_key)
+    timeout     = var.ssh_connection_timeout
+  }
+
+  provisioner "file" {
+    source      = var.docker_stack_file_source
+    destination = "/root/minitwit_stack.yml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      # allow ports for docker swarm
+      "ufw allow 2377/tcp",
+      "ufw allow 7946",
+      "ufw allow 4789/udp",
+      # ports for apps
+      "ufw allow 80",
+      "ufw allow 8080",
+      "ufw allow 8888",
+      # SSH
+      "ufw allow 22",
+
+      # initialize docker swarm cluster
+      "docker swarm init --advertise-addr ${self.ipv4_address}"
+    ]
+  }
+}
+
+resource "null_resource" "swarm-worker-token" {
+  depends_on = [digitalocean_droplet.minitwit-swarm-leader]
+
+  # save the worker join token
+  provisioner "local-exec" {
+    command = "ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.local_exec_ssh_identity_path} 'docker swarm join-token worker -q' > temp/worker_token"
+  }
+}
+
+resource "null_resource" "swarm-manager-token" {
+  depends_on = [digitalocean_droplet.minitwit-swarm-leader]
+  # save the manager join token
+  provisioner "local-exec" {
+    command = "ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.local_exec_ssh_identity_path} 'docker swarm join-token manager -q' > temp/manager_token"
+  }
+}
+
+
+#  _ __ ___   __ _ _ __   __ _  __ _  ___ _ __
+# | '_ ` _ \ / _` | '_ \ / _` |/ _` |/ _ \ '__|
+# | | | | | | (_| | | | | (_| | (_| |  __/ |
+# |_| |_| |_|\__,_|_| |_|\__,_|\__, |\___|_|
+#                              |___/
+
+# create cloud vm
+resource "digitalocean_droplet" "minitwit-swarm-manager" {
+  # create managers after the leader
+  depends_on = [null_resource.swarm-manager-token]
+
+  # number of vms to create
+  count = var.swarm_manager_count
+
+  image  = var.droplet_image
+  name   = "${var.swarm_manager_name_prefix}-${count.index}"
+  region = var.region
+  size   = var.droplet_size
+  # add public ssh key so we can access the machine
+  ssh_keys = var.ssh_key_fingerprints
+
+  # specify a ssh connection
+  connection {
+    user        = "root"
+    host        = self.ipv4_address
+    type        = "ssh"
+    private_key = file(var.pvt_key)
+    timeout     = var.ssh_connection_timeout
+  }
+
+  provisioner "file" {
+    source      = "temp/manager_token"
+    destination = "/root/manager_token"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      # allow ports for docker swarm
+      "ufw allow 2377/tcp",
+      "ufw allow 7946",
+      "ufw allow 4789/udp",
+      # ports for apps
+      "ufw allow 80",
+      "ufw allow 8080",
+      "ufw allow 8888",
+      # SSH
+      "ufw allow 22",
+
+      # join swarm cluster as managers
+      "docker swarm join --token $(cat manager_token) ${digitalocean_droplet.minitwit-swarm-leader.ipv4_address}"
+    ]
+  }
+}
+
+
+#                     _
+# __      _____  _ __| | _____ _ __
+# \ \ /\ / / _ \| '__| |/ / _ \ '__|
+#  \ V  V / (_) | |  |   <  __/ |
+#   \_/\_/ \___/|_|  |_|\_\___|_|
+#
+# create cloud vm
+resource "digitalocean_droplet" "minitwit-swarm-worker" {
+  # create workers after the leader
+  depends_on = [null_resource.swarm-worker-token]
+
+  # number of vms to create
+  count = var.swarm_worker_count
+
+  image  = var.droplet_image
+  name   = "${var.swarm_worker_name_prefix}-${count.index}"
+  region = var.region
+  size   = var.droplet_size
+  # add public ssh key so we can access the machine
+  ssh_keys = var.ssh_key_fingerprints
+
+  # specify a ssh connection
+  connection {
+    user        = "root"
+    host        = self.ipv4_address
+    type        = "ssh"
+    private_key = file(var.pvt_key)
+    timeout     = var.ssh_connection_timeout
+  }
+
+  provisioner "file" {
+    source      = "temp/worker_token"
+    destination = "/root/worker_token"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      # allow ports for docker swarm
+      "ufw allow 2377/tcp",
+      "ufw allow 7946",
+      "ufw allow 4789/udp",
+      # ports for apps
+      "ufw allow 80",
+      "ufw allow 8080",
+      "ufw allow 8888",
+      # SSH
+      "ufw allow 22",
+
+      # join swarm cluster as workers
+      "docker swarm join --token $(cat worker_token) ${digitalocean_droplet.minitwit-swarm-leader.ipv4_address}"
+    ]
+  }
+}
+
+output "minitwit-swarm-leader-ip-address" {
+  value = digitalocean_droplet.minitwit-swarm-leader.ipv4_address
+}
+
+output "minitwit-swarm-manager-ip-address" {
+  value = digitalocean_droplet.minitwit-swarm-manager.*.ipv4_address
+}
+
+output "minitwit-swarm-worker-ip-address" {
+  value = digitalocean_droplet.minitwit-swarm-worker.*.ipv4_address
+}

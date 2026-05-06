@@ -1,0 +1,84 @@
+variable "region" {
+  type        = string
+  description = "DigitalOcean region slug for all swarm droplets (e.g. fra1, nyc3)."
+}
+
+variable "pvt_key" {
+  type        = string
+  description = "Filesystem path to the SSH private key used by provisioners to connect as root to each droplet."
+  sensitive   = true
+}
+
+variable "ssh_key_fingerprints" {
+  type        = list(string)
+  description = "Fingerprints of SSH public keys already registered in DigitalOcean; attached to each droplet (same as digitalocean_droplet.ssh_keys)."
+}
+
+variable "droplet_image" {
+  type        = string
+  description = "DigitalOcean image slug for swarm nodes (Docker-on-Ubuntu appliance)."
+  default     = "docker-20-04"
+}
+
+variable "droplet_size" {
+  type        = string
+  description = "Droplet size slug (vCPU/RAM/disk plan) applied to leader, managers, and workers."
+  default     = "s-1vcpu-1gb"
+}
+
+variable "swarm_leader_name" {
+  type        = string
+  description = "DigitalOcean droplet name for the node that runs docker swarm init."
+  default     = "minitwit-swarm-leader"
+}
+
+variable "swarm_manager_name_prefix" {
+  type        = string
+  description = "Prefix for manager droplet names; final name is \"<prefix>-<index>\"."
+  default     = "minitwit-swarm-manager"
+}
+
+variable "swarm_worker_name_prefix" {
+  type        = string
+  description = "Prefix for worker droplet names; final name is \"<prefix>-<index>\"."
+  default     = "minitwit-swarm-worker"
+}
+
+variable "swarm_manager_count" {
+  type        = number
+  description = "Number of manager nodes in addition to the leader (each joins with a manager token)."
+  default     = 1
+
+  validation {
+    condition     = var.swarm_manager_count >= 1
+    error_message = "swarm_manager_count must be >= 1."
+  }
+}
+
+variable "swarm_worker_count" {
+  type        = number
+  description = "Number of worker nodes joining the swarm with a worker token."
+  default     = 1
+
+  validation {
+    condition     = var.swarm_worker_count >= 1
+    error_message = "swarm_worker_count must be >= 1."
+  }
+}
+
+variable "docker_stack_file_source" {
+  type        = string
+  description = "Path to the compose/stack file uploaded to the leader (relative to this module's directory)."
+}
+
+variable "ssh_connection_timeout" {
+  type        = string
+  description = "Timeout for SSH connections used by file and remote-exec provisioners (Terraform duration string)."
+  default     = "2m"
+}
+
+variable "local_exec_ssh_identity_path" {
+  type        = string
+  description = "Private key path for local-exec ssh used to read swarm join tokens from the leader (-i flag)."
+  default     = "ssh_key/terraform"
+}
