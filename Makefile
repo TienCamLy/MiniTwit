@@ -79,7 +79,11 @@ provision-digital-ocean:
 	vagrant provision
 
 clean-digital-ocean:
-	vagrant destroy && \
+	@if vagrant status | grep -q 'webserver.*running'; then \
+		vagrant destroy -f; \
+	else \
+		echo "Vagrant VM 'webserver' is not running."; \
+	fi && \
 	rm -rf .vagrant
 
 # Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
