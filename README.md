@@ -83,6 +83,8 @@ Note, that in order to set up to providers some secrets are needed, which should
 
 #### Secrets
 - `do_token` - a PAT token generated from within Digital Ocean
+- `pub_key` - Path to your public key file. Should match `pvt_key`.
+- `pvt_key` - Path to your private key file. Should match `pub_key`.
 
 #### Commands
 Once the secret variables are set up, you can run the following command in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
