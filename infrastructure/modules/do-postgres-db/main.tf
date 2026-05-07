@@ -10,9 +10,11 @@ resource "digitalocean_database_cluster" "postgres-db" {
 resource "digitalocean_database_firewall" "droplet-firewall" {
   cluster_id = digitalocean_database_cluster.postgres-db.id
 
-  for_each = var.droplet_firewall_entries
-  rule {
-    type  = "droplet"
-    value = each.value
+  dynamic "rule" {
+    for_each = var.droplet_firewall_entries
+    content {
+      type  = "droplet"
+      value = rule.value
+    }
   }
 }
