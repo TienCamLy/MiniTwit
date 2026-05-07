@@ -11,6 +11,12 @@ module "swarm" {
   pvt_key                  = var.pvt_key
   ssh_key_fingerprints     = [module.ssh_key_register.fingerprint]
   docker_stack_file_source = var.docker_stack_file_source
+  swarm_manager_count      = 0
+  swarm_worker_count       = 2
+  swarm_leader_name        = "webserver"
+  swarm_worker_name_prefix = "webserver-worker"
+  droplet_image            = "159651797" #"ubuntu-22-04-x64"
+  droplet_size             = "s-1vcpu-1gb"
 }
 
 module "public-ip" {
@@ -20,10 +26,10 @@ module "public-ip" {
 
 module "postgres-db" {
   source         = "../../modules/do-postgres-db"
-  name           = "minitwit-prod"
+  name           = "minitwit-db"
   engine         = "pg"
-  engine_version = "15"
-  size           = "db-s-1vcpu-1gb"
+  engine_version = "18"
+  size           = "db-s-2vcpu-4gb"
   region         = var.region
   node_count     = 1
   droplet_firewall_entries = merge(

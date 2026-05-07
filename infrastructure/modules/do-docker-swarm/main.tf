@@ -11,6 +11,7 @@ resource "digitalocean_droplet" "minitwit-swarm-leader" {
   name   = var.swarm_leader_name
   region = var.region
   size   = var.droplet_size
+  tags   = var.swarm_leader_tags
   # add public ssh key so we can access the machine
   ssh_keys = var.ssh_key_fingerprints
 
@@ -44,6 +45,12 @@ resource "digitalocean_droplet" "minitwit-swarm-leader" {
       # initialize docker swarm cluster
       "docker swarm init --advertise-addr ${self.ipv4_address}"
     ]
+  }
+
+  # Imported (or manually keyed) droplets often diverge from state for ssh_keys; the DO provider
+  # replaces the droplet if ssh_keys changes. Ignore drift so plans stay non-destructive.
+  lifecycle {
+    ignore_changes = [ssh_keys]
   }
 }
 
@@ -83,6 +90,7 @@ resource "digitalocean_droplet" "minitwit-swarm-manager" {
   name   = "${var.swarm_manager_name_prefix}-${count.index}"
   region = var.region
   size   = var.droplet_size
+  tags   = var.swarm_manager_tags
   # add public ssh key so we can access the machine
   ssh_keys = var.ssh_key_fingerprints
 
@@ -138,6 +146,7 @@ resource "digitalocean_droplet" "minitwit-swarm-worker" {
   name   = "${var.swarm_worker_name_prefix}-${count.index}"
   region = var.region
   size   = var.droplet_size
+  tags   = var.swarm_worker_tags
   # add public ssh key so we can access the machine
   ssh_keys = var.ssh_key_fingerprints
 

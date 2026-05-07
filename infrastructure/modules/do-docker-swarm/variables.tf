@@ -32,6 +32,24 @@ variable "swarm_leader_name" {
   default     = "minitwit-swarm-leader"
 }
 
+variable "swarm_leader_tags" {
+  type        = list(string)
+  description = "Tags applied only to the swarm leader droplet."
+  default     = ["Manager"]
+}
+
+variable "swarm_manager_tags" {
+  type        = list(string)
+  description = "Tags applied only to the swarm manager droplets."
+  default     = ["Manager"]
+}
+
+variable "swarm_worker_tags" {
+  type        = list(string)
+  description = "Tags applied only to the swarm worker droplets."
+  default     = ["Worker"]
+}
+
 variable "swarm_manager_name_prefix" {
   type        = string
   description = "Prefix for manager droplet names; final name is \"<prefix>-<index>\"."
@@ -48,22 +66,12 @@ variable "swarm_manager_count" {
   type        = number
   description = "Number of manager nodes in addition to the leader (each joins with a manager token)."
   default     = 1
-
-  validation {
-    condition     = var.swarm_manager_count >= 1
-    error_message = "swarm_manager_count must be >= 1."
-  }
 }
 
 variable "swarm_worker_count" {
   type        = number
   description = "Number of worker nodes joining the swarm with a worker token."
   default     = 1
-
-  validation {
-    condition     = var.swarm_worker_count >= 1
-    error_message = "swarm_worker_count must be >= 1."
-  }
 }
 
 variable "docker_stack_file_source" {

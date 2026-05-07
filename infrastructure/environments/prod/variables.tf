@@ -24,7 +24,7 @@ variable "pvt_key" {
 variable "ssh_key_name" {
   type = string
   description = "The name of the SSH key to use for the swarm cluster"
-  default     = "minitwit-prod-key"
+  default     = "do_ssh_key"
 }
 
 variable "docker_stack_file_source" {

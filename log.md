@@ -81,3 +81,10 @@
 ### Week 13 (May 1 - May 6)
 * Added `.mailmap` file to consolidate authors into persons
 * Added two new static analysis tool to `continuous-QA-deployment`, `hadolint` for testing the linting of Dockerfiles and Roslynator for analyzing the C# code. 
+
+### Week 13 (May 1 - May 7)
+* **Terraform / IaC on DigitalOcean:** Added `infrastructure/` with **dev** and **prod** root modules, **remote state** via DigitalOcean Spaces (`backend.tf` / `backend.tfvars`, `terraform init -backend-config=…`), and documented prerequisites, secrets (`do_token`, SSH key paths), and `plan` / `apply` with `dev.tfvars` / `prod.tfvars` in the README.
+* **IaC Modules:** `do-ssh-key` (upload SSH public key), `do-single-droplet` (single VM + compose file artifact for provisioning), `do-docker-swarm` (Swarm leader + worker droplets and stack from compose), `do-public-ip` (floating IP on the target droplet), `do-postgres-db` (managed PostgreSQL with firewall rules so only the relevant droplet(s) can reach the DB).
+* **Environments:** **Dev** — one droplet and `minitwit-test-db`. **Prod** — Swarm layout (leader `webserver`, two workers) and `minitwit-db`, with DB firewall `droplet_firewall_entries` covering leader, managers, and workers; tightened firewall configuration toward **one firewall resource with multiple allowances** instead of one per droplet where applicable.
+* Small **`.gitignore`** updates for Terraform artifacts alongside the new tree.
+* Terraform Import for all existing resources in digital ocean to have non-destructive swap-over and allow managing existing resources using terraform going forward.

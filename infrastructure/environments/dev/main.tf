@@ -22,9 +22,9 @@ module "public_ip" {
 
 module "postgres-db" {
   source = "../../modules/do-postgres-db"
-  name = "minitwit-dev"
+  name = "minitwit-test-db"
   engine = "pg"
-  engine_version = "15"
+  engine_version = "18"
   size = "db-s-1vcpu-1gb"
   region = var.region
   node_count = 1
