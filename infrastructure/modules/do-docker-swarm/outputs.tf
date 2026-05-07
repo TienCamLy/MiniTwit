@@ -13,3 +13,11 @@ output "minitwit-swarm-worker-ip-address" {
 output "minitwit-swarm-leader-droplet-id" {
   value = digitalocean_droplet.minitwit-swarm-leader.id
 }
+
+output "minitwit-swarm-manager-droplet-ids" {
+  value = digitalocean_droplet.minitwit-swarm-manager.*.id
+}
+
+output "minitwit-swarm-worker-droplet-ids" {
+  value = digitalocean_droplet.minitwit-swarm-worker.*.id
+}
