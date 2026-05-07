@@ -35,4 +35,10 @@ resource "digitalocean_droplet" "single-droplet" {
       "docker compose -f /root/compose.yaml up -d --build"
     ]
   }
+
+  # Imported (or manually keyed) droplets often diverge from state for ssh_keys; the DO provider
+  # replaces the droplet if ssh_keys changes. Ignore drift so plans stay non-destructive.
+  lifecycle {
+    ignore_changes = [ssh_keys, image]
+  }
 }

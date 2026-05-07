@@ -50,7 +50,7 @@ resource "digitalocean_droplet" "minitwit-swarm-leader" {
   # Imported (or manually keyed) droplets often diverge from state for ssh_keys; the DO provider
   # replaces the droplet if ssh_keys changes. Ignore drift so plans stay non-destructive.
   lifecycle {
-    ignore_changes = [ssh_keys]
+    ignore_changes = [ssh_keys, image]
   }
 }
 
@@ -125,6 +125,12 @@ resource "digitalocean_droplet" "minitwit-swarm-manager" {
       "docker swarm join --token $(cat manager_token) ${digitalocean_droplet.minitwit-swarm-leader.ipv4_address}"
     ]
   }
+
+  # Imported (or manually keyed) droplets often diverge from state for ssh_keys; the DO provider
+  # replaces the droplet if ssh_keys changes. Ignore drift so plans stay non-destructive.
+  lifecycle {
+    ignore_changes = [ssh_keys, image]
+  }
 }
 
 
@@ -180,5 +186,11 @@ resource "digitalocean_droplet" "minitwit-swarm-worker" {
       # join swarm cluster as workers
       "docker swarm join --token $(cat worker_token) ${digitalocean_droplet.minitwit-swarm-leader.ipv4_address}"
     ]
+  }
+
+  # Imported (or manually keyed) droplets often diverge from state for ssh_keys; the DO provider
+  # replaces the droplet if ssh_keys changes. Ignore drift so plans stay non-destructive.
+  lifecycle {
+    ignore_changes = [ssh_keys, image]
   }
 }
