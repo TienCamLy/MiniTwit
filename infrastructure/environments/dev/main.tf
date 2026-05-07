@@ -19,3 +19,14 @@ module "public_ip" {
   region     = var.region
   droplet_id = module.single-droplet.droplet_id
 }
+
+module "postgres-db" {
+  source = "../../modules/do-postgres-db"
+  name = "minitwit-dev"
+  engine = "pg"
+  engine_version = "15"
+  size = "db-s-1vcpu-1gb"
+  region = var.region
+  node_count = 1
+  droplet_firewall_entries = { dev = module.single-droplet.droplet_id }
+}
