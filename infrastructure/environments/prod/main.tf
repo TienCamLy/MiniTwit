@@ -5,7 +5,7 @@ module "ssh_key_register" {
 }
 
 module "swarm" {
-  source = "../../modules/swarm"
+  source = "../../modules/do-docker-swarm"
 
   region                   = var.region
   pvt_key                  = var.pvt_key

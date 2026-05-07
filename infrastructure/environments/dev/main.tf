@@ -5,7 +5,7 @@ module "ssh_key_register" {
 }
 
 module "single-droplet" {
-  source = "../../modules/single-droplet"
+  source = "../../modules/do-single-droplet"
 
   name                 = var.droplet_name
   region               = var.region
