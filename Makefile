@@ -19,23 +19,37 @@ app-down-build: # Delete all volumes and rebuild the app
 install-ef-tools:
 	dotnet tool install --global dotnet-ef
 
-# Database Migrations from root directory
-db-migrate:
-	dotnet ef migrations add $(name) \
+# Database Migrations from root directory unless a migration with same name exists
+db-migrate: 
+	@if dotnet ef migrations list \
 		--context MiniTwitContext \
 		--project razor-pages/Infrastructure \
-		--startup-project razor-pages/Web && \
+		--startup-project razor-pages/Web | grep -q "$(name)"; then \
+		echo "Migration '$(name)' already exists. Skipping add."; \
+	else \
+		dotnet ef migrations add $(name) \
+			--context MiniTwitContext \
+			--project razor-pages/Infrastructure \
+			--startup-project razor-pages/Web; \
+	fi && \
 	dotnet ef database update \
-    	--context MiniTwitContext \
-    	--project razor-pages/Infrastructure \
-    	--startup-project razor-pages/Web
-
-# Database remove migrations from root directory
-db-remove-migration:
-	dotnet ef migrations remove \
 		--context MiniTwitContext \
 		--project razor-pages/Infrastructure \
 		--startup-project razor-pages/Web
+
+# Database remove migrations from root directory if any exist
+db-remove-migration:
+	@if dotnet ef migrations list \
+		--context MiniTwitContext \
+		--project razor-pages/Infrastructure \
+		--startup-project razor-pages/Web | grep -q "No migrations were found"; then \
+		echo "No migrations to remove."; \
+	else \
+		dotnet ef migrations remove --force \
+			--context MiniTwitContext \
+			--project razor-pages/Infrastructure \
+			--startup-project razor-pages/Web; \
+	fi
 
 # Database Migration Update from root directory
 db-update:
@@ -65,7 +79,11 @@ provision-digital-ocean:
 	vagrant provision
 
 clean-digital-ocean:
-	vagrant destroy && \
+	@if vagrant status | grep -q 'webserver.*running'; then \
+		vagrant destroy -f; \
+	else \
+		echo "Vagrant VM 'webserver' is not running."; \
+	fi && \
 	rm -rf .vagrant
 
 # Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
@@ -87,20 +105,39 @@ test-ui-selenium:
 	cd tests/selenium && \
 	docker compose up --build --abort-on-container-exit --exit-code-from tests
 
-lint-spell-checker:
+spell-checker:
 	printf "\n\nRunning spell checker tests...\n" && \
 	pip install codespell && \
 	cd razor-pages && \
 	codespell
 
-lint-c-sharp:
+c-sharp-code-formatter:
 	printf "\n\nRunning C# linting tests...\n" && \
 	dotnet format --verify-no-changes razor-pages/Infrastructure/ && \
 	dotnet format --verify-no-changes razor-pages/Web/ && \
 	dotnet format --verify-no-changes razor-pages/Core/
 
+hadolint-docker-linter: # runs as a docker container itself
+	printf "\n\n Running Docker linter tests...\n" && \
+	DOCKERFILES="$$(find . -type f \( -name 'Dockerfile' -o -name 'Dockerfile-*' -o -name '*.Dockerfile' \) -not -path './.git/*')" && \
+	if [ -z "$$DOCKERFILES" ]; then \
+		echo "No Dockerfiles found."; \
+		exit 0; \
+	fi && \
+	for dockerfile in $$DOCKERFILES; do \
+		echo "Linting $$dockerfile"; \
+		cat "$$dockerfile" | docker run --rm -i hadolint/hadolint; \
+	done
+
+roslynator-c-sharp-analyzer: # change --severity-level to "info" to get more diagnostics
+	printf "\n\nRunning C# analyzer tests...\n" && \
+	dotnet tool install -g roslynator.dotnet.cli
+	roslynator analyze razor-pages/Core/Core.csproj --severity-level warning
+	roslynator analyze razor-pages/Infrastructure/Infrastructure.csproj --severity-level warning
+	roslynator analyze razor-pages/Web/Web.csproj --severity-level warning
+
 test-all: test-ui-selenium test-api-simulator
-lint-all: lint-spell-checker lint-c-sharp
+lint-all: spell-checker c-sharp-code-formatter roslynator-c-sharp-analyzer hadolint-docker-linter
 run-all-validations: test-all lint-all
 
 build-and-test: # requires API_TOKEN to be set in environment variable API_TOKEN

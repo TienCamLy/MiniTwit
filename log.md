@@ -82,3 +82,5 @@
 * Added `.mailmap` file to consolidate authors into persons
 * Added `Docker-Scout` to the CD workflow, which scans for vulnerabilities.
 * Added `Codeql` but its not a workflow file. its a setting enabled within github that automatically scan our code
+* Added two new static analysis tool to `continuous-QA-deployment`, `hadolint` for testing the linting of Dockerfiles and Roslynator for analyzing the C# code. 
+* Reviewed the idempotence of our configuration files. Applied small changes to both Dockerfiles; reviewed both Vagrantfiles but found no issues; applied changes to the Makefile; updated the readme.
