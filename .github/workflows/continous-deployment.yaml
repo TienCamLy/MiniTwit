@@ -26,6 +26,9 @@ on:
 # CONNECTIONSTRING
 # API_TOKEN
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
