@@ -22,6 +22,8 @@ on:
 # CONNECTIONSTRING
 # API_TOKEN
 # PROD_LOKI_URL
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
 
 jobs:
   build:
@@ -55,7 +57,7 @@ jobs:
           chmod 600 ~/.ssh/do_ssh_key
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 

@@ -25,6 +25,8 @@ permissions:
 
 # TESTCONNECTIONSTRING
 # API_TOKEN
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
 
 jobs:
   build:
