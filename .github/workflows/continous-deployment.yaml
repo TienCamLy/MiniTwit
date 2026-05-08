@@ -54,7 +54,9 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/do_ssh_key
+          echo "$SSH_KEY_PUB" > ~/.ssh/do_ssh_key.pub
           chmod 600 ~/.ssh/do_ssh_key
+          chmod 600 ~/.ssh/do_ssh_key.pub
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -73,10 +75,8 @@ jobs:
           cd infrastructure/environments/prod && terraform apply -var-file=prod.tfvars
         env:
           TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
-          TF_VAR_pub_key: ${{ secrets.SSH_PUBLIC_KEY }}
-          TF_VAR_pvt_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          TF_VAR_pub_key: "~/.ssh/do_ssh_key.pub"
+          TF_VAR_pvt_key: "~/.ssh/do_ssh_key"
 
       - name: Copy config files to all nodes in Docker Swarm cluster
         run: |
