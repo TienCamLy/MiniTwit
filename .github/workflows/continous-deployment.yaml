@@ -72,7 +72,7 @@ jobs:
         run: |
           cd infrastructure/environments/prod && terraform apply -var-file=prod.tfvars
         env:
-          TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
+          TF_VAR_do_token: ${{ secrets.API_TOKEN }}
           TF_VAR_pub_key: ${{ secrets.SSH_PUBLIC_KEY }}
           TF_VAR_pvt_key: ${{ secrets.SSH_PRIVATE_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
