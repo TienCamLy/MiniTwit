@@ -8,6 +8,10 @@ on:
   # allow manual triggers too
   workflow_dispatch:
 
+permissions:
+  pull-requests: write
+  contents: read
+
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
 # DOCKER_USERNAME
@@ -65,6 +69,9 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Run Terraform plan
         run: |
           cd infrastructure/environments/prod && terraform init && terraform plan -var-file=prod.tfvars -out=plan.out
@@ -74,6 +81,12 @@ jobs:
           TF_VAR_pvt_key: ${{ secrets.SSH_PRIVATE_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Post Terraform Plan Comment in PR
+        uses: towardsthecloud/terraform-plan-pr-commenter@v1
+        with:
+          planfile: plan.out
+          working-directory: infrastructure/environments/prod
           
       - name: Copy .env files to server
         run: |
