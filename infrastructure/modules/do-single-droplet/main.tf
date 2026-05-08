@@ -32,6 +32,7 @@ resource "digitalocean_droplet" "single-droplet" {
       "ufw allow 22",
 
       # start the services
+      "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io docker-compose-v2",
       "docker compose -f /root/compose.yaml up -d --build"
     ]
   }
