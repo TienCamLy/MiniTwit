@@ -85,7 +85,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Post Terraform Plan Comment in PR
-        uses: towardsthecloud/terraform-plan-pr-commenter@v1
+        uses: towardsthecloud/terraform-plan-pr-commenter@e0e93b3396eb8dfbf70109c06340dc64ce26c818
         with:
           planfile: plan.out
           working-directory: infrastructure/environments/prod
