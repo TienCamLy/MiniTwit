@@ -60,10 +60,17 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+      
+      - name: Run Terraform Init
+        run: |
+          cd infrastructure/environments/prod && terraform init -backend-config=backend.tfvars
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Run Terraform Apply
         run: |
-          cd infrastructure/environments/prod && terraform init && terraform apply -var-file=prod.tfvars
+          cd infrastructure/environments/prod && terraform apply -var-file=prod.tfvars
         env:
           TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
           TF_VAR_pub_key: ${{ secrets.SSH_PUBLIC_KEY }}
