@@ -54,7 +54,7 @@ resource "digitalocean_droplet" "minitwit-swarm-leader" {
   }
 }
 
-resource "null_resource" "swarm-worker-token" {
+resource "terraform_data" "swarm-worker-token" {
   depends_on = [digitalocean_droplet.minitwit-swarm-leader]
 
   # save the worker join token
@@ -63,7 +63,7 @@ resource "null_resource" "swarm-worker-token" {
   }
 }
 
-resource "null_resource" "swarm-manager-token" {
+resource "terraform_data" "swarm-manager-token" {
   depends_on = [digitalocean_droplet.minitwit-swarm-leader]
   # save the manager join token
   provisioner "local-exec" {
@@ -81,7 +81,7 @@ resource "null_resource" "swarm-manager-token" {
 # create cloud vm
 resource "digitalocean_droplet" "minitwit-swarm-manager" {
   # create managers after the leader
-  depends_on = [null_resource.swarm-manager-token]
+  depends_on = [terraform_data.swarm-manager-token]
 
   # number of vms to create
   count = var.swarm_manager_count
@@ -143,7 +143,7 @@ resource "digitalocean_droplet" "minitwit-swarm-manager" {
 # create cloud vm
 resource "digitalocean_droplet" "minitwit-swarm-worker" {
   # create workers after the leader
-  depends_on = [null_resource.swarm-worker-token]
+  depends_on = [terraform_data.swarm-worker-token]
 
   # number of vms to create
   count = var.swarm_worker_count
