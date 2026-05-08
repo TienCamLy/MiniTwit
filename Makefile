@@ -19,23 +19,37 @@ app-down-build: # Delete all volumes and rebuild the app
 install-ef-tools:
 	dotnet tool install --global dotnet-ef
 
-# Database Migrations from root directory
-db-migrate:
-	dotnet ef migrations add $(name) \
+# Database Migrations from root directory unless a migration with same name exists
+db-migrate: 
+	@if dotnet ef migrations list \
 		--context MiniTwitContext \
 		--project razor-pages/Infrastructure \
-		--startup-project razor-pages/Web && \
+		--startup-project razor-pages/Web | grep -q "$(name)"; then \
+		echo "Migration '$(name)' already exists. Skipping add."; \
+	else \
+		dotnet ef migrations add $(name) \
+			--context MiniTwitContext \
+			--project razor-pages/Infrastructure \
+			--startup-project razor-pages/Web; \
+	fi && \
 	dotnet ef database update \
-    	--context MiniTwitContext \
-    	--project razor-pages/Infrastructure \
-    	--startup-project razor-pages/Web
-
-# Database remove migrations from root directory
-db-remove-migration:
-	dotnet ef migrations remove \
 		--context MiniTwitContext \
 		--project razor-pages/Infrastructure \
 		--startup-project razor-pages/Web
+
+# Database remove migrations from root directory if any exist
+db-remove-migration:
+	@if dotnet ef migrations list \
+		--context MiniTwitContext \
+		--project razor-pages/Infrastructure \
+		--startup-project razor-pages/Web | grep -q "No migrations were found"; then \
+		echo "No migrations to remove."; \
+	else \
+		dotnet ef migrations remove --force \
+			--context MiniTwitContext \
+			--project razor-pages/Infrastructure \
+			--startup-project razor-pages/Web; \
+	fi
 
 # Database Migration Update from root directory
 db-update:
@@ -65,7 +79,11 @@ provision-digital-ocean:
 	vagrant provision
 
 clean-digital-ocean:
-	vagrant destroy && \
+	@if vagrant status | grep -q 'webserver.*running'; then \
+		vagrant destroy -f; \
+	else \
+		echo "Vagrant VM 'webserver' is not running."; \
+	fi && \
 	rm -rf .vagrant
 
 # Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
