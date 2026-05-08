@@ -3,14 +3,10 @@ name: Continuous Deployment
 
 on:
   push:
-    
-    # Run workflow every time a new tag is pushed to the main branch
     tags:
       - '*'
 
-  # allow manual triggers for now too
   workflow_dispatch:
-    manual: true
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -25,6 +21,7 @@ on:
 
 # CONNECTIONSTRING
 # API_TOKEN
+# PROD_LOKI_URL
 
 jobs:
   build:
@@ -32,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Login to Docker Hub
         uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
@@ -51,7 +48,6 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
-
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
@@ -59,15 +55,26 @@ jobs:
           chmod 600 ~/.ssh/do_ssh_key
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        
+
+      - name: Run Terraform Apply
+        run: |
+          cd infrastructure/environments/prod && terraform init && terraform apply -var-file=prod.tfvars
+        env:
+          TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
+          TF_VAR_pub_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          TF_VAR_pvt_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Copy config files to all nodes in Docker Swarm cluster
         run: |
-          NODES="$SSH_HOST $SSH_HOST_TEST $MONITOR_SSH_HOST"  
+          NODES="$SSH_HOST $SSH_HOST_TEST $MONITOR_SSH_HOST"
           for IP in $NODES; do
-            ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@$IP" 'mkdir -p /vagrant/promtail'
+            ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@$IP" \
+              'mkdir -p /vagrant/promtail /vagrant/razor-pages/Web && touch /vagrant/razor-pages/Web/.env /vagrant/promtail/.env'
             scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/promtail-config.yaml "${SSH_USER}@$IP:/vagrant/promtail/promtail-config.yaml"
-          done     
-               
+          done
+
           scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./compose.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/compose.yaml"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
@@ -75,22 +82,21 @@ jobs:
           SSH_HOST_TEST: ${{ secrets.SSH_HOST_TEST }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
 
-      - name: Deploy to server (using compose)
-        run: >
-          ssh $SSH_USER@$SSH_HOST -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
-          "export DOCKER_USERNAME='"$DOCKER_USERNAME"' && 
-           export IMAGE_NAME='minitwitimage' &&
-           export IMAGE_TAG='${{ github.sha }}' && 
-           export API_TOKEN='"$API_TOKEN"' &&
-           export CONNECTIONSTRING='"$CONNECTIONSTRING"' &&
-           export LOKI_URL='"$PROD_LOKI_URL"' &&
-           cd /vagrant &&  
-           docker stack deploy --with-registry-auth --resolve-image always -c compose.yaml minitwit"
+      - name: Deploy to server (Docker Swarm stack)
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
-          LOKI_URL: ${{ secrets.PROD_LOKI_URL }}
-          
+          PROD_LOKI_URL: ${{ secrets.PROD_LOKI_URL }}
+        run: |
+          ssh "${SSH_USER}@${SSH_HOST}" -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no \
+            "export DOCKER_USERNAME=$(printf %q "$DOCKER_USERNAME") && \
+             export IMAGE_NAME=minitwitimage && \
+             export IMAGE_TAG=$(printf %q "${{ github.sha }}") && \
+             export API_TOKEN=$(printf %q "$API_TOKEN") && \
+             export CONNECTIONSTRING=$(printf %q "$CONNECTIONSTRING") && \
+             export PROD_LOKI_URL=$(printf %q "$PROD_LOKI_URL") && \
+             cd /vagrant && \
+             docker stack deploy --with-registry-auth --resolve-image always -c compose.yaml minitwit"
