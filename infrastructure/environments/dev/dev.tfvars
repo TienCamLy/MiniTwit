@@ -1,2 +1,2 @@
-region                   = "fra1"
-docker_stack_file_source = "../../../compose.yaml"
+region              = "fra1"
+droplet_file_source = "../../../compose-test.yaml"
