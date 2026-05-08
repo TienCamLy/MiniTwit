@@ -1,0 +1,33 @@
+services:
+
+  selenium:
+    #image: seleniarm/standalone-chromium:latest
+    image: selenium/standalone-chrome:latest
+    shm_size: "2g" # Shared memory allocated to building Docker images
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/wd/hub/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - test-network
+
+  tests:
+    depends_on:
+      selenium:
+        condition: service_healthy
+    build:
+      context: . # builds dockerfiles from the specified folder, here base folder
+      dockerfile: Dockerfile
+    environment:
+      # With containers on the same network, use the service names instead of IPs
+      - SELENIUM_REMOTE_URL=http://selenium:4444/wd/hub # Selenium WebDriver endpoint
+      - REGISTRATION_PAGE=${REGISTRATION_PAGE:-http://127.0.0.1:8081/register}
+    networks:
+      - test-network
+
+# for communication between selenium, tests and razor-pages containers
+networks:
+  test-network:
+    name: "test-network"

@@ -11,7 +11,7 @@ public static class Helpers
         using var md5 = MD5.Create();
         var inputBytes = Encoding.UTF8.GetBytes(email.Trim().ToLowerInvariant());
         var hashBytes = md5.ComputeHash(inputBytes);
-        
+
         var sb = new StringBuilder();
         foreach (var b in hashBytes)
             sb.Append(b.ToString("x2"));

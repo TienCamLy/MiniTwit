@@ -1,10 +1,19 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
+# Razor Pages App
+app-down: # Delete all volumes
+	docker compose down -v
+
 # Razor Pages App
 app-build: # Rebuilds the app without deleting volumes
 	ISLOCALDEVELOPMENT=true docker compose -f compose-test.yaml up --build
 
 app-down-build: # Delete all volumes and rebuild the app
-	docker compose down -v && \
-	ISLOCALDEVELOPMENT=true docker compose -f compose-test.yaml up --build
+	make app-down && \
+	make app-build
 
 # Install EF Tools
 install-ef-tools:
@@ -62,3 +71,66 @@ clean-digital-ocean:
 # Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
 monitor-build:
 	cd monitoring && docker compose up --build
+
+# Tests
+test-api-simulator: 
+# requires API_TOKEN to be set in environment variable API_TOKEN
+# requires TEST_GUI_IP to be set in environment variable TEST_GUI_IP
+	printf "\n\nRunning API simulator tests...\n" && \
+	python tests/API_Spec/wait_for_port.py --host $(TEST_GUI_IP) --port 8081 && \
+	cd tests/API_Spec && \
+	pip install -r requirements.txt && \
+	SIM_DEBUG=1 python minitwit_simulator.py http://$(TEST_GUI_IP):8081 $(API_TOKEN) 50
+
+test-ui-selenium: 
+	printf "\n\nRunning UI selenium tests...\n" && \
+	cd tests/selenium && \
+	docker compose up --build --abort-on-container-exit --exit-code-from tests
+
+spell-checker:
+	printf "\n\nRunning spell checker tests...\n" && \
+	pip install codespell && \
+	cd razor-pages && \
+	codespell
+
+c-sharp-code-formatter:
+	printf "\n\nRunning C# linting tests...\n" && \
+	dotnet format --verify-no-changes razor-pages/Infrastructure/ && \
+	dotnet format --verify-no-changes razor-pages/Web/ && \
+	dotnet format --verify-no-changes razor-pages/Core/
+
+hadolint-docker-linter: # runs as a docker container itself
+	printf "\n\n Running Docker linter tests...\n" && \
+	DOCKERFILES="$$(find . -type f \( -name 'Dockerfile' -o -name 'Dockerfile-*' -o -name '*.Dockerfile' \) -not -path './.git/*')" && \
+	if [ -z "$$DOCKERFILES" ]; then \
+		echo "No Dockerfiles found."; \
+		exit 0; \
+	fi && \
+	for dockerfile in $$DOCKERFILES; do \
+		echo "Linting $$dockerfile"; \
+		cat "$$dockerfile" | docker run --rm -i hadolint/hadolint; \
+	done
+
+roslynator-c-sharp-analyzer: # change --severity-level to "info" to get more diagnostics
+	printf "\n\nRunning C# analyzer tests...\n" && \
+	dotnet tool install -g roslynator.dotnet.cli
+	roslynator analyze razor-pages/Core/Core.csproj --severity-level warning
+	roslynator analyze razor-pages/Infrastructure/Infrastructure.csproj --severity-level warning
+	roslynator analyze razor-pages/Web/Web.csproj --severity-level warning
+
+test-all: test-ui-selenium test-api-simulator
+lint-all: spell-checker c-sharp-code-formatter roslynator-c-sharp-analyzer hadolint-docker-linter
+run-all-validations: test-all lint-all
+
+build-and-test: # requires API_TOKEN to be set in environment variable API_TOKEN
+	printf "Building and testing Docker image...\n" && \
+	make app-build && \
+	make run-all-validations && \
+	printf "\n\nStopping and removing Docker container...\n" && \
+	make app-down
+
+# Local auto-linting
+auto-lint:
+	dotnet format razor-pages/Infrastructure/ && \
+	dotnet format razor-pages/Web/ && \
+	dotnet format razor-pages/Core/

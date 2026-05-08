@@ -16,7 +16,7 @@ public class RegisterModel : PageModel
     [BindProperty] public string Password { get; set; } = string.Empty;
 
     [BindProperty] public string Password2 { get; set; } = string.Empty;
-    
+
     public string Error { get; set; } = String.Empty;
     public RegisterModel(IUserRepository userRepository)
     {
