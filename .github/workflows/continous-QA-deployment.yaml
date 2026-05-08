@@ -91,6 +91,8 @@ jobs:
           TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
           TF_VAR_pub_key: "~/.ssh/do_ssh_key.pub"
           TF_VAR_pvt_key: "~/.ssh/do_ssh_key"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Post Terraform Plan Comment in PR
         uses: towardsthecloud/terraform-plan-pr-commenter@e0e93b3396eb8dfbf70109c06340dc64ce26c818
