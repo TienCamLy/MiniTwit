@@ -80,3 +80,5 @@
 * Added additional debug printouts to `test-api-simulator`
 ### Week 13 (May 1 - May 6)
 * Added `.mailmap` file to consolidate authors into persons
+* Added `Docker-Scout` to the CD workflow, which scans for vulnerabilities.
+* Added `Codeql` but its not a workflow file. its a setting enabled within github that automatically scan our code

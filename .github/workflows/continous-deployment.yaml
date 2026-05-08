@@ -85,13 +85,13 @@ jobs:
 
           chmod +x $HOME/.docker/cli-plugins/docker-scout
 
-          docker scout version || true
+          docker scout version
 
       - name: Run Docker Scout CVE scan (SHIFT-LEFT)
         run: |
           docker scout cves minitwit-app:latest \
             --only-severity critical,high \
-            --exit-code || true    
+            --exit-code
 
       - name: Deploy to server (using compose)
         run: >
