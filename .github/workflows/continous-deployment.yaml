@@ -65,7 +65,7 @@ jobs:
       
       - name: Run Terraform Init
         run: |
-          cd infrastructure/environments/prod && terraform init -backend-config=backend.tfvars
+          make tf-init
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

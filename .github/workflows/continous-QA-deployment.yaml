@@ -79,14 +79,14 @@ jobs:
       
       - name: Run Terraform Init
         run: |
-          cd infrastructure/environments/prod && terraform init -backend-config=backend.tfvars
+          make tf-init
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Run Terraform plan
         run: |
-          cd infrastructure/environments/prod && terraform plan -var-file=prod.tfvars -out=plan.out
+          make tf-plan
         env:
           TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
           TF_VAR_pub_key: "~/.ssh/do_ssh_key.pub"
