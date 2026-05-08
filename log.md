@@ -87,3 +87,4 @@
 
 ### Week 14 (May 8 - May 14)
 * Updated workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24 on June 2nd.
+* Specified permissions in github action workflows to satisfy CodeQL's warnings. 
