@@ -1,3 +1,7 @@
+# OBS: NOT DEPLOYED
+# This is what we intiially added as a QA / DEV environment, but due to Digital Ocean's limitation on
+# number of droplets being max 3, the droplet for this was taken over by the PROD environment.
+# Therefore it is not possible at our current account level to spin up DEV :(
 module "ssh_key_register" {
   source  = "../../modules/do-ssh-key"
   pub_key = var.pub_key
