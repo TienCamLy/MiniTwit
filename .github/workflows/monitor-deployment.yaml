@@ -12,6 +12,9 @@ on:
 # SSH_PRIVATE_KEY
 # MONITOR_SSH_HOST
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
