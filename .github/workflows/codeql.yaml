@@ -2,9 +2,13 @@ name: CodeQL Security Scan
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - fresh-ci-fix
+
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   analyze:
