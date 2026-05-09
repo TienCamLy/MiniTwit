@@ -78,11 +78,15 @@
 * Simulator and UI tests now use a remote postgres-based db `minitwit-test-db` to run validation. The database tables are truncated at the beginning of each workflow ensuring state consistency.
 * Cleanup of unused images on `webserver-test` before running tests to address running out of space issues.
 * Added additional debug printouts to `test-api-simulator`
-### Week 13 (May 1 - May 6)
-* Added `.mailmap` file to consolidate authors into persons
-* Added two new static analysis tool to `continuous-QA-deployment`, `hadolint` for testing the linting of Dockerfiles and Roslynator for analyzing the C# code. 
-
 ### Week 13 (May 1 - May 7)
+* Added `.mailmap` file to consolidate authors into persons
+* Added `Docker-Scout` to the CD workflow, which scans for vulnerabilities.
+* Added `Codeql` but its not a workflow file. its a setting enabled within github that automatically scan our code
+* Added two new static analysis tool to `continuous-QA-deployment`, `hadolint` for testing the linting of Dockerfiles and Roslynator for analyzing the C# code. 
+* Reviewed the idempotence of our configuration files. Applied small changes to both Dockerfiles; reviewed both Vagrantfiles but found no issues; applied changes to the Makefile; updated the readme.
+
+### Week 14 (May 8 - May 14)
+* Updated workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24 on June 2nd.
 * **Terraform / IaC on DigitalOcean:** Added `infrastructure/` with **dev** and **prod** root modules, **remote state** via DigitalOcean Spaces (`backend.tf` / `backend.tfvars`, `terraform init -backend-config=…`), and documented prerequisites, secrets (`do_token`, SSH key paths), and `plan` / `apply` with `dev.tfvars` / `prod.tfvars` in the README.
 * **IaC Modules:** `do-ssh-key` (upload SSH public key), `do-single-droplet` (single VM + compose file artifact for provisioning), `do-docker-swarm` (Swarm leader + worker droplets and stack from compose), `do-public-ip` (floating IP on the target droplet), `do-postgres-db` (managed PostgreSQL with firewall rules so only the relevant droplet(s) can reach the DB).
 * **Environments:** **Dev** — one droplet and `minitwit-test-db`. **Prod** — Swarm layout (leader `webserver`, two workers) and `minitwit-db`, with DB firewall `droplet_firewall_entries` covering leader, managers, and workers; tightened firewall configuration toward **one firewall resource with multiple allowances** instead of one per droplet where applicable.

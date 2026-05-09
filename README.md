@@ -120,3 +120,19 @@ We use the following static analysis tools in our CI pipelines to improve code q
 - **Roslynator**, a Roslyn-based analyzer (meaning deep understanding of C#) that detects bugs, security issues, and violations of best practices. Set to `--severity-level=warning` to limit the amount of diagnostics it produces by default. 
 - **Codespell**, a general spell-checker, ensuring the right spelling of common words within the entire codebase. Fails the pipeline if it finds errors such as "teh" ==> "the".
 - **Hadolint**, a Docker linter. Scans the repository for Dockerfiles, then runs the linter against each. Runs with default `failure-threshold=info`.
+
+### Idempotence in Configuration Files
+
+We have analyzed the Vagrantfiles, the Dockerfile and the Makefile for idempotence issues. We decided against migrating our solution to an external tool like Ansible for simplicity.Dockerfiles only required small fixes related to potential double user creation. We found no issues in the Vagrantfiles provisioning — if something is reinstalled or rebuilt but the system ends up in the same state without throwing an error, we don't consider that a problem. 
+
+The Makefile required most effort to analyze. We defined the desired quality to be a consistent state and the absence of errors if a command runs repeatedly, provided all the prerequisites (such as *environment variables*) are met. 
+
+We applied changes to migration recipes `db-migrate` and `db-remove-migration` as they had thrown errors if executed repeatedly. If a package is already present, `dotnet tool install` reports it but succeeds, so we left it as is. Similarly, `pip install` will reinstall, but not fail. All validation recipes can be run repeatedly with the same effect. `Vagrant up` is idempotent, as per the following documentation snippet:
+
+>If the virtual machine already exists and you run vagrant up again, Vagrant will start the machine without running the provisioning scripts. If you modify your provisioning scripts or need to reapply them, use vagrant provision or --provision. This re-runs all provisioning scripts in your Vagrantfile to apply updates or fixes.
+
+`Vagrant destroy` had thrown an error if executed repeatedly, so we added a guard check. `docker compose up` is designed to be idempotent, as per the following (it does nothing if nothing was changed): 
+
+>If there are existing containers for a service, and the service’s configuration or image was changed after the container’s creation, docker compose up picks up the changes by stopping and recreating the containers (preserving mounted volumes).
+
+`API-generate` generates the same stub each time it runs, overwriting the previous one. The container exits immediately after completion, so there is no risk of multiple leftover containers running.
