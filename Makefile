@@ -70,21 +70,22 @@ API-generate:
 API-clean-generate:
 	rm -rf out
 
-# Deployment to Digital Ocean
-deploy-digital-ocean: # requires Digital Ocean API PAT token to be set in environment variable DIGITAL_OCEAN_TOKEN
-	export SSH_KEY_NAME="MacLocalKey" && \
-	vagrant up
+# Deployment to Digital Ocean using Terraform
+# Make sure to set the following environment variables:
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
+# TF_VAR_do_token
+# TF_VAR_pub_key
+# TF_VAR_pvt_key
+tf-init:
+	cd infrastructure/environments/prod && terraform init -backend-config=backend.tfvars
 
-provision-digital-ocean:
-	vagrant provision
+tf-plan:
+	cd infrastructure/environments/prod && terraform plan -var-file=prod.tfvars -out=plan.out
 
-clean-digital-ocean:
-	@if vagrant status | grep -q 'webserver.*running'; then \
-		vagrant destroy -f; \
-	else \
-		echo "Vagrant VM 'webserver' is not running."; \
-	fi && \
-	rm -rf .vagrant
+# It is here for completeness but we do not want to run this locally as it will modify the production environment
+#tf-apply:
+#	cd infrastructure/environments/prod && terraform apply -var-file=prod.tfvars
 
 # Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
 monitor-build:

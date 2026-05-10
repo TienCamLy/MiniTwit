@@ -11,7 +11,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
     deploy:
       placement:
-        constraints: [node.hostname == webserver-monitoring]
+        constraints: [node.hostname == webserver-worker-1]
     networks:
       - monitor_net
   
@@ -28,7 +28,7 @@ services:
       - '--web.listen-address=0.0.0.0:9091'
     deploy:
       placement:
-        constraints: [node.hostname == webserver-monitoring]
+        constraints: [node.hostname == webserver-worker-1]
     networks:
       - monitor_net
 
@@ -42,7 +42,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     deploy:
       placement:
-        constraints: [node.hostname == webserver-monitoring]
+        constraints: [node.hostname == webserver-worker-1]
     networks:
       - monitor_net
 
@@ -56,7 +56,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     deploy:
       placement:
-        constraints: [node.hostname == webserver-monitoring]
+        constraints: [node.hostname == webserver-worker-1]
     networks:
       - monitor_net
 
@@ -72,7 +72,7 @@ services:
       - /vagrant/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
     deploy:
       placement:
-        constraints: [node.hostname == webserver-monitoring]
+        constraints: [node.hostname == webserver-worker-1]
       restart_policy:
         condition: any
     networks:
