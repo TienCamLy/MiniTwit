@@ -95,3 +95,4 @@
 * Small **`.gitignore`** updates for Terraform artifacts alongside the new tree.
 * Terraform Import for all existing resources in digital ocean to have non-destructive swap-over and allow managing existing resources using terraform going forward.
 * Fix the Continuous Deployment Terraform Apply step to have the auto-approve flag.
+* Fix missing environment variable in Continuous Deployment workflow causing it to fail.
