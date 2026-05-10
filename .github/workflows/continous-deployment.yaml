@@ -72,7 +72,7 @@ jobs:
 
       - name: Run Terraform Apply
         run: |
-          cd infrastructure/environments/prod && terraform apply -var-file=prod.tfvars
+          cd infrastructure/environments/prod && terraform apply -var-file=prod.tfvars -auto-approve
         env:
           TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
           TF_VAR_pub_key: "~/.ssh/do_ssh_key.pub"
