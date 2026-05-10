@@ -52,6 +52,8 @@ We discussed that it may have been useful to have defined the infrastructure in 
 <!--- operation -->
 ### 3.2 Operation
 <!--- Database CPU Overload -->
+In early April we started receiving warnings from the built-in resource alert system in Digital Ocean that our Database Cluster was above 90% CPU utilization. We started investigating the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
+We chose to resize the cluster such that it had an extra virtual CPU after cost-benefit analysis concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time consuming versus the cost of upgrading the database cluster.
 <!--- Monitoring Droplet CPU Overload -->
 <!--- Failures after migration to Swarm -->
 
