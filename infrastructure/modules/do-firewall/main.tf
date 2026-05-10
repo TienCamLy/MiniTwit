@@ -55,6 +55,35 @@ resource "digitalocean_firewall" "swarm" {
     source_addresses = ["0.0.0.0/0", "::/0"]
   }
 
+  # Loki / Promtail gRPC + metrics
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "3101"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "9095"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "9096"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  # Wazuh agent (security log shipping)
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "1514"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+  inbound_rule {
+    protocol         = "udp"
+    port_range       = "1514"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
   # node_exporter — only the monitoring droplet should be able to scrape.
   # When monitoring_droplet_ids is empty the rule is omitted entirely.
   dynamic "inbound_rule" {
