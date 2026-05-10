@@ -94,3 +94,4 @@
 * **Environments:** **Dev** — one droplet and `minitwit-test-db`. **Prod** — Swarm layout (leader `webserver`, two workers) and `minitwit-db`, with DB firewall `droplet_firewall_entries` covering leader, managers, and workers; tightened firewall configuration toward **one firewall resource with multiple allowances** instead of one per droplet where applicable.
 * Small **`.gitignore`** updates for Terraform artifacts alongside the new tree.
 * Terraform Import for all existing resources in digital ocean to have non-destructive swap-over and allow managing existing resources using terraform going forward.
+* Fix the Continuous Deployment Terraform Apply step to have the auto-approve flag.
