@@ -49,7 +49,14 @@ If the resource modification look as you expect, you can provision them:
 terraform apply --var-file="[dev|prod].tfvars"
 ```
 
-### Migration into Terraform from Vagrant / Click-Ops
+### 4. Destroying Resources
+To shut down running resources, start by initializing the backend and then run:
+```
+terraform apply -destroy --var-file="[dev|prod].tfvars"
+```
+This is a deletion action and all data is lost when it is performed, as your database and droplets will all be deleted when run.
+
+## Migration into Terraform from Vagrant / Click-Ops
 
 Anything you built in the DigitalOcean UI (or only ran locally in Vagrant) needs to be imported into Terraform state files before they can be managed i IaC. You write it up in `.tf` files like everything else, then run `terraform import '<address>' '<id>'` from `infrastructure/environments/dev` or `prod` once the [backend](#initializing-the-backend) is initialized. Import only updates state — it does not generate config — so run `plan` afterwards and adjust until Terraform agrees with what actually exists (image slug vs id, SSH key material, tags, and so on) - in some cases items may state that a certain change "forces recreate", but you can get around this by defining the "ignore_changes = []" on the relevant attributes under the lifecycle sub-block. Note, that ignoring changes should only be done for things that you know should NEVER change over the entire lifecycle of a resource and only is part of initialization.
 
