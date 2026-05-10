@@ -7,6 +7,9 @@
 <!--- Design and architecture of your ITU-MiniTwit systems. -->
 ### 1.1
 
+#### 1.1.1 Choice of Final Infrastructure-as-Code Architecture
+We ended up migrating to Terraform towards the end of the project as it allows easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined Documentation for Digital Ocean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources therefore did not have much extra overhead.
+
 <!--- All dependencies of your ITU-MiniTwit systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on. -->
 ### 1.2
 
