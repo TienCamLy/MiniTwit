@@ -71,17 +71,24 @@ resource "digitalocean_droplet" "minitwit-swarm-leader" {
 resource "terraform_data" "swarm-worker-token" {
   depends_on = [digitalocean_droplet.minitwit-swarm-leader]
 
+  # Force-replace at every run to ensure the token is always fresh
+  triggers_replace = [timestamp()]
+
   # save the worker join token
   provisioner "local-exec" {
-    command = "ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.local_exec_ssh_identity_path} 'docker swarm join-token worker -q' > temp/worker_token"
+    command = "mkdir -p temp && ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.local_exec_ssh_identity_path} 'docker swarm join-token worker -q' > temp/worker_token"
   }
 }
 
 resource "terraform_data" "swarm-manager-token" {
   depends_on = [digitalocean_droplet.minitwit-swarm-leader]
+
+  # Force-replace at every run to ensure the token is always fresh
+  triggers_replace = [timestamp()]
+
   # save the manager join token
   provisioner "local-exec" {
-    command = "ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.local_exec_ssh_identity_path} 'docker swarm join-token manager -q' > temp/manager_token"
+    command = "mkdir -p temp && ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.local_exec_ssh_identity_path} 'docker swarm join-token manager -q' > temp/manager_token"
   }
 }
 
