@@ -51,7 +51,9 @@ We discussed that it may have been useful to have defined the infrastructure in 
 
 <!--- operation -->
 ### 3.2 Operation
-<!--- operation -->
+<!--- Database CPU Overload -->
+<!--- Monitoring Droplet CPU Overload -->
+<!--- Failures after migration to Swarm -->
 
 <!--- maintenance -->
 ### 3.3 Maintenance
