@@ -32,10 +32,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
 
       - name: Login to Docker Hub
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -75,6 +75,24 @@ jobs:
           SSH_HOST_TEST: ${{ secrets.SSH_HOST_TEST }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
 
+      - name: Install Docker Scout CLI (SonarQube safe)
+        run: |
+          mkdir -p $HOME/.docker/cli-plugins
+
+          curl --proto "=https" --tlsv1.2 -sSf -L \
+            https://github.com/docker/scout-cli/releases/latest/download/docker-scout-linux-amd64 \
+            -o $HOME/.docker/cli-plugins/docker-scout
+
+          chmod +x $HOME/.docker/cli-plugins/docker-scout
+
+          docker scout version
+
+      - name: Run Docker Scout CVE scan (SHIFT-LEFT)
+        run: |
+          docker scout cves minitwit-app:latest \
+            --only-severity critical,high \
+            --exit-code
+
       - name: Deploy to server (using compose)
         run: >
           ssh $SSH_USER@$SSH_HOST -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
@@ -83,7 +101,7 @@ jobs:
            export IMAGE_TAG='${{ github.sha }}' && 
            export API_TOKEN='"$API_TOKEN"' &&
            export CONNECTIONSTRING='"$CONNECTIONSTRING"' &&
-           export LOKI_URL='"$PROD_LOKI_URL"' &&
+           export PROD_LOKI_URL='"$PROD_LOKI_URL"' &&
            cd /vagrant &&  
            docker stack deploy --with-registry-auth --resolve-image always -c compose.yaml minitwit"
         env:
@@ -92,5 +110,5 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
-          LOKI_URL: ${{ secrets.PROD_LOKI_URL }}
+          PROD_LOKI_URL: ${{ secrets.PROD_LOKI_URL }}
           
