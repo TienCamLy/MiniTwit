@@ -96,3 +96,4 @@
 * Terraform Import for all existing resources in digital ocean to have non-destructive swap-over and allow managing existing resources using terraform going forward.
 * Fix the Continuous Deployment Terraform Apply step to have the auto-approve flag.
 * Fix missing environment variable in Continuous Deployment workflow causing it to fail.
+* Fix the token fetching from lecturer code, as the previous version was not reproducible amongst multiple machines and only works when the apply is always run from the same machine and that machine does not remove the temp directory.
