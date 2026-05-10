@@ -47,9 +47,11 @@ Also reflect and describe what was the "DevOps" style of your work. For example,
 
 <!--- evolution and refactoring -->
 ### 3.1 Evolution and Refactoring
+We discussed that it may have been useful to have defined the infrastructure in Terraform from the beginning and that it may have led us to avoid having the amount of "Click-Ops" we had during the project (setting up a managed database, modifying network rules for droplets etc.) giving better reproducibility and version history.
 
 <!--- operation -->
 ### 3.2 Operation
+<!--- operation -->
 
 <!--- maintenance -->
 ### 3.3 Maintenance
