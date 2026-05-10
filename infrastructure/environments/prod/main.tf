@@ -38,3 +38,12 @@ module "postgres-db" {
     { for i, id in module.swarm.minitwit-swarm-worker-droplet-ids : "worker-${i}" => id },
   )
 }
+
+module "swarm_firewall" {
+  source = "../../modules/do-firewall"
+
+  name                   = "minitwit-swarm"
+  target_tags            = ["Manager", "Worker"]
+  swarm_internal_tags    = ["Manager", "Worker"]
+  monitoring_droplet_ids = [module.swarm.minitwit-swarm-worker-droplet-ids[1]]
+}

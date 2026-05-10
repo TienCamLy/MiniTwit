@@ -31,17 +31,6 @@ resource "digitalocean_droplet" "minitwit-swarm-leader" {
 
   provisioner "remote-exec" {
     inline = [
-      # allow ports for docker swarm
-      "ufw allow 2377/tcp",
-      "ufw allow 7946",
-      "ufw allow 4789/udp",
-      # ports for apps
-      "ufw allow 80",
-      "ufw allow 8080",
-      "ufw allow 8888",
-      # SSH
-      "ufw allow 22",
-
       # initialize docker swarm cluster
       "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io",
       "docker swarm init --advertise-addr ${self.ipv4_address}"
@@ -111,17 +100,6 @@ resource "digitalocean_droplet" "minitwit-swarm-manager" {
 
   provisioner "remote-exec" {
     inline = [
-      # allow ports for docker swarm
-      "ufw allow 2377/tcp",
-      "ufw allow 7946",
-      "ufw allow 4789/udp",
-      # ports for apps
-      "ufw allow 80",
-      "ufw allow 8080",
-      "ufw allow 8888",
-      # SSH
-      "ufw allow 22",
-
       # join swarm cluster as managers
       "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io",
       "docker swarm join --token $(cat manager_token) ${digitalocean_droplet.minitwit-swarm-leader.ipv4_address}"
@@ -174,17 +152,6 @@ resource "digitalocean_droplet" "minitwit-swarm-worker" {
 
   provisioner "remote-exec" {
     inline = [
-      # allow ports for docker swarm
-      "ufw allow 2377/tcp",
-      "ufw allow 7946",
-      "ufw allow 4789/udp",
-      # ports for apps
-      "ufw allow 80",
-      "ufw allow 8080",
-      "ufw allow 8888",
-      # SSH
-      "ufw allow 22",
-
       # join swarm cluster as workers
       "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker.io",
       "docker swarm join --token $(cat worker_token) ${digitalocean_droplet.minitwit-swarm-leader.ipv4_address}"
