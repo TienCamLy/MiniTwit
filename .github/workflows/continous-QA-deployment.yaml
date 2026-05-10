@@ -8,6 +8,10 @@ on:
   # allow manual triggers too
   workflow_dispatch:
 
+permissions:
+  pull-requests: write
+  contents: read
+
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
 # DOCKER_USERNAME
@@ -21,6 +25,8 @@ on:
 
 # TESTCONNECTIONSTRING
 # API_TOKEN
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
 
 jobs:
   build:
@@ -61,10 +67,39 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/do_ssh_key
+          echo "$SSH_KEY_PUB" > ~/.ssh/do_ssh_key.pub
           chmod 600 ~/.ssh/do_ssh_key
+          chmod 600 ~/.ssh/do_ssh_key.pub
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KEY_PUB: ${{ secrets.SSH_PUBLIC_KEY }}
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+      
+      - name: Run Terraform Init
+        run: |
+          make tf-init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Run Terraform plan
+        run: |
+          make tf-plan
+        env:
+          TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
+          TF_VAR_pub_key: "~/.ssh/do_ssh_key.pub"
+          TF_VAR_pvt_key: "~/.ssh/do_ssh_key"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Post Terraform Plan Comment in PR
+        uses: towardsthecloud/terraform-plan-pr-commenter@e0e93b3396eb8dfbf70109c06340dc64ce26c818
+        with:
+          planfile: plan.out
+          working-directory: infrastructure/environments/prod
+          
       - name: Copy .env files to server
         run: |
           ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" 'mkdir -p /vagrant/promtail'
