@@ -59,6 +59,7 @@ jobs:
           chmod 600 ~/.ssh/do_ssh_key.pub
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KEY_PUB: ${{ secrets.SSH_PUBLIC_KEY }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
