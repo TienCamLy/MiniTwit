@@ -2,21 +2,33 @@
 A course project as part of "DevOps, Software Evolution and Software Maintenance, MSc (Spring 2026)" at IT-University of Copenhagen.
 
 ## Deployment of Infrastructure using Terraform
-### Prerequisites
+### 0. Prerequisites
 1. An account within Digital Ocean
 2. A "Spaces Object Storage" S3 bucket inside Digital Ocean, to manage the backend of terraform.
 3. Terraform installation.
 
-### Initializing the backend
+### 1. Cloning the Repo
+Start by cloning the repo by running
+```
+git clone https://github.com/TienCamLy/MiniTwit.git
+```
+Then navigate into the freshly created local clone:
+```
+cd MiniTwit
+```
+
+### 2. Initializing the backend
 Run the following in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
 export AWS_ACCESS_KEY_ID="<your_spaces_access_key>"
 export AWS_SECRET_ACCESS_KEY="<your_spaces_secret_key>"
+
+cd infrastructure/environments/prod
 terraform init -backend-config=backend.tfvars
 ```
 Note, that initializing the backend is the first step of any terraform process and is done initially to ensure file structures and state files exist that can then be used in other terraform commands as well as to initialize any submodules etc.
 
-### Provisioning and Planning using Terraform
+### 3. Provisioning and Planning using Terraform
 Once you have created new infrastructure resources or changed existing resources you can initially "plan" and later "apply" (provision) the resources and/or updates.
 Note, that in order to set up to providers some secrets are needed, which should be generated from source systems and can be provided in one of the following two ways:
 1. Append a new line to the `*.tfvars` with `<var_name> = "<secret_value>"`
