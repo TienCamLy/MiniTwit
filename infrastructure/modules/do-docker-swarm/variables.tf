@@ -84,9 +84,3 @@ variable "ssh_connection_timeout" {
   description = "Timeout for SSH connections used by file and remote-exec provisioners (Terraform duration string)."
   default     = "2m"
 }
-
-variable "local_exec_ssh_identity_path" {
-  type        = string
-  description = "Private key path for local-exec ssh used to read swarm join tokens from the leader (-i flag)."
-  default     = "ssh_key/terraform"
-}
