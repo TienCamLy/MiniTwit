@@ -106,9 +106,11 @@ jobs:
 
       - name: Run Docker Scout CVE scan (SHIFT-LEFT)
         run: |
-          docker scout cves minitwit-app:latest \
-            --only-severity critical,high \
-            --exit-code
+          docker scout cves $DOCKER_USERNAME/minitwitimage:${{ github.sha }} \
+          --only-severity critical,high \
+          --exit-code
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
       - name: Deploy to server (using compose)
         run: >
