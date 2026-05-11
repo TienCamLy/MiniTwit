@@ -97,15 +97,10 @@ jobs:
           SSH_HOST_TEST: ${{ secrets.SSH_HOST_TEST }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
 
-      - name: Install Docker Scout CLI (SonarQube safe)
+      - name: Install Docker Scout CLI
         run: |
-          mkdir -p $HOME/.docker/cli-plugins
-
-          curl --proto "=https" --tlsv1.2 -sSf -L \
-            https://github.com/docker/scout-cli/releases/latest/download/docker-scout-linux-amd64 \
-            -o $HOME/.docker/cli-plugins/docker-scout
-
-          chmod +x $HOME/.docker/cli-plugins/docker-scout
+          curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
+          sh install-scout.sh
 
           docker scout version
 
