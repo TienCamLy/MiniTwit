@@ -134,7 +134,7 @@ public class MessageRepository : IMessageRepository
         }
 
         text = InputSanitizer.SanitizePlainText(text);
-        
+
         var message = new Message
         {
             AuthorId = authorId,

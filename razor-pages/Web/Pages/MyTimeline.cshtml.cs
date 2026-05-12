@@ -52,7 +52,7 @@ public class MyTimelineModel : PageModel
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        
+
         return RedirectToPage();
     }
 }
