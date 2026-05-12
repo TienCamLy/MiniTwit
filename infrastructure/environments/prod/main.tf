@@ -17,6 +17,9 @@ module "swarm" {
   swarm_worker_name_prefix = "webserver-worker"
   droplet_image            = "159651797" #"ubuntu-22-04-x64"
   droplet_size             = "s-1vcpu-1gb"
+  swarm_worker_size_overrides = {
+    "1" = "s-2vcpu-2gb"
+  }
 }
 
 module "public-ip" {
