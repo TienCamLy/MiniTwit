@@ -89,6 +89,7 @@
 
 ### Week 14 (May 8 - May 14)
 * Updated workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24 on June 2nd.
+* Specified permissions in github action workflows to satisfy CodeQL's warnings. 
 * **Terraform / IaC on DigitalOcean:** Added `infrastructure/` with **dev** and **prod** root modules, **remote state** via DigitalOcean Spaces (`backend.tf` / `backend.tfvars`, `terraform init -backend-config=…`), and documented prerequisites, secrets (`do_token`, SSH key paths), and `plan` / `apply` with `dev.tfvars` / `prod.tfvars` in the README.
 * **IaC Modules:** `do-ssh-key` (upload SSH public key), `do-single-droplet` (single VM + compose file artifact for provisioning), `do-docker-swarm` (Swarm leader + worker droplets and stack from compose), `do-public-ip` (floating IP on the target droplet), `do-postgres-db` (managed PostgreSQL with firewall rules so only the relevant droplet(s) can reach the DB).
 * **Environments:** **Dev** — one droplet and `minitwit-test-db`. **Prod** — Swarm layout (leader `webserver`, two workers) and `minitwit-db`, with DB firewall `droplet_firewall_entries` covering leader, managers, and workers; tightened firewall configuration toward **one firewall resource with multiple allowances** instead of one per droplet where applicable.
