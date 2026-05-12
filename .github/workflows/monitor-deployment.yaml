@@ -29,11 +29,13 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/do_ssh_key
           chmod 600 ~/.ssh/do_ssh_key
           ssh-keyscan -H "$MONITOR_SSH_HOST" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
 
-      - name: Copy monitoring directory
+      - name: Copy monitoring directory to monitoring server
         run: |
           SSH_OPTS="-i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no"
           ssh $SSH_OPTS $SSH_USER@$MONITOR_SSH_HOST 'rm -rf /tmp/monitoring && mkdir -p /tmp/monitoring'
@@ -42,17 +44,27 @@ jobs:
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
+      
+      - name: Copy monitoring directory to manager
+        run: |
+          SSH_OPTS="-i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no"
+          ssh $SSH_OPTS $SSH_USER@$SSH_HOST 'rm -rf /tmp/monitoring && mkdir -p /tmp/monitoring'
+          scp $SSH_OPTS -r monitoring/* $SSH_USER@$SSH_HOST:/tmp/monitoring/
+          ssh $SSH_OPTS $SSH_USER@$SSH_HOST 'mkdir -p /vagrant/monitoring && rm -rf /vagrant/monitoring/* && cp -r /tmp/monitoring/* /vagrant/monitoring/ && rm -rf /tmp/monitoring'
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
 
       # Grafana merges file-provisioned dashboards into the grafana-storage volume. `compose up`
       # often leaves the Grafana container running when only bind-mounted JSON changes, so the DB
       # never refreshes. Restart Grafana after each deploy so provisioning overwrites dashboards
       # from the repo. ${GRAFANA_PASSWORD@Q} safely quotes the secret for the remote shell.
-      - name: Deploy to server (using compose)
+      - name: Deploy to server (using stack deploy)
         run: |
-          ssh "${SSH_USER}@${MONITOR_SSH_HOST}" \
+          ssh "${SSH_USER}@${SSH_HOST}" \
             -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no \
-            "export GRAFANA_PASSWORD=${GRAFANA_PASSWORD@Q} && cd /vagrant/monitoring && docker compose up -d --build && docker compose restart grafana"
+            "export GRAFANA_PASSWORD=${GRAFANA_PASSWORD@Q} && cd /vagrant/monitoring && docker stack deploy -c compose.yaml monitoring"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
-          MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
           GRAFANA_PASSWORD: ${{ secrets.GRAFANA_PASSWORD }}

@@ -8,7 +8,7 @@ server:
   log_level: info
 
 common:
-  instance_addr: 127.0.0.1
+  instance_addr: 0.0.0.0
   path_prefix: /loki
   storage:
     filesystem:
@@ -45,8 +45,6 @@ schema_config:
 
 pattern_ingester:
   enabled: true
-  metric_aggregation:
-    loki_address: localhost:3101
 
 ruler:
   alertmanager_url: http://localhost:9093

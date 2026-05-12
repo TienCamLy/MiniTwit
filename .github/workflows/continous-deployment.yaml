@@ -3,14 +3,10 @@ name: Continuous Deployment
 
 on:
   push:
-    
-    # Run workflow every time a new tag is pushed to the main branch
     tags:
       - '*'
 
-  # allow manual triggers for now too
   workflow_dispatch:
-    manual: true
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -25,6 +21,9 @@ on:
 
 # CONNECTIONSTRING
 # API_TOKEN
+# PROD_LOKI_URL
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
 
 permissions:
   contents: read
@@ -54,23 +53,46 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
-
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/do_ssh_key
+          echo "$SSH_KEY_PUB" > ~/.ssh/do_ssh_key.pub
           chmod 600 ~/.ssh/do_ssh_key
+          chmod 600 ~/.ssh/do_ssh_key.pub
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        
+          SSH_KEY_PUB: ${{ secrets.SSH_PUBLIC_KEY }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+      
+      - name: Run Terraform Init
+        run: |
+          make tf-init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Run Terraform Apply
+        run: |
+          cd infrastructure/environments/prod && terraform apply -var-file=prod.tfvars -auto-approve
+        env:
+          TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
+          TF_VAR_pub_key: "~/.ssh/do_ssh_key.pub"
+          TF_VAR_pvt_key: "~/.ssh/do_ssh_key"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Copy config files to all nodes in Docker Swarm cluster
         run: |
-          NODES="$SSH_HOST $SSH_HOST_TEST $MONITOR_SSH_HOST"  
+          NODES="$SSH_HOST $SSH_HOST_TEST $MONITOR_SSH_HOST"
           for IP in $NODES; do
-            ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@$IP" 'mkdir -p /vagrant/promtail'
+            ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@$IP" \
+              'mkdir -p /vagrant/promtail /vagrant/razor-pages/Web && touch /vagrant/razor-pages/Web/.env /vagrant/promtail/.env'
             scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/promtail-config.yaml "${SSH_USER}@$IP:/vagrant/promtail/promtail-config.yaml"
-          done     
-               
+          done
+
           scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./compose.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/compose.yaml"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
@@ -104,7 +126,7 @@ jobs:
            export IMAGE_TAG='${{ github.sha }}' && 
            export API_TOKEN='"$API_TOKEN"' &&
            export CONNECTIONSTRING='"$CONNECTIONSTRING"' &&
-           export LOKI_URL='"$PROD_LOKI_URL"' &&
+           export PROD_LOKI_URL='"$PROD_LOKI_URL"' &&
            cd /vagrant &&  
            docker stack deploy --with-registry-auth --resolve-image always -c compose.yaml minitwit"
         env:
@@ -113,5 +135,5 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
-          LOKI_URL: ${{ secrets.PROD_LOKI_URL }}
+          PROD_LOKI_URL: ${{ secrets.PROD_LOKI_URL }}
           
