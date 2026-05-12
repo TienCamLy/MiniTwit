@@ -161,7 +161,8 @@ install-pandoc:
 		pandoc \
 		texlive-latex-base \
 		texlive-fonts-recommended \
-		texlive-latex-recommended
+		texlive-latex-recommended \
+		texlive-lmodern
 
 build-report-pdf:
 	mkdir -p report/build && \
