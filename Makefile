@@ -153,3 +153,13 @@ auto-lint:
 	dotnet format razor-pages/Infrastructure/ && \
 	dotnet format razor-pages/Web/ && \
 	dotnet format razor-pages/Core/
+
+# Build report pdf
+install-pandoc:
+	sudo apt install pandoc
+
+build-report-pdf:
+	pandoc --from=gfm --to=pdf -o report/build/MSc_group_f.pdf report/MSc_group_f.md
+
+install-and-build-report:
+	make install-pandoc && make build-report-pdf
