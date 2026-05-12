@@ -29,7 +29,7 @@ module "postgres-db" {
   name           = "minitwit-db"
   engine         = "pg"
   engine_version = "18"
-  size           = "db-s-2vcpu-4gb"
+  size           = "db-s-1vcpu-1gb"
   region         = var.region
   node_count     = 1
   droplet_firewall_entries = merge(
