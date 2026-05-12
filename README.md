@@ -1,64 +1,66 @@
 # ITU-MiniTwit
 A course project as part of "DevOps, Software Evolution and Software Maintenance, MSc (Spring 2026)" at IT-University of Copenhagen.
 
-## Deployment in DigitalOcean
-Deployment of the application MiniTwit was done by using Vagrant and DigitalOcean. The following steps were taken to create a VM (droplet) on DigitalOcean and deploy a Docker release to it.
+## Deployment of Infrastructure using Terraform
+### 0. Prerequisites
+1. An account within Digital Ocean
+2. A "Spaces Object Storage" S3 bucket inside Digital Ocean, to manage the backend of terraform.
+3. Terraform installation.
 
-### 1. Prerequisites
-- Vagrant ([Download here](https://developer.hashicorp.com/vagrant/install))
-- DigitalOcean plugin:`vagrant plugin install vagrant-digitalocean`
-- SSH Key
-- A DigitalOcean account
-
-### 2. DigitalOcean
-In DigitalOcean:
-- Upload SSH public key
-- Generate API token
-
-### 3. Set Environment Variables 
-Set the environment variables from DigitalOcean by:
-```bash
-export DIGITAL_OCEAN_TOKEN="your_api_token_on_digitalocean"
-export SSH_KEY_NAME="your_ssh_key_name_on_digitalocean"
-```
-### 4. Creating the VM (droplet) and deploy Docker Release
-Clone the repository by running:
+### 1. Cloning the Repo
+Start by cloning the repo by running
 ```
 git clone https://github.com/TienCamLy/MiniTwit.git
+```
+Then navigate into the freshly created local clone:
+```
 cd MiniTwit
 ```
-Run the following command in terminal:
-```
-vagrant up
-```
-`vagrant up` creates the VM and executes the provisioning script (shell script) in the VagrantFile. 
-This will build the Docker image and deploys the application using Docker Compose.
 
-### 5. Droplet IP
-The application can be accessed by:
+### 2. Initializing the backend
+Run the following in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
-http://<YOUR_DROPLET_IP>:8080
+export AWS_ACCESS_KEY_ID="<your_spaces_access_key>"
+export AWS_SECRET_ACCESS_KEY="<your_spaces_secret_key>"
+
+cd infrastructure/environments/prod
+terraform init -backend-config=backend.tfvars
 ```
-Our public droplet IP:
+Note, that initializing the backend is the first step of any terraform process and is done initially to ensure file structures and state files exist that can then be used in other terraform commands as well as to initialize any submodules etc.
+
+### 3. Provisioning and Planning using Terraform
+Once you have created new infrastructure resources or changed existing resources you can initially "plan" and later "apply" (provision) the resources and/or updates.
+Note, that in order to set up to providers some secrets are needed, which should be generated from source systems and can be provided in one of the following two ways:
+1. Append a new line to the `*.tfvars` with `<var_name> = "<secret_value>"`
+2. Set an environment variable named `export TF_VAR_<var_name>="<secret_value>"`
+
+#### Secrets
+- `do_token` - a PAT token generated from within Digital Ocean
+- `pub_key` - Path to your public key file. Should match `pvt_key`.
+- `pvt_key` - Path to your private key file. Should match `pub_key`.
+
+#### Commands
+Once the secret variables are set up, you can run the following command in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
-http://157.230.30.175:8080
+terraform plan --var-file="[dev|prod].tfvars"
+```
+If the resource modification look as you expect, you can provision them:
+```
+terraform apply --var-file="[dev|prod].tfvars"
 ```
 
-### Shutdown
-To stop the VM and destroy all resources that were created during the machine creation process,
-run the following in terminal:
+### 4. Destroying Resources
+To shut down running resources, start by initializing the backend and then run:
 ```
-vagrant destroy
+terraform apply -destroy --var-file="[dev|prod].tfvars"
 ```
+This is a deletion action and all data is lost when it is performed, as your database and droplets will all be deleted when run.
 
-### Logging
-To connect to the VM, navigate to the project directory, and stream the logs of the running Docker container,
-run the following in termnial:
-```
-vagrant ssh webserver
-cd /vagrant
-sudo docker compose logs -f razor-pages
-```
+## Migration into Terraform from Vagrant / Click-Ops
+
+Anything you built in the DigitalOcean UI (or only ran locally in Vagrant) needs to be imported into Terraform state files before they can be managed i IaC. You write it up in `.tf` files like everything else, then run `terraform import '<address>' '<id>'` from `infrastructure/environments/dev` or `prod` once the [backend](#2-initializing-the-backend) is initialized. Import only updates state — it does not generate config — so run `plan` afterwards and adjust until Terraform agrees with what actually exists (image slug vs id, SSH key material, tags, and so on) - in some cases items may state that a certain change "forces recreate", but you can get around this by defining the "ignore_changes = []" on the relevant attributes under the lifecycle sub-block. Note, that ignoring changes should only be done for things that you know should NEVER change over the entire lifecycle of a resource and only is part of initialization.
+
+For import ids we mostly grabbed them straight from the URLs: droplet number from `/droplets/…`, database UUID from `/databases/…`, floating IP as the IPv4 string. SSH keys use their numeric id from `doctl compute ssh-key list`, not the fingerprint. A few things bit us along the way: `for_each` needs predictable keys if values are droplet ids; DigitalOcean tends to replace droplets when the `ssh_keys` attributes changes and sometimes the droplet is registered with a local `image` specific to only that droplet (instead of a more general `ubuntu` image or similar).
 
 ## DevOps Principles
 The group adheres to the "*Three Ways*" characterizing DevOps (from "The DevOps Handbook") by the following:
