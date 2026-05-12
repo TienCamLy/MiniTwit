@@ -154,3 +154,13 @@ jobs:
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           TEST_GUI_IP: ${{ secrets.SSH_HOST_TEST }}
+    
+      - name: Compile and push report
+        run: |
+          make install-and-build-report
+          git config user.name "Github Action [bot]"
+          git config user.email "action@github.com"
+          git checkout ${{ steps.branch-names.outputs.current_branch }}
+          git add report/build/MSc_group_f.pdf
+          git commit -m "Automatic Build and Update of Report"
+          git push
