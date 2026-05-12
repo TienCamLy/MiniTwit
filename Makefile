@@ -157,12 +157,11 @@ auto-lint:
 # Build report pdf (pandoc uses pdflatex; install TeX Live — pandoc .deb alone does not ship it)
 install-pandoc:
 	sudo apt-get update -qq && \
-	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
 		pandoc \
 		texlive-latex-base \
 		texlive-fonts-recommended \
-		texlive-latex-recommended \
-		texlive-lmodern
+		texlive-latex-recommended 
 
 build-report-pdf:
 	mkdir -p report/build && \
