@@ -107,7 +107,7 @@ We find Razor Pages to be a good choice, as it supports HTML templating similar 
 When migrating to another database, PostgreSQL was chosen as it was an available option as a managed database on DigitalOcean, and PostgreSQL is convenient to integrate with EF Core.
 
 ### Choice of Deployment Infrastructure
-We choose to use GitHub Actions to deploy our application, as it is a native functionality that does not require additional setup. For this project, we are not dependent on 100% uptimes and do not mind the 1 minute runtime of our workflow. Keeping the deployment within GitHub also means we do not have to expand our tech stack with additional tools and connections, which would otherwise increase the complexity unnecessarily for the project scope.
+We choose to use GitHub Actions to deploy our application, as it is a native functionality that does not require additional setup. For this project, we are not dependent on 100% uptimes and do not mind the 1-3 minute runtime of our workflow. Keeping the deployment within GitHub also means we do not have to expand our tech stack with additional tools and connections, which would otherwise increase the complexity for the project scope.
 
 ### Choice of logging Infrastructure
 We use **Grafana Loki** with **Promtail** and visualize logs in **Grafana**, alongside our existing Prometheus setup. Loki indexes metadata (labels) rather than full log text, which keeps storage and operational cost reasonable for a course project while still supporting useful queries with **LogQL**. Promtail runs on each application droplet, discovers Docker containers via the host socket, and ships stdout/stderr logs to Loki over HTTP, while the monitoring server hosts Loki and Grafana so logs stay centralized without running heavy logging agents on the metrics box. This stack is well documented, fits naturally next to Grafana dashboards we already use, and aligns with our goal of observable deployments with minimal extra moving parts.
@@ -145,7 +145,7 @@ We use the following static analysis tools in our CI pipelines to improve code q
 
 ### Idempotence in Configuration Files
 
-We have analyzed the Vagrantfiles, the Dockerfile and the Makefile for idempotence issues. We decided against migrating our solution to an external tool like Ansible for simplicity.Dockerfiles only required small fixes related to potential double user creation. We found no issues in the Vagrantfiles provisioning — if something is reinstalled or rebuilt but the system ends up in the same state without throwing an error, we don't consider that a problem. 
+We have analyzed the Vagrantfiles, the Dockerfile and the Makefile for idempotence issues. We decided against migrating our solution to an external tool like Ansible for simplicity. Dockerfiles only required small fixes related to potential double user creation. We found no issues in the Vagrantfile's provisioning — if something is reinstalled or rebuilt but the system ends up in the same state without throwing an error, we don't consider that a problem. 
 
 The Makefile required most effort to analyze. We defined the desired quality to be a consistent state and the absence of errors if a command runs repeatedly, provided all the prerequisites (such as *environment variables*) are met. 
 
