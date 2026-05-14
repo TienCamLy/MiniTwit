@@ -50,6 +50,29 @@
 | Pandoc / LaTeX | CI/CD | Building the report PDF in automation |
 | GNU Make | Development, CI/CD | Task automation (local and in workflows) |
 
+#### Libraries
+
+NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-pages/Infrastructure`). Direct Python libraries for automated tests are listed below; the UI test lockfile also pins transitive versions (see `tests/selenium/requirements.txt`).
+
+| Library | Context | Usage |
+|---------|---------|-------|
+| Microsoft.AspNetCore.Identity.EntityFrameworkCore | Web, Infrastructure | ASP.NET Core Identity integrated with EF Core |
+| Microsoft.EntityFrameworkCore.Design | Web, Infrastructure | EF Core design-time support and migrations |
+| Npgsql.EntityFrameworkCore.PostgreSQL | Web, Infrastructure | EF Core provider for PostgreSQL |
+| Newtonsoft.Json | Web | JSON serialization and deserialization |
+| Swashbuckle.AspNetCore.Annotations | Web | OpenAPI metadata and attributes for the HTTP API |
+| Swashbuckle.AspNetCore.Newtonsoft | Web | OpenAPI generation using Newtonsoft.Json |
+| DotNetEnv | Web | Loading environment variables from `.env` files |
+| prometheus-net.AspNetCore | Web | Prometheus metrics for ASP.NET Core |
+| Microsoft.CodeAnalysis.Analyzers | Infrastructure | Build-time Roslyn analyzers |
+| Microsoft.Extensions.Hosting | Infrastructure | Hosting abstractions for background-style infrastructure code |
+| prometheus-net | Infrastructure | Prometheus metric registration and exposition primitives |
+| Npgsql | Infrastructure | PostgreSQL data provider (ADO.NET) alongside EF |
+| TimeZoneConverter | Infrastructure | Resolving time zones in infrastructure logic |
+| requests | tests/API_Spec | HTTP calls from the API simulator |
+| pytest | tests/selenium | Test runner for the Selenium UI suite |
+| selenium | tests/selenium | WebDriver client driving the remote Chrome grid |
+
 
 <!--- Describe the current state of your systems, for example using results of static analysis and quality assessments. -->
 ### 1.3
