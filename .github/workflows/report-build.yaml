@@ -34,9 +34,6 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
 
-      - name: Compile Report
-        run: make install-and-build-report
-
       - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
@@ -47,6 +44,9 @@ jobs:
           git checkout -B main origin/main
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Compile Report
+        run: make install-and-build-report
         
       - name: Add Report
         run: git add report/build/MSc_group_f.pdf
