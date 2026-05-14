@@ -67,5 +67,8 @@ Additionally, describe how generative AI tools have been used and briefly reflec
 <!--- Kris -->
 
 <!--- Patrick -->
+When it came to the use of GAI, ChatGPT and GitHub Copilot was used to better understand coding errors and thereby helping in solving them.
+Another aspect of using AI, would be on how to do specific things in different languages. 
+For example "How do i write inline code in .md?" or "How do i change the rejection status code on the rate limiter?".
 
 <!--- Tien -->
