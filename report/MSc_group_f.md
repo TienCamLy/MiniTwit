@@ -31,7 +31,37 @@ In particular, the following descriptions should be included: -->
 ### 2.4
 
 <!--- How do you handle availability and scaling in your systems? -->
-### 2.5
+### 2.5 Availability and Scaling
+
+availability:
+- declarative Scaling (three replicas)
+
+scaling:
+- internal load balancing (ingress routing mesh)
+  - The ingress mesh acts as an internal load balancer. Swarm automatically distributes the traffic across all healthy replicas
+
+
+To ensure low downtime during the transition from the standalone containers to a Docker Swarm cluster, 
+the stack was deployed with a **blue-green service deployment** strategy from the start, such that the running containers were gradually replaced by the updated ones. 
+This is achieved by configuring the deployment settings within the Docker Compose file to set the update order to `start-first` and 
+a delay parameter that dictates how long Docker Swarm should wait after starting an updated container before terminating an old one, 
+allowing the new container to initialize.
+
+As a result, the services remain available during deployment. By default, Docker Swarm uses the rolling update strategy which terminates the old container 
+before starting a new one. This is called `stop-first`. By terminating the containers first, the default strategy forces the application to experience downtime 
+during the window between container termination and container initialization.
+
+While our strategy should have ensured low downtime during the transition to Docker Swarm, the production application still experienced downtime 
+due to overlooked human errors. These errors came as a result of separate Docker Swarm migration issues. 
+Specifically, the Swarm Ingress routing mesh overwrote the port of the development environment on one of our DigitalOcean Droplets, 
+and the Loki logs failed to display on our Grafana dashboards. During the debugging process, accidental downtime of the application was introduced 
+when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, 
+which prevented the simulator from reaching it. 
+
+<!--- Move to reflection part? -->
+To avoid these issues in the future, a solution could be to replicate the Docker Swarm infrastructure 
+within an isolated development environment, so any configuration changes during the transition does not affect live production. 
+
 
 ## 3. Reflection Perspective
 
