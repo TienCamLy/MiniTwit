@@ -66,6 +66,8 @@ The monitoring droplet was resized using terraform and therefore had minimal pos
 <!--- Grafana Restart / Volume Management -->
 We struggled with the continuous deployment of our monitoring application in terms of ensuring new dashboards would appear and an unintended addition of a flag that reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the issues and accepted the loss of earlier metrics & logs.
 
+An improvement of the monitoring deployment would be to trigger it on changes to the particular folder containing monitoring definitions instead of only manual trigger.
+
 <!--- maintenance -->
 ### 3.3 Maintenance
 
