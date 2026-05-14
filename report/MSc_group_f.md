@@ -28,7 +28,43 @@ In particular, the following descriptions should be included: -->
 ### 2.3
 
 <!--- Brief description of how you security hardened your systems. -->
-### 2.4
+### 2.4 Security Hardening
+For the security hardening of our system a security assessment was made showing an overview of assets/threats/risks:
+
+**Assets**
+- Web Application & API Endpoint
+- PostgreSQL Database
+- Monitoring (Grafana, Loki, Promtail & Prometheus)
+
+**Threat Sources**
+- SQL Injection
+- Cross-Site Scripting (XSS)
+- DDoS Attack
+- Brute force attack
+
+**Risk Scenarios**
+- An attacker uses SQL injection on the web application to gain access to the database.
+- An attacker injects a script into a post, which is executed on other users’ browsers, allowing the attacker to steal session tokens.
+- An attacker uses a script to spam an API endpoint, resulting in a denial of service.
+
+**Risk Analysis**
+| Scenario                   | Likelihood      | Impact | Risk     |
+|:---------------------------|:---------------:|:------:|:--------:|
+| SQL Injection              | High/Common     | High   | Critical |
+| Cross-Site Scripting (XSS) | High/Common     | High   | High     |
+| DDoS Attack                | Medium/Uncommon | Medium | Medium   |
+
+To solve the various risk scenarios the following measures were taken:
+- SQL Injection: All inputs are sanitized to avoid script injection. This is handled automatically by Entity Framework Core.
+- Cross-Site Scripting (XSS): This gains from the input sanitation, but still needs an output encoding to ensure data is rendered as text. Which is handled by Razor pages rendering all posts as plain text.
+- DDoS Attack: Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
+
+**Other Security Measures**
+
+Other security measures were also taken such as:
+- Setting up a firewall (using `ufw`) on the server only allowing specific traffic through on specified ports.
+- Ensuring the application runs on HTTPS with a TLS certificate and setting up `Nginx` for a reverse proxy in front of the application.
+- Docker images were also security hardened by ensuring only user privileges
 
 <!--- How do you handle availability and scaling in your systems? -->
 ### 2.5
