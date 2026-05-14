@@ -1,13 +1,19 @@
 # ITU-MiniTwit
 A course project as part of "DevOps, Software Evolution and Software Maintenance, MSc (Spring 2026)" at IT-University of Copenhagen.
 
-## Deployment of Infrastructure using Terraform
-### 0. Prerequisites
+## Description
+
+## Working with this repository
+
+## Production system
+
+### Deployment of Infrastructure using Terraform
+#### 0. Prerequisites
 1. An account within Digital Ocean
 2. A "Spaces Object Storage" S3 bucket inside Digital Ocean, to manage the backend of terraform.
 3. Terraform installation.
 
-### 1. Cloning the Repo
+#### 1. Cloning the Repo
 Start by cloning the repo by running
 ```
 git clone https://github.com/TienCamLy/MiniTwit.git
@@ -17,7 +23,7 @@ Then navigate into the freshly created local clone:
 cd MiniTwit
 ```
 
-### 2. Initializing the backend
+#### 2. Initializing the backend
 Run the following in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
 export AWS_ACCESS_KEY_ID="<your_spaces_access_key>"
@@ -28,18 +34,18 @@ terraform init -backend-config=backend.tfvars
 ```
 Note, that initializing the backend is the first step of any terraform process and is done initially to ensure file structures and state files exist that can then be used in other terraform commands as well as to initialize any submodules etc.
 
-### 3. Provisioning and Planning using Terraform
+#### 3. Provisioning and Planning using Terraform
 Once you have created new infrastructure resources or changed existing resources you can initially "plan" and later "apply" (provision) the resources and/or updates.
 Note, that in order to set up to providers some secrets are needed, which should be generated from source systems and can be provided in one of the following two ways:
 1. Append a new line to the `*.tfvars` with `<var_name> = "<secret_value>"`
 2. Set an environment variable named `export TF_VAR_<var_name>="<secret_value>"`
 
-#### Secrets
+##### Secrets
 - `do_token` - a PAT token generated from within Digital Ocean
 - `pub_key` - Path to your public key file. Should match `pvt_key`.
 - `pvt_key` - Path to your private key file. Should match `pub_key`.
 
-#### Commands
+##### Commands
 Once the secret variables are set up, you can run the following command in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
 terraform plan --var-file="[dev|prod].tfvars"
@@ -49,18 +55,20 @@ If the resource modification look as you expect, you can provision them:
 terraform apply --var-file="[dev|prod].tfvars"
 ```
 
-### 4. Destroying Resources
+#### 4. Destroying Resources
 To shut down running resources, start by initializing the backend and then run:
 ```
 terraform apply -destroy --var-file="[dev|prod].tfvars"
 ```
 This is a deletion action and all data is lost when it is performed, as your database and droplets will all be deleted when run.
 
-## Migration into Terraform from Vagrant / Click-Ops
+### Migration into Terraform from Vagrant / Click-Ops
 
 Anything you built in the DigitalOcean UI (or only ran locally in Vagrant) needs to be imported into Terraform state files before they can be managed i IaC. You write it up in `.tf` files like everything else, then run `terraform import '<address>' '<id>'` from `infrastructure/environments/dev` or `prod` once the [backend](#2-initializing-the-backend) is initialized. Import only updates state — it does not generate config — so run `plan` afterwards and adjust until Terraform agrees with what actually exists (image slug vs id, SSH key material, tags, and so on) - in some cases items may state that a certain change "forces recreate", but you can get around this by defining the "ignore_changes = []" on the relevant attributes under the lifecycle sub-block. Note, that ignoring changes should only be done for things that you know should NEVER change over the entire lifecycle of a resource and only is part of initialization.
 
 For import ids we mostly grabbed them straight from the URLs: droplet number from `/droplets/…`, database UUID from `/databases/…`, floating IP as the IPv4 string. SSH keys use their numeric id from `doctl compute ssh-key list`, not the fingerprint. A few things bit us along the way: `for_each` needs predictable keys if values are droplet ids; DigitalOcean tends to replace droplets when the `ssh_keys` attributes changes and sometimes the droplet is registered with a local `image` specific to only that droplet (instead of a more general `ubuntu` image or similar).
+
+## Contributing and releasing changes
 
 ## DevOps Principles
 The group adheres to the "*Three Ways*" characterizing DevOps (from "The DevOps Handbook") by the following:
