@@ -100,3 +100,4 @@
 * Fix the token fetching from lecturer code, as the previous version was not reproducible amongst multiple machines and only works when the apply is always run from the same machine and that machine does not remove the temp directory.
 * Fix the code provided by examiners to not use two different variables for the same path of whihc one was configured wrongly such that the SSH command failed.
 * Add compilation from markdown -> pdf in the QA build
+* Rescale resources using Terraform to fit current processing requirements (i.e. reduce or increase such that all our services are available but not blown out of proportion)

@@ -33,6 +33,13 @@ variable "node_count" {
   default     = 1
 }
 
+# Disk is per SKU; e.g. db-s-1vcpu-1gb allows 10–30 GiB.
+variable "storage_size_mib" {
+  type        = number
+  description = "Primary storage in MiB (mebibytes). Must be within the min/max for the chosen size slug (DigitalOcean API / pricing page)."
+  default     = 30720 # 30 GiB — within typical max for db-s-1vcpu-1gb
+}
+
 variable "droplet_firewall_entries" {
   type        = map(string)
   description = "Static-key map of droplet IDs for managed-database firewall rules (keys must be known at plan time)."
