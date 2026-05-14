@@ -1,23 +1,67 @@
 # ITU-MiniTwit
 A course project as part of "DevOps, Software Evolution and Software Maintenance, MSc (Spring 2026)" at IT-University of Copenhagen.
 
-## Deployment of Infrastructure using Terraform
-### 0. Prerequisites
+## Description
+
+ITU-MiniTwit is Twitter-style web application used as part of the DevOps course on ITU: users can register, sign in, post short messages, follow others, and browse public and per-user timelines. The course’s original Python/Flask reference was refactored into **C#** with **ASP.NET Core Razor Pages** and migrated to use **Entity Framework Core** for database interactions.
+
+The app runs in **Docker**; in production it is deployed on **DigitalOcean** using **Docker Swarm** (with rolling updates) and a managed **PostgreSQL** database. **GitHub Actions** are used to build, test, and deploy the system, and **Prometheus**, **Grafana**, **Loki**, and **Promtail** provide metrics for monitoring and centralized logs. Development applications can also be spun up locally or remotely with a connection to a separate managed **PostgreSQL** database using **Docker Compose**.
+
+The public production app is at [https://minitwitj.dk/](https://minitwitj.dk/). A Grafana dashboard for production monitoring is at [http://209.38.255.154:3000/d/ad8crlm/monitoring-prod?orgId=1&from=now-6h&to=now&timezone=browser](http://209.38.255.154:3000/d/ad8crlm/monitoring-prod?orgId=1&from=now-6h&to=now&timezone=browser). A user and credentials for viewing the dashboards can be obtained by contacting the repository owner.
+
+Weekly design notes live in `log.md` at the repository root; architectural and tooling choices are documented further down in this file.
+
+## Working with this repository
+
+Clone the repository and work from the root directory:
+
+```bash
+git clone https://github.com/TienCamLy/MiniTwit.git
+cd MiniTwit
+```
+
+**Prerequisites:** Docker (with Compose), GNU Make, and the **.NET 10 SDK** (for EF Core migrations and local `dotnet` commands). For API simulator tests you also need **Python 3** and `pip`.
+
+**Repository Structure:** application code under `razor-pages/` (web app, API, EF Core in `Infrastructure/`), integration tests under `tests/`, Compose files at the repo root, automation in `Makefile` and `.github/workflows/`.
+
+**Run the app locally in Docker:** copy `razor-pages/Web/.env_example` to `razor-pages/Web/.env` and provide valid values for each of the variables (API token and connection string for test db; see comments in `.env_example` for host vs container networking). If you run Promtail next to the app stack, add `promtail/.env` from `promtail/env.example` and set `LOKI_URL` when you ship logs to Loki (note that this requires running the monitoring containers simultaneously). Then from the repository root:
+
+```bash
+make app-build    # compose-test.yaml, app on http://localhost:8081
+make app-down     # stop and remove containers/volumes
+```
+
+**Database migrations:** install tools once with `make install-ef-tools`, then e.g. `make db-migrate name=YourMigrationName` and `make db-update` (see the `Makefile` for exact targets). These are used whenever you want to update the EF Core definitions or update the provider.
+
+**Tests and linting:** targets such as `make test-ui-selenium`, `make test-api-simulator` (needs `API_TOKEN` and `TEST_GUI_IP` in the environment), `make lint-all`, and `make auto-lint` are defined in the `Makefile`; pull requests run overlapping checks in GitHub Actions.
+
+## Production system
+
+Production is hosted on **DigitalOcean**: a **Docker Swarm** cluster runs the MiniTwit stack (built from `compose.yaml` on the Swarm manager), workloads use a **managed PostgreSQL** database, and a **monitoring** virtual machine hosts **Prometheus**, **Grafana**, and **Loki**. Application logs are shipped from the app nodes with **Promtail**. The public site is [https://minitwitj.dk/](https://minitwitj.dk/);
+IMPORTANT: Due to Digital Ocean limitations on the number of droplets, the monitoring droplet is also a part of the swarm in our case and simply runs extra containers. In a better case, one would spin up a separate droplet outside the swarm and connect it to the shared network for log shipping such that it would not be directly intermixed with the swarm operations it is monitoring.
+
+Infrastructure (droplets, database, firewall, floating IP, SSH resources, and related wiring) lives in **`infrastructure/`** and is applied with **Terraform** (`environments/dev` and `environments/prod`). Day-to-day application releases are automated from GitHub as described below.
+
+### Release pipeline (GitHub Actions)
+
+Production images and rollout are driven by **Continuous Deployment** (`.github/workflows/continous-deployment.yaml`):
+
+- **When it runs:** on every **git tag** push, and on **manual** `workflow_dispatch` from the Actions tab.
+- **What it does (high level):** logs in to Docker Hub, builds and pushes a **linux/amd64** image tagged `minitwitimage:<commit-sha>`, runs **`terraform init`** / **`terraform apply`** against `infrastructure/environments/prod`, copies `promtail/promtail-config.yaml` and `compose.yaml` onto the Swarm nodes (and ensures `.env` paths exist on app and monitor hosts), runs a **Docker Scout** CVE check (critical/high, failing the job on hits), then **SSH**s to the Swarm manager and runs **`docker stack deploy`** with registry auth so the stack pulls the new image (**rolling update** behavior is defined in the stack/compose settings).
+
+Runtime secrets on the servers (**connection string**, **API token**, **Loki push URL**, Docker Hub credentials, SSH keys, DigitalOcean token for Terraform, Spaces keys for remote state, etc.) are supplied as **GitHub Actions secrets**; the authoritative list is in the comments at the top of `continous-deployment.yaml`. Do not commit secrets to the repository.
+
+Before you cut a production release, changes are applied in a **QA** environment by running the workflow **`.github/workflows/continous-QA-deployment.yaml`** (triggered on pull requests to `main`).
+
+The **monitoring** stack on the dedicated VM is deployed separately via **Deploy Monitoring** (`.github/workflows/monitor-deployment.yaml`), which is **manual** (`workflow_dispatch`) only.
+
+### Deployment of Infrastructure using Terraform
+#### 0. Prerequisites
 1. An account within Digital Ocean
 2. A "Spaces Object Storage" S3 bucket inside Digital Ocean, to manage the backend of terraform.
 3. Terraform installation.
 
-### 1. Cloning the Repo
-Start by cloning the repo by running
-```
-git clone https://github.com/TienCamLy/MiniTwit.git
-```
-Then navigate into the freshly created local clone:
-```
-cd MiniTwit
-```
-
-### 2. Initializing the backend
+#### 1. Initializing the backend
 Run the following in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
 export AWS_ACCESS_KEY_ID="<your_spaces_access_key>"
@@ -28,18 +72,18 @@ terraform init -backend-config=backend.tfvars
 ```
 Note, that initializing the backend is the first step of any terraform process and is done initially to ensure file structures and state files exist that can then be used in other terraform commands as well as to initialize any submodules etc.
 
-### 3. Provisioning and Planning using Terraform
+#### 2. Provisioning and Planning using Terraform
 Once you have created new infrastructure resources or changed existing resources you can initially "plan" and later "apply" (provision) the resources and/or updates.
 Note, that in order to set up to providers some secrets are needed, which should be generated from source systems and can be provided in one of the following two ways:
 1. Append a new line to the `*.tfvars` with `<var_name> = "<secret_value>"`
 2. Set an environment variable named `export TF_VAR_<var_name>="<secret_value>"`
 
-#### Secrets
+##### Secrets
 - `do_token` - a PAT token generated from within Digital Ocean
 - `pub_key` - Path to your public key file. Should match `pvt_key`.
 - `pvt_key` - Path to your private key file. Should match `pub_key`.
 
-#### Commands
+##### Commands
 Once the secret variables are set up, you can run the following command in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
 terraform plan --var-file="[dev|prod].tfvars"
@@ -49,33 +93,47 @@ If the resource modification look as you expect, you can provision them:
 terraform apply --var-file="[dev|prod].tfvars"
 ```
 
-### 4. Destroying Resources
+#### 3. Destroying Resources
 To shut down running resources, start by initializing the backend and then run:
 ```
 terraform apply -destroy --var-file="[dev|prod].tfvars"
 ```
 This is a deletion action and all data is lost when it is performed, as your database and droplets will all be deleted when run.
 
-## Migration into Terraform from Vagrant / Click-Ops
+### Migration into Terraform from Vagrant / Click-Ops
 
-Anything you built in the DigitalOcean UI (or only ran locally in Vagrant) needs to be imported into Terraform state files before they can be managed i IaC. You write it up in `.tf` files like everything else, then run `terraform import '<address>' '<id>'` from `infrastructure/environments/dev` or `prod` once the [backend](#2-initializing-the-backend) is initialized. Import only updates state — it does not generate config — so run `plan` afterwards and adjust until Terraform agrees with what actually exists (image slug vs id, SSH key material, tags, and so on) - in some cases items may state that a certain change "forces recreate", but you can get around this by defining the "ignore_changes = []" on the relevant attributes under the lifecycle sub-block. Note, that ignoring changes should only be done for things that you know should NEVER change over the entire lifecycle of a resource and only is part of initialization.
+Anything you built in the DigitalOcean UI (or only ran locally in Vagrant) needs to be imported into Terraform state files before they can be managed in IaC. You write it up in `.tf` files like everything else, then run `terraform import '<address>' '<id>'` from `infrastructure/environments/dev` or `prod` once the [backend](#1-initializing-the-backend) is initialized. Import only updates state — it does not generate config — so run `plan` afterwards and adjust until Terraform agrees with what actually exists (image slug vs id, SSH key material, tags, and so on) - in some cases items may state that a certain change "forces recreate", but you can get around this by defining the "ignore_changes = []" on the relevant attributes under the lifecycle sub-block. Note, that ignoring changes should only be done for things that you know should NEVER change over the entire lifecycle of a resource and only is part of initialization.
 
 For import ids we mostly grabbed them straight from the URLs: droplet number from `/droplets/…`, database UUID from `/databases/…`, floating IP as the IPv4 string. SSH keys use their numeric id from `doctl compute ssh-key list`, not the fingerprint. A few things bit us along the way: `for_each` needs predictable keys if values are droplet ids; DigitalOcean tends to replace droplets when the `ssh_keys` attributes changes and sometimes the droplet is registered with a local `image` specific to only that droplet (instead of a more general `ubuntu` image or similar).
+
+## Contributing and releasing changes
+
+We work in small branches off `main`, one focused task per branch when possible. **Do not push directly to `main`:** open a pull request, fill in the [pull request template](.github/pull_request_template.md), and wait for **at least one other group member** to review your changes before merging.
+
+**Before you ask for review**, allow the QA build to run and ensure your features work and do not cause any new issues. Work items are tracked on [Trello](https://trello.com/b/a72cgcKI/devops-minitwit); branch and PR title conventions are listed under [Processes & Workflows](#processes--workflows).
+
+**Merging:** when the PR is approved and **GitHub Actions are all green**, merge into `main`. If you have made changes to the report the pdf will be built on push to main.
+
+**Releasing to production:** deploying the live stack is **not** tied to every merge. Production deployments only run on release tags and tag names should follow [semantic versioning](https://semver.org/). Once a tag is created, **`.github/workflows/continous-deployment.yaml`** builds and pushes the image, applies Terraform if needed, and rolls the **Docker Swarm** stack on production. Details and secrets are described under [Production system](#production-system).
+
+Design decisions worth remembering should be noted in **`log.md`** as you go.
 
 ## DevOps Principles
 The group adheres to the "*Three Ways*" characterizing DevOps (from "The DevOps Handbook") by the following:
 - **Flow**:
   - To make our work visible, we make use of a visual work board by using Trello. This consists of assigning group members to small, self-contained tasks (ensuring small batch sizes) and displaying the current status of them. Every time a task needs to be done, it is added to the board first. We structure our pull requests accordingly to ensure small, atomic changes to the main branch. Our workflow is described in more detail in the [Processes and Workflows](https://github.com/TienCamLy/MiniTwit?tab=readme-ov-file#processes--workflows) section.
-  - To increase visibility, we have also introduced a log (log.txt in the root path) where we write down design decisions made during development each week. A GitHub webhook has been added to our main communication channel, so that all members get notified whenever a change to the repository has been made.
-  - We ensure limiting Work In Process (WIP) by, as a general rule, allowing one group member to work on one ticket at the same time. If someone wants to take on new work, they either have to finish their previous ticket or report it as needing help.
+  - To increase visibility, we have also introduced a log (`log.md` in the root path) where we write down design decisions made during development each week. A GitHub webhook has been added to our Discord, such that all members get notified whenever a change to the repository has been made.
+  - We ensure limiting Work In Process (WIP) by, as a general rule, by allowing one group member to work on a single ticket at a time. If someone wants to take on new work, they either have to finish their previous ticket or report it as "Need Help". Tickets with a request for help will be discussed at our weekly check-ins or by reaching out to a group member.
   - To improve the flow, we automate the process by using workflows. This includes setting the environment up and building/deploying the application.
   - We don’t have any hard constraints limiting our flow, save for the development pace (a constraint as close to the developers as possible) and PR acceptance (which can potentially take up to a day but is usually much faster)
+  - A Pull Request Template was also added to the repository to streamline the processes and remind ourselves of our ways-of-working. The template includes a check-list for the developer to check off everything they should ensure before requesting a review as well as prompts them to write a short description of what the branch does. This also eases the review workload as all pull requests are structured in the same way and the checklist can be used as a guideline for reviewers as well.
 - **Feedback**:
   - The workflows provide us feedback on whether the automated build succeeded or not. This happens every time a commit has been pushed to the main branch.
+  - Pull Requests must successfully build, deploy and test the application before they can be merged (through an automated workflow). Tests include both code scanning, linting and functional tests and will report any issues in the code.
   - For quality control, every pull request must be reviewed by another group member.
 - **Continual Learning and Experimentation**:
-  - We don't blame group members for trying to solve a problem and failing; instead, we appreciate the work they did, and let other people help if needed. For this reason, we have added a "Need help" status in Trello. If anyone is stuck with a specfic problem and is unsure how to proceed, they can also write on discord; the conversation is always focused on how to proceed best instead of simply critisizing. This creates safety culture.
-  - After each solved issue, a group member posts an update to the discord groupchat about what they did, and how they solved the problem. If anything is unclear, other group members may request a presentation of a new solution in-person. This enables transforming local discoveries into global improvement by openly sharing information that other group members might find relevant in their work.
+  - We don't blame group members for trying to solve a problem and failing; instead, we appreciate the work they did, and let other people help if needed. For this reason, we have added a "Need help" status in Trello. If anyone is stuck with a specific problem and is unsure how to proceed, they can also write on Discord; the conversation is always focused on how to proceed best instead of criticizing. This creates a psychologically safe environment.
+  - After each solved issue, a group member posts an update to the Discord group chat about what they did, and how they solved the problem. If anything is unclear, other group members may request a presentation of the new solution in-person. This enables transforming local discoveries into global improvement by openly sharing information that other group members might find relevant in their work.
   - If our process during the past week didn't seem streamlined during a Friday meeting, we introduce improvements right away. For this reason, for example, we decided to log our work in Trello. This way we improve our daily work continuously. 
 
 ## Processes & Workflows
@@ -93,6 +151,7 @@ Contributions to this repository should be structured as necessary following the
 - Changes related to deployment/CICD flows: *branches* - 'deploy/XXX' *PRs* - 'Deploy: XXX'
 - Changes related to Refactoring: *branches* - 'refactor/XXX' *PRs* - 'Refactor: XXX'
 - Changes related to API implementation: *branches* - 'api/XXX' *PRs* - 'API: XXX'
+- Changes related to Infrastructure: *branches* - 'infra/XXX' *PRs* - 'Infrastructure: XXX'
 
 ## Documentation of choices and issues
 ### Choice of Programming Language / Tech Stack
@@ -104,7 +163,7 @@ We find Razor Pages to be a good choice, as it supports HTML templating similar 
 When migrating to another database, PostgreSQL was chosen as it was an available option as a managed database on DigitalOcean, and PostgreSQL is convenient to integrate with EF Core.
 
 ### Choice of Deployment Infrastructure
-We choose to use GitHub Actions to deploy our application, as it is a native functionality that does not require additional setup. For this project, we are not dependent on 100% uptimes and do not mind the 1 minute runtime of our workflow. Keeping the deployment within GitHub also means we do not have to expand our tech stack with additional tools and connections, which would otherwise increase the complexity unnecessarily for the project scope.
+We choose to use GitHub Actions to deploy our application, as it is a native functionality that does not require additional setup. For this project, we are not dependent on 100% uptimes and do not mind the 1-3 minute runtime of our workflow. Keeping the deployment within GitHub also means we do not have to expand our tech stack with additional tools and connections, which would otherwise increase the complexity for the project scope.
 
 ### Choice of logging Infrastructure
 We use **Grafana Loki** with **Promtail** and visualize logs in **Grafana**, alongside our existing Prometheus setup. Loki indexes metadata (labels) rather than full log text, which keeps storage and operational cost reasonable for a course project while still supporting useful queries with **LogQL**. Promtail runs on each application droplet, discovers Docker containers via the host socket, and ships stdout/stderr logs to Loki over HTTP, while the monitoring server hosts Loki and Grafana so logs stay centralized without running heavy logging agents on the metrics box. This stack is well documented, fits naturally next to Grafana dashboards we already use, and aligns with our goal of observable deployments with minimal extra moving parts.
@@ -142,7 +201,7 @@ We use the following static analysis tools in our CI pipelines to improve code q
 
 ### Idempotence in Configuration Files
 
-We have analyzed the Vagrantfiles, the Dockerfile and the Makefile for idempotence issues. We decided against migrating our solution to an external tool like Ansible for simplicity.Dockerfiles only required small fixes related to potential double user creation. We found no issues in the Vagrantfiles provisioning — if something is reinstalled or rebuilt but the system ends up in the same state without throwing an error, we don't consider that a problem. 
+We have analyzed the Vagrantfiles, the Dockerfile and the Makefile for idempotence issues. We decided against migrating our solution to an external tool like Ansible for simplicity. Dockerfiles only required small fixes related to potential double user creation. We found no issues in the Vagrantfile's provisioning — if something is reinstalled or rebuilt but the system ends up in the same state without throwing an error, we don't consider that a problem. 
 
 The Makefile required most effort to analyze. We defined the desired quality to be a consistent state and the absence of errors if a command runs repeatedly, provided all the prerequisites (such as *environment variables*) are met. 
 

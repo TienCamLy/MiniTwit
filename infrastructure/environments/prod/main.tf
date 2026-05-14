@@ -11,14 +11,14 @@ module "swarm" {
   pvt_key                  = var.pvt_key
   ssh_key_fingerprints     = [module.ssh_key_register.fingerprint]
   docker_stack_file_source = var.docker_stack_file_source
-  swarm_manager_count      = 0
-  swarm_worker_count       = 2
+  swarm_manager_count      = 2
+  swarm_worker_count       = 0
   swarm_leader_name        = "webserver"
   swarm_worker_name_prefix = "webserver-worker"
   droplet_image            = "159651797" #"ubuntu-22-04-x64"
   droplet_size             = "s-1vcpu-1gb"
-  swarm_worker_size_overrides = {
-    "1" = "s-2vcpu-2gb"
+  swarm_manager_size_overrides = {
+      "1" = "s-2vcpu-2gb"
   }
 }
 
@@ -48,5 +48,15 @@ module "swarm_firewall" {
   name                   = "minitwit-swarm"
   target_tags            = ["Manager", "Worker"]
   swarm_internal_tags    = ["Manager", "Worker"]
-  monitoring_droplet_ids = [module.swarm.minitwit-swarm-worker-droplet-ids[1]]
+  monitoring_droplet_ids = [module.swarm.minitwit-swarm-manager-droplet-ids[1]]
+}
+
+moved {
+  from = module.swarm.digitalocean_droplet.minitwit-swarm-worker[0]
+  to   = module.swarm.digitalocean_droplet.minitwit-swarm-manager[0]
+}
+
+moved {
+  from = module.swarm.digitalocean_droplet.minitwit-swarm-worker[1]
+  to   = module.swarm.digitalocean_droplet.minitwit-swarm-manager[1]
 }
