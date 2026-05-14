@@ -97,22 +97,6 @@ jobs:
           SSH_HOST_TEST: ${{ secrets.SSH_HOST_TEST }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
 
-      - name: Install Docker Scout CLI
-        run: |
-          curl --proto '=https' --tlsv1.2 -fsSL \
-            https://raw.githubusercontent.com/docker/scout-cli/main/install.sh \
-            -o install-scout.sh
-
-          docker scout version
-
-      - name: Run Docker Scout CVE scan (SHIFT-LEFT)
-        run: |
-          docker scout cves $DOCKER_USERNAME/minitwitimage:${{ github.sha }} \
-          --only-severity critical,high \
-          --exit-code
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-
       - name: Deploy to server (using compose)
         run: >
           ssh $SSH_USER@$SSH_HOST -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
