@@ -31,7 +31,7 @@ make app-build    # compose-test.yaml, app on http://localhost:8081
 make app-down     # stop and remove containers/volumes
 ```
 
-**Database migrations:** install tools once with `make install-ef-tools`, then e.g. `make db-migrate name=YourMigrationName` and `make db-update` (see the `Makefile` for exact targets).
+**Database migrations:** install tools once with `make install-ef-tools`, then e.g. `make db-migrate name=YourMigrationName` and `make db-update` (see the `Makefile` for exact targets). These are used whenever you want to update the EF Core definitions or update the provider.
 
 **Tests and linting:** targets such as `make test-ui-selenium`, `make test-api-simulator` (needs `API_TOKEN` and `TEST_GUI_IP` in the environment), `make lint-all`, and `make auto-lint` are defined in the `Makefile`; pull requests run overlapping checks in GitHub Actions.
 
