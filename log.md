@@ -101,3 +101,4 @@
 * Fix the code provided by examiners to not use two different variables for the same path of whihc one was configured wrongly such that the SSH command failed.
 * Add compilation from markdown -> pdf in a separate build
 * Rescale resources using Terraform to fit current processing requirements (i.e. reduce or increase such that all our services are available but not blown out of proportion)
+* Changing Terraform configuration files to match having three manager nodes in Docker Swarm.
