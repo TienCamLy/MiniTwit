@@ -10,6 +10,47 @@
 <!--- All dependencies of your ITU-MiniTwit systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on. -->
 ### 1.2 Dependencies of MiniTwit
 
+| Technology | Stage | Role |
+|------------|-------|------|
+| Git / GitHub | Development, CI/CD | Source control, reviews, and workflow hosting |
+| Trello | Development, operations | Backlog management and work tracking |
+| Discord | Development, operations | Team communication and receiving alerts (for example from GitHub & Grafana webhooks) |
+| C# / .NET | Development, production | Application language and runtime |
+| NuGet | Development, CI/CD | Package restore and feeds for .NET dependencies |
+| ASP.NET Core (Razor Pages) | Development, production | Web UI and HTTP API |
+| Entity Framework Core | Development, production | Database access and migrations |
+| PostgreSQL | Development, testing, production | Primary data store (managed in DigitalOcean) |
+| Docker | Development, CI/CD, production | Container images and runtime isolation |
+| Docker Hub | CI/CD, production | Registry for built application images |
+| Docker Compose | Development, testing | Local and test multi-container setups |
+| Docker Swarm | Production | Orchestration and rolling updates |
+| DigitalOcean | Infrastructure, production | Cloud VMs, managed database, and networking |
+| DigitalOcean Spaces (S3-compatible) | Infrastructure, CI/CD | Object storage with an S3-compatible API (Terraform remote state backend) |
+| Terraform | Infrastructure, CI/CD | Infrastructure as code for managing cloud resources |
+| GitHub Actions | CI/CD | Continuous integration and deployment pipelines |
+| Third-party GitHub Actions | CI/CD | Marketplace and vendor-maintained workflow steps (for example checkout, Docker login, Terraform setup, PR plan commenter, GitHub App token) |
+| GitHub CLI | CI/CD | Command-line GitHub integration in workflows (for example `gh auth setup-git` for automated commits) |
+| Ubuntu | CI/CD, production | Base operating system on GitHub-hosted runners and provisioned droplets |
+| SSH (OpenSSH) | CI/CD, production | Remote deploy, file copy, and server access from pipelines |
+| Prometheus | Monitoring | Metrics collection |
+| Grafana | Monitoring | Dashboards and alerting |
+| Loki | Monitoring | Centralized log storage |
+| Promtail | Monitoring | Shipping container logs to Loki |
+| Python | Testing (local and CI/CD) | API simulator test driver and test scripts |
+| Selenium | Testing (local and CI/CD) | Browser-based UI tests (with Chrome in Docker) |
+| dotnet format | Development, CI/CD | C# formatting and verifying the tree matches the formatter in CI |
+| Roslynator | Development, CI/CD | C# static analysis (Roslyn-based diagnostics) |
+| Codespell | Development, CI/CD | Spell checking across the repository |
+| Hadolint | Development, CI/CD | Linting Dockerfiles |
+| Codacy | Development, CI/CD | Hosted static analysis and pull-request quality checks |
+| SonarCloud | Development, CI/CD | SonarQube-family analysis and quality gate on pull requests |
+| CodeQL | Development, CI/CD | Semantic security and quality scanning (for example C# and Python) on pull requests |
+| Docker Scout | CI/CD | Container image vulnerability scanning on QA builds |
+| OpenAPI Generator | Development | Generating the API simulator stub from the OpenAPI description |
+| Pandoc / LaTeX | CI/CD | Building the report PDF in automation |
+| GNU Make | Development, CI/CD | Task automation (local and in workflows) |
+
+
 <!--- Describe the current state of your systems, for example using results of static analysis and quality assessments. -->
 ### 1.3
 
