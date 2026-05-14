@@ -22,8 +22,14 @@ variable "droplet_image" {
 
 variable "droplet_size" {
   type        = string
-  description = "Droplet size slug (vCPU/RAM/disk plan) applied to leader, managers, and workers."
+  description = "Default droplet size slug for leader, managers, and workers. Per-worker overrides use swarm_worker_size_overrides."
   default     = "s-1vcpu-1gb"
+}
+
+variable "swarm_worker_size_overrides" {
+  type        = map(string)
+  description = "Optional droplet size per worker index (map keys: \"0\", \"1\", ...). Indexes not listed use droplet_size."
+  default     = {}
 }
 
 variable "swarm_leader_name" {
@@ -83,10 +89,4 @@ variable "ssh_connection_timeout" {
   type        = string
   description = "Timeout for SSH connections used by file and remote-exec provisioners (Terraform duration string)."
   default     = "2m"
-}
-
-variable "local_exec_ssh_identity_path" {
-  type        = string
-  description = "Private key path for local-exec ssh used to read swarm join tokens from the leader (-i flag)."
-  default     = "ssh_key/terraform"
 }

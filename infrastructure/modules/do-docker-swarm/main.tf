@@ -76,7 +76,7 @@ resource "terraform_data" "swarm-worker-token" {
 
   # save the worker join token
   provisioner "local-exec" {
-    command = "mkdir -p temp && ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.local_exec_ssh_identity_path} 'docker swarm join-token worker -q' > temp/worker_token"
+    command = "mkdir -p temp && ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.pvt_key} 'docker swarm join-token worker -q' > temp/worker_token"
   }
 }
 
@@ -88,7 +88,7 @@ resource "terraform_data" "swarm-manager-token" {
 
   # save the manager join token
   provisioner "local-exec" {
-    command = "mkdir -p temp && ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.local_exec_ssh_identity_path} 'docker swarm join-token manager -q' > temp/manager_token"
+    command = "mkdir -p temp && ssh -o 'ConnectionAttempts 3600' -o 'StrictHostKeyChecking no' root@${digitalocean_droplet.minitwit-swarm-leader.ipv4_address} -i ${var.pvt_key} 'docker swarm join-token manager -q' > temp/manager_token"
   }
 }
 
@@ -186,7 +186,7 @@ resource "digitalocean_droplet" "minitwit-swarm-worker" {
   image  = var.droplet_image
   name   = "${var.swarm_worker_name_prefix}-${count.index}"
   region = var.region
-  size   = var.droplet_size
+  size   = lookup(var.swarm_worker_size_overrides, tostring(count.index), var.droplet_size)
   tags   = var.swarm_worker_tags
   # add public ssh key so we can access the machine
   ssh_keys = var.ssh_key_fingerprints
