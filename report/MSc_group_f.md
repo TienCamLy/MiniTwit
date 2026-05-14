@@ -69,7 +69,7 @@ Additionally, describe how generative AI tools have been used and briefly reflec
 <!--- Daniel -->
 
 <!--- Mads -->
-[ChatGPT](https://chatgpt.com/) was used for debugging GitHub Actions, Docker, and DevOps setup issues, its often it hindered my work on the Deployment workflows but helps alot on Command lines in the terminal.
+[ChatGPT](https://chatgpt.com/) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
 <!--- Kris -->
 
 <!--- Patrick -->
