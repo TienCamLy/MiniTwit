@@ -3,6 +3,14 @@ A course project as part of "DevOps, Software Evolution and Software Maintenance
 
 ## Description
 
+ITU-MiniTwit is Twitter-style web application used as part of the DevOps course on ITU: users can register, sign in, post short messages, follow others, and browse public and per-user timelines. The course’s original Python/Flask reference was refactored into **C#** with **ASP.NET Core Razor Pages** and migrated to use **Entity Framework Core** for database interactions.
+
+The app runs in **Docker**; in production it is deployed on **DigitalOcean** using **Docker Swarm** (with rolling updates) and a managed **PostgreSQL** database. **GitHub Actions** are used to build, test, and deploy the system, and **Prometheus**, **Grafana**, **Loki**, and **Promtail** provide metrics for monitoring and centralized logs. Development applications can also be spun up locally or remotely with a connection to a separate managed **PostgreSQL** database using **Docker Compose**.
+
+The public production app is at [https://minitwitj.dk/](https://minitwitj.dk/). A Grafana dashboard for production monitoring is at [http://209.38.255.154:3000/d/ad8crlm/monitoring-prod?orgId=1&from=now-6h&to=now&timezone=browser](http://209.38.255.154:3000/d/ad8crlm/monitoring-prod?orgId=1&from=now-6h&to=now&timezone=browser).
+
+Weekly design notes live in `log.md` at the repository root; architectural and tooling choices are documented further down in this file.
+
 ## Working with this repository
 
 ## Production system
