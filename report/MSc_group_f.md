@@ -26,9 +26,9 @@ In particular, the following descriptions should be included: -->
 
 <!--- What do you log in your systems and how do you aggregate logs? -->
 ### 2.3 Aggregated logs
-All assignment completions for each week have been aggregated in [View project log](log.md)
+All assignment completions for each week have been aggregated in [View project log](../log.md)
 . It was standard practice for everyone to document which tasks they completed.
-A type of "Meta" log used is the [README file](README.md) it serves as how we ought to implement the assignments as well as principle on how work as a group
+A type of "Meta" log used is the [README file](../README.md) it serves as how we ought to implement the assignments as well as principle on how work as a group
 Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
 all live logs are shipped to grafana 
 ![alt text](images/imageGrafanaLogging.png)
