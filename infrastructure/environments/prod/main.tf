@@ -17,8 +17,8 @@ module "swarm" {
   swarm_worker_name_prefix = "webserver-worker"
   droplet_image            = "159651797" #"ubuntu-22-04-x64"
   droplet_size             = "s-1vcpu-1gb"
-  swarm_worker_size_overrides = {
-    "1" = "s-2vcpu-2gb"
+  swarm_manager_size_overrides = {
+      "1" = "s-2vcpu-2gb"
   }
 }
 
@@ -38,6 +38,7 @@ module "postgres-db" {
   droplet_firewall_entries = merge(
     { leader = module.swarm.minitwit-swarm-leader-droplet-id },
     { for i, id in module.swarm.minitwit-swarm-manager-droplet-ids : "manager-${i}" => id },
+    { for i, id in module.swarm.minitwit-swarm-worker-droplet-ids : "worker-${i}" => id },
   )
 }
 

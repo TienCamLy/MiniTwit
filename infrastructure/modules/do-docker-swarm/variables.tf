@@ -32,6 +32,12 @@ variable "swarm_worker_size_overrides" {
   default     = {}
 }
 
+variable "swarm_manager_size_overrides" {
+  type        = map(string)
+  description = "Optional droplet size per manager index (map keys: \"0\", \"1\", ...). Indexes not listed use droplet_size."
+  default     = {}
+}
+
 variable "swarm_leader_name" {
   type        = string
   description = "DigitalOcean droplet name for the node that runs docker swarm init."
