@@ -123,7 +123,7 @@ jobs:
 
       - name: Run Docker Scout CVE scan (SHIFT-LEFT)
         run: |
-          docker scout cves $DOCKER_USERNAME/minitwitimage:${{ github.sha }} \
+          docker scout cves $DOCKER_USERNAME/testminitwit:latest \
           --only-severity critical,high \
           --exit-code
         env:
