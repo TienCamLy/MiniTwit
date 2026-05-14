@@ -95,6 +95,7 @@ Contributions to this repository should be structured as necessary following the
 - Changes related to deployment/CICD flows: *branches* - 'deploy/XXX' *PRs* - 'Deploy: XXX'
 - Changes related to Refactoring: *branches* - 'refactor/XXX' *PRs* - 'Refactor: XXX'
 - Changes related to API implementation: *branches* - 'api/XXX' *PRs* - 'API: XXX'
+- Changes related to Infrastructure: *branches* - 'infra/XXX' *PRs* - 'Infrastructure: XXX'
 
 ## Documentation of choices and issues
 ### Choice of Programming Language / Tech Stack
