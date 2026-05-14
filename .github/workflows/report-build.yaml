@@ -1,0 +1,42 @@
+name: Report Building
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'report/MSc_group_f.md'
+      - 'report/images/**'
+  # allow manual triggers too
+  workflow_dispatch:
+
+permissions:
+  # Required so the workflow can commit and push the rebuilt report PDF
+  contents: write
+
+jobs:
+  # Skip when this workflow’s own report push re-triggers the PR (would loop / waste minutes).
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Compile Report
+        run: make install-and-build-report
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "action@github.com"
+          git fetch origin main
+          git checkout -B main origin/main
+        
+      - name: Add Report
+        run: git add report/build/MSc_group_f.pdf
+
+      - name: Commit Report
+        run: git commit -m "Automatic Build and Update of Report"
+    
+      - name: Push Report
+        run: git push origin "HEAD:refs/heads/main"

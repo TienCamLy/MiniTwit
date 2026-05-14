@@ -11,7 +11,7 @@ on:
 permissions:
   pull-requests: write
   # Required so the workflow can commit and push the rebuilt report PDF
-  contents: write
+  contents: read
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -30,9 +30,7 @@ permissions:
 # AWS_SECRET_ACCESS_KEY
 
 jobs:
-  # Skip when this workflow’s own report push re-triggers the PR (would loop / waste minutes).
   build:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     steps:
@@ -157,19 +155,3 @@ jobs:
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           TEST_GUI_IP: ${{ secrets.SSH_HOST_TEST }}
-    
-      - name: Compile and push report
-        env:
-          # pull_request: branch the PR comes from; workflow_dispatch: selected branch
-          REPORT_BRANCH: ${{ github.head_ref || github.ref_name }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "action@github.com"
-          git fetch origin "$REPORT_BRANCH"
-          git checkout -B "$REPORT_BRANCH" "origin/$REPORT_BRANCH"
-
-          make install-and-build-report
-          
-          git add report/build/MSc_group_f.pdf
-          git commit -m "Automatic Build and Update of Report"
-          git push origin "HEAD:refs/heads/${REPORT_BRANCH}"
