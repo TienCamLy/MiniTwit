@@ -108,6 +108,16 @@ For import ids we mostly grabbed them straight from the URLs: droplet number fro
 
 ## Contributing and releasing changes
 
+We work in small branches off `main`, one focused task per branch when possible. **Do not push directly to `main`:** open a pull request, fill in the [pull request template](.github/pull_request_template.md), and wait for **at least one other group member** to review your changes before merging.
+
+**Before you ask for review**, allow the QA build to run and ensure your features work and do not cause any new issues. Work items are tracked on [Trello](https://trello.com/b/a72cgcKI/devops-minitwit); branch and PR title conventions are listed under [Processes & Workflows](#processes--workflows).
+
+**Merging:** when the PR is approved and **GitHub Actions are all green**, merge into `main`. If you have made changes to the report the pdf will be built on push to main.
+
+**Releasing to production:** deploying the live stack is **not** tied to every merge. Production deployments only run on release tags and tag names should follow [semantic versioning](https://semver.org/). Once a tag is created, **`.github/workflows/continous-deployment.yaml`** builds and pushes the image, applies Terraform if needed, and rolls the **Docker Swarm** stack on production. Details and secrets are described under [Production system](#production-system).
+
+Design decisions worth remembering should be noted in **`log.md`** as you go.
+
 ## DevOps Principles
 The group adheres to the "*Three Ways*" characterizing DevOps (from "The DevOps Handbook") by the following:
 - **Flow**:
