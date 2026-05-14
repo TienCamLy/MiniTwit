@@ -13,6 +13,28 @@ Weekly design notes live in `log.md` at the repository root; architectural and t
 
 ## Working with this repository
 
+Clone the repository and work from the root directory:
+
+```bash
+git clone https://github.com/TienCamLy/MiniTwit.git
+cd MiniTwit
+```
+
+**Prerequisites:** Docker (with Compose), GNU Make, and the **.NET 10 SDK** (for EF Core migrations and local `dotnet` commands). For API simulator tests you also need **Python 3** and `pip`.
+
+**Repository Structure:** application code under `razor-pages/` (web app, API, EF Core in `Infrastructure/`), integration tests under `tests/`, Compose files at the repo root, automation in `Makefile` and `.github/workflows/`.
+
+**Run the app locally in Docker:** copy `razor-pages/Web/.env_example` to `razor-pages/Web/.env` and provide valid values for each of the variables (API token and connection string; see comments in `.env_example` for host vs container networking). If you run Promtail next to the app stack, add `promtail/.env` from `promtail/env.example` and set `LOKI_URL` when you ship logs to Loki (note that this requires running the monitoring containers simultaneously). Then from the repository root:
+
+```bash
+make app-build    # compose-test.yaml, app on http://localhost:8081
+make app-down     # stop and remove containers/volumes
+```
+
+**Database migrations:** install tools once with `make install-ef-tools`, then e.g. `make db-migrate name=YourMigrationName` and `make db-update` (see the `Makefile` for exact targets).
+
+**Tests and linting:** targets such as `make test-ui-selenium`, `make test-api-simulator` (needs `API_TOKEN` and `TEST_GUI_IP` in the environment), `make lint-all`, and `make auto-lint` are defined in the `Makefile`; pull requests run overlapping checks in GitHub Actions.
+
 ## Production system
 
 ### Deployment of Infrastructure using Terraform
@@ -21,17 +43,7 @@ Weekly design notes live in `log.md` at the repository root; architectural and t
 2. A "Spaces Object Storage" S3 bucket inside Digital Ocean, to manage the backend of terraform.
 3. Terraform installation.
 
-#### 1. Cloning the Repo
-Start by cloning the repo by running
-```
-git clone https://github.com/TienCamLy/MiniTwit.git
-```
-Then navigate into the freshly created local clone:
-```
-cd MiniTwit
-```
-
-#### 2. Initializing the backend
+#### 1. Initializing the backend
 Run the following in your terminal from within the environment you would like to initialize: (`infrastructure/environments/[dev|prod]`)
 ```
 export AWS_ACCESS_KEY_ID="<your_spaces_access_key>"
@@ -42,7 +54,7 @@ terraform init -backend-config=backend.tfvars
 ```
 Note, that initializing the backend is the first step of any terraform process and is done initially to ensure file structures and state files exist that can then be used in other terraform commands as well as to initialize any submodules etc.
 
-#### 3. Provisioning and Planning using Terraform
+#### 2. Provisioning and Planning using Terraform
 Once you have created new infrastructure resources or changed existing resources you can initially "plan" and later "apply" (provision) the resources and/or updates.
 Note, that in order to set up to providers some secrets are needed, which should be generated from source systems and can be provided in one of the following two ways:
 1. Append a new line to the `*.tfvars` with `<var_name> = "<secret_value>"`
@@ -63,7 +75,7 @@ If the resource modification look as you expect, you can provision them:
 terraform apply --var-file="[dev|prod].tfvars"
 ```
 
-#### 4. Destroying Resources
+#### 3. Destroying Resources
 To shut down running resources, start by initializing the backend and then run:
 ```
 terraform apply -destroy --var-file="[dev|prod].tfvars"
