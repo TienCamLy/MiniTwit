@@ -8,7 +8,7 @@
 ### 1.1
 
 <!--- All dependencies of your ITU-MiniTwit systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on. -->
-### 1.2
+### 1.2 Dependencies of MiniTwit
 
 <!--- Describe the current state of your systems, for example using results of static analysis and quality assessments. -->
 ### 1.3
