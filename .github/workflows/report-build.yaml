@@ -8,6 +8,7 @@ on:
     paths:
       - 'report/MSc_group_f.md'
       - 'report/images/**'
+      - '.github/workflows/report-build.yaml'
   # allow manual triggers too
   workflow_dispatch:
 
