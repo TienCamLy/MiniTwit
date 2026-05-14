@@ -24,7 +24,7 @@ cd MiniTwit
 
 **Repository Structure:** application code under `razor-pages/` (web app, API, EF Core in `Infrastructure/`), integration tests under `tests/`, Compose files at the repo root, automation in `Makefile` and `.github/workflows/`.
 
-**Run the app locally in Docker:** copy `razor-pages/Web/.env_example` to `razor-pages/Web/.env` and provide valid values for each of the variables (API token and connection string; see comments in `.env_example` for host vs container networking). If you run Promtail next to the app stack, add `promtail/.env` from `promtail/env.example` and set `LOKI_URL` when you ship logs to Loki (note that this requires running the monitoring containers simultaneously). Then from the repository root:
+**Run the app locally in Docker:** copy `razor-pages/Web/.env_example` to `razor-pages/Web/.env` and provide valid values for each of the variables (API token and connection string for test db; see comments in `.env_example` for host vs container networking). If you run Promtail next to the app stack, add `promtail/.env` from `promtail/env.example` and set `LOKI_URL` when you ship logs to Loki (note that this requires running the monitoring containers simultaneously). Then from the repository root:
 
 ```bash
 make app-build    # compose-test.yaml, app on http://localhost:8081
