@@ -49,3 +49,13 @@ module "swarm_firewall" {
   swarm_internal_tags    = ["Manager", "Worker"]
   monitoring_droplet_ids = [module.swarm.minitwit-swarm-manager-droplet-ids[1]]
 }
+
+moved {
+  from = module.swarm.digitalocean_droplet.minitwit-swarm-worker[0]
+  to   = module.swarm.digitalocean_droplet.minitwit-swarm-manager[0]
+}
+
+moved {
+  from = module.swarm.digitalocean_droplet.minitwit-swarm-worker[1]
+  to   = module.swarm.digitalocean_droplet.minitwit-swarm-manager[1]
+}
