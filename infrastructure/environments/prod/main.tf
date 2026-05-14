@@ -11,8 +11,8 @@ module "swarm" {
   pvt_key                  = var.pvt_key
   ssh_key_fingerprints     = [module.ssh_key_register.fingerprint]
   docker_stack_file_source = var.docker_stack_file_source
-  swarm_manager_count      = 0
-  swarm_worker_count       = 2
+  swarm_manager_count      = 2
+  swarm_worker_count       = 0
   swarm_leader_name        = "webserver"
   swarm_worker_name_prefix = "webserver-worker"
   droplet_image            = "159651797" #"ubuntu-22-04-x64"
@@ -38,7 +38,6 @@ module "postgres-db" {
   droplet_firewall_entries = merge(
     { leader = module.swarm.minitwit-swarm-leader-droplet-id },
     { for i, id in module.swarm.minitwit-swarm-manager-droplet-ids : "manager-${i}" => id },
-    { for i, id in module.swarm.minitwit-swarm-worker-droplet-ids : "worker-${i}" => id },
   )
 }
 
@@ -48,5 +47,5 @@ module "swarm_firewall" {
   name                   = "minitwit-swarm"
   target_tags            = ["Manager", "Worker"]
   swarm_internal_tags    = ["Manager", "Worker"]
-  monitoring_droplet_ids = [module.swarm.minitwit-swarm-worker-droplet-ids[1]]
+  monitoring_droplet_ids = [module.swarm.minitwit-swarm-manager-droplet-ids[1]]
 }
