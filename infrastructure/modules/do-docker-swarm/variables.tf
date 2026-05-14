@@ -71,13 +71,11 @@ variable "swarm_worker_name_prefix" {
 variable "swarm_manager_count" {
   type        = number
   description = "Number of manager nodes in addition to the leader (each joins with a manager token)."
-  default     = 3
 }
 
 variable "swarm_worker_count" {
   type        = number
   description = "Number of worker nodes joining the swarm with a worker token."
-  default     = 0
 }
 
 variable "docker_stack_file_source" {
