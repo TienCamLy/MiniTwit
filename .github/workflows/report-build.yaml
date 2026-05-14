@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - chore/build_pdf_in_qa
     paths:
       - 'report/MSc_group_f.md'
       - 'report/images/**'
