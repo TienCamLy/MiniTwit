@@ -1,10 +1,11 @@
 resource "digitalocean_database_cluster" "postgres-db" {
-  name       = var.name
-  engine     = var.engine
-  version    = var.engine_version
-  size       = var.size
-  region     = var.region
-  node_count = var.node_count
+  name               = var.name
+  engine             = var.engine
+  version            = var.engine_version
+  size               = var.size
+  region             = var.region
+  node_count         = var.node_count
+  storage_size_mib   = var.storage_size_mib
 }
 
 resource "digitalocean_database_firewall" "droplet-firewall" {
