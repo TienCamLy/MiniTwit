@@ -10,7 +10,6 @@ on:
 
 permissions:
   pull-requests: write
-  # Required so the workflow can commit and push the rebuilt report PDF
   contents: read
 
 # Remember to set the following secrets in your repository's settings:
