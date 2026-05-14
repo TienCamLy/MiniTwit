@@ -37,6 +37,24 @@ make app-down     # stop and remove containers/volumes
 
 ## Production system
 
+Production is hosted on **DigitalOcean**: a **Docker Swarm** cluster runs the MiniTwit stack (built from `compose.yaml` on the Swarm manager), workloads use a **managed PostgreSQL** database, and a **monitoring** virtual machine hosts **Prometheus**, **Grafana**, and **Loki**. Application logs are shipped from the app nodes with **Promtail**. The public site is [https://minitwitj.dk/](https://minitwitj.dk/);
+IMPORTANT: Due to Digital Ocean limitations on the number of droplets, the monitoring droplet is also a part of the swarm in our case and simply runs extra containers. In a better case, one would spin up a separate droplet outside the swarm and connect it to the shared network for log shipping such that it would not be directly intermixed with the swarm operations it is monitoring.
+
+Infrastructure (droplets, database, firewall, floating IP, SSH resources, and related wiring) lives in **`infrastructure/`** and is applied with **Terraform** (`environments/dev` and `environments/prod`). Day-to-day application releases are automated from GitHub as described below.
+
+### Release pipeline (GitHub Actions)
+
+Production images and rollout are driven by **Continuous Deployment** (`.github/workflows/continous-deployment.yaml`):
+
+- **When it runs:** on every **git tag** push, and on **manual** `workflow_dispatch` from the Actions tab.
+- **What it does (high level):** logs in to Docker Hub, builds and pushes a **linux/amd64** image tagged `minitwitimage:<commit-sha>`, runs **`terraform init`** / **`terraform apply`** against `infrastructure/environments/prod`, copies `promtail/promtail-config.yaml` and `compose.yaml` onto the Swarm nodes (and ensures `.env` paths exist on app and monitor hosts), runs a **Docker Scout** CVE check (critical/high, failing the job on hits), then **SSH**s to the Swarm manager and runs **`docker stack deploy`** with registry auth so the stack pulls the new image (**rolling update** behavior is defined in the stack/compose settings).
+
+Runtime secrets on the servers (**connection string**, **API token**, **Loki push URL**, Docker Hub credentials, SSH keys, DigitalOcean token for Terraform, Spaces keys for remote state, etc.) are supplied as **GitHub Actions secrets**; the authoritative list is in the comments at the top of `continous-deployment.yaml`. Do not commit secrets to the repository.
+
+Before you cut a production release, changes are applied in a **QA** environment by running the workflow **`.github/workflows/continous-QA-deployment.yaml`** (triggered on pull requests to `main`).
+
+The **monitoring** stack on the dedicated VM is deployed separately via **Deploy Monitoring** (`.github/workflows/monitor-deployment.yaml`), which is **manual** (`workflow_dispatch`) only.
+
 ### Deployment of Infrastructure using Terraform
 #### 0. Prerequisites
 1. An account within Digital Ocean
@@ -84,7 +102,7 @@ This is a deletion action and all data is lost when it is performed, as your dat
 
 ### Migration into Terraform from Vagrant / Click-Ops
 
-Anything you built in the DigitalOcean UI (or only ran locally in Vagrant) needs to be imported into Terraform state files before they can be managed i IaC. You write it up in `.tf` files like everything else, then run `terraform import '<address>' '<id>'` from `infrastructure/environments/dev` or `prod` once the [backend](#2-initializing-the-backend) is initialized. Import only updates state — it does not generate config — so run `plan` afterwards and adjust until Terraform agrees with what actually exists (image slug vs id, SSH key material, tags, and so on) - in some cases items may state that a certain change "forces recreate", but you can get around this by defining the "ignore_changes = []" on the relevant attributes under the lifecycle sub-block. Note, that ignoring changes should only be done for things that you know should NEVER change over the entire lifecycle of a resource and only is part of initialization.
+Anything you built in the DigitalOcean UI (or only ran locally in Vagrant) needs to be imported into Terraform state files before they can be managed in IaC. You write it up in `.tf` files like everything else, then run `terraform import '<address>' '<id>'` from `infrastructure/environments/dev` or `prod` once the [backend](#1-initializing-the-backend) is initialized. Import only updates state — it does not generate config — so run `plan` afterwards and adjust until Terraform agrees with what actually exists (image slug vs id, SSH key material, tags, and so on) - in some cases items may state that a certain change "forces recreate", but you can get around this by defining the "ignore_changes = []" on the relevant attributes under the lifecycle sub-block. Note, that ignoring changes should only be done for things that you know should NEVER change over the entire lifecycle of a resource and only is part of initialization.
 
 For import ids we mostly grabbed them straight from the URLs: droplet number from `/droplets/…`, database UUID from `/databases/…`, floating IP as the IPv4 string. SSH keys use their numeric id from `doctl compute ssh-key list`, not the fingerprint. A few things bit us along the way: `for_each` needs predictable keys if values are droplet ids; DigitalOcean tends to replace droplets when the `ssh_keys` attributes changes and sometimes the droplet is registered with a local `image` specific to only that droplet (instead of a more general `ubuntu` image or similar).
 
