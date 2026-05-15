@@ -29,6 +29,9 @@ In particular, the following descriptions should be included: -->
 
 <!--- Brief description of how you security hardened your systems. -->
 ### 2.4
+<!--- CI pipeline -->
+The static analysis tool **CodeQL** is used to scan for security vulnerabilities in the application code. The tool has been added in Github's in-built code scanning feature with a default setup, 
+which automatically discovers source code languages in the repository and dynamically adjusts the scan based on the languages present. At the current state of the repository, CodeQL analyzes 
 
 <!--- How do you handle availability and scaling in your systems? -->
 ### 2.5
