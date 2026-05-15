@@ -25,8 +25,13 @@ In particular, the following descriptions should be included: -->
 ### 2.2
 
 <!--- What do you log in your systems and how do you aggregate logs? -->
-### 2.3
-
+### 2.3 Aggregated logs
+All assignment completions for each week have been aggregated in [View project log](../log.md)
+. It was standard practice for everyone to document which tasks they completed.
+A type of "Meta" log used is the [README file](../README.md) it serves as how we ought to implement the assignments as well as principle on how work as a group
+Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
+all live logs are shipped to grafana 
+![alt text](images/imageGrafanaLogging.png)
 <!--- Brief description of how you security hardened your systems. -->
 ### 2.4
 
@@ -44,7 +49,8 @@ Also reflect and describe what was the "DevOps" style of your work. For example,
 
 <!--- evolution and refactoring -->
 ### 3.1 Evolution and Refactoring
-
+On first refactoring from Pyhton to RazorPages with C# we ran into unforseen issues with the methods not working as intended. This slowed us down but once the bugs were solved we were able to make our release.
+We had no issues Refactoring to our Onion Structure. It was time-consuming but that half the group being familiar with the framework made the proces smooth.
 <!--- operation -->
 ### 3.2 Operation
 
@@ -63,7 +69,7 @@ Additionally, describe how generative AI tools have been used and briefly reflec
 <!--- Daniel -->
 
 <!--- Mads -->
-
+[ChatGPT](https://chatgpt.com/) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
 <!--- Kris -->
 
 <!--- Patrick -->
