@@ -76,6 +76,7 @@ Additionally, describe how generative AI tools have been used and briefly reflec
 <!--- Mie -->
 
 <!--- Daniel -->
+Claude and ChatGPT were used to quickly bounce ideas off of and to help identify the pros/cons of options when many were presented. Additionally, they were very useful in quickly parsing large error logs. 
 
 <!--- Mads -->
 
