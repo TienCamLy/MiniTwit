@@ -69,3 +69,10 @@ Additionally, describe how generative AI tools have been used and briefly reflec
 <!--- Patrick -->
 
 <!--- Tien -->
+The **Google Gemini 3 model** has primarily been used for debugging and to resolve technical uncertainty during development. 
+
+This includes asking the generative AI model to: 
+- find possible fixes for errors, as well as explaining how and why they appeared. 
+- provide an overview and understanding of important features and commands of new tools and technologies. 
+- review developer decisions to ensure that any changes to the application is correct.
+- check for grammar and phrasings when writing documentation or report.
