@@ -219,7 +219,40 @@ all live logs are shipped to grafana
 ### 2.4
 
 <!--- How do you handle availability and scaling in your systems? -->
-### 2.5
+### 2.5 Availability and Scaling
+Availability and scaling in the MiniTwit application are managed by Docker Swarm. A Swarm cluster of the DigitalOcean Droplets is joined into a single Swarm cluster,
+which continuously monitors and enforces the declared desired state.
+
+**High availability** is handled by having manager redundancy, three production container replicas, and automatic self-healing. 
+All three nodes in the cluster are given the `manager` role to prevent a single point of failure if one of the manager nodes crashes. 
+When a node in the cluster crashes, the Swarm detects a difference between the actual state and the declared desired state, such that 
+the number of actual running replicas is lower than three, which triggers *self-healing* to restore the third replica. 
+
+**Scaling** is handled by Docker Swarm's built-in Ingress Routing Mesh which functions as a load balancer. 
+Swarm evenly distributes incoming user requests across all three healthy replicas of the production container to handle high amounts of concurrent requests. 
+This parallelizes the workload across the nodes, such that a container does not consume all the resources of a single node.
+
+To ensure low downtime during the transition from the standalone containers to a Docker Swarm cluster, 
+the stack was deployed with a **blue-green service deployment** strategy from the start, such that the running containers were gradually replaced by the updated ones. 
+This is achieved by configuring the deployment settings within the Docker Compose file to set the update order to `start-first` and 
+a delay parameter that dictates how long Docker Swarm should wait after starting an updated container before terminating an old one, 
+allowing the new container to initialize.
+
+As a result, the services remain available during deployment. By default, Docker Swarm uses the rolling update strategy which terminates the old container 
+before starting a new one. This is called `stop-first`. By terminating the containers first, the default strategy forces the application to experience downtime 
+during the window between container termination and container initialization.
+
+While our strategy should have ensured low downtime during the transition to Docker Swarm, the production application still experienced downtime 
+due to overlooked human errors. These errors came as a result of debugging separate Docker Swarm migration issues. 
+Specifically, the Swarm Ingress routing mesh overwrote the port of the development environment on one of our DigitalOcean Droplets, 
+and the Loki logs failed to display on our Grafana dashboards. During the debugging process, accidental downtime of the application was introduced 
+when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, 
+which prevented the simulator from reaching it. 
+
+<!--- Move to reflection part? -->
+To avoid these issues in the future, a solution could be to replicate the Docker Swarm infrastructure 
+within an isolated development environment, so any configuration changes during the transition does not affect live production. 
+
 
 ## 3. Reflection Perspective
 
