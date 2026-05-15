@@ -83,7 +83,129 @@ This perspective should clarify how code or other artifacts come from idea into 
 In particular, the following descriptions should be included: -->
 
 <!--- A complete description and illustration of stages and tools included in the CI/CD pipelines, including deployment and release of your systems. -->
-### 2.1
+### 2.1 CI/CD pipelines, deployment, and release
+
+All development work is done on branches and requires a pull request to be merged into the main branch.
+Pull Requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, test and deployment to a QA droplet and database. 
+Note, that due to limitations on number of allowed droplets in our Digital Ocean account level, this QA droplet was later included in the production swarm as well.
+
+After merging a pull request into main, the report pdf is built iff changes have been made in the relevant files.
+Nothing is immediately pushed to production as we deemed that we wanted our releases to contain more than a single small change and have more control of when releases to production were made.
+The control of timing is important to ensure stability of the application and timely action given a failure/bug.
+
+We used an automated deployment pipeline to deploy our production services that automatically triggers when a tag is pushed to the repository.
+We attempted to follow a form of [semantic versioning](https://semver.org/) for tag names, to have a consistent format and a notion of how big each release was.
+The automated deployment builds a docker image and deploys the stack on the swarm leader node.
+
+Monitoring is deployed manually in a separate workflow. The monitoring droplet was initially a stand-alone droplet, but given the Digital Ocean limitation on droplets, this droplet was also later included in the swarm. 
+The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare and we therefore did not find it necessary.
+
+Below is an overview of the different stages of development towards operationalization. In the following sections we will deep dive into the QA deployment workflow, continuous deployment release workflow and the monitoring deployment workflow.
+```mermaid
+flowchart LR
+  subgraph dev [Development Branch]
+    A[Branch Work] --> B[Make a PR]
+    B --> C[QA Deployment workflow]
+    B --> K[Automated Checks]
+    C --> L[Peer Review]
+    K --> L[Peer Review]
+  end
+  subgraph merge [Main Branch]
+    L --> D[Merge to main]
+    D --> E[Report build on report changes]
+  end
+  subgraph release [Release Tagging]
+    D --> F[Semantic version tag]
+    F --> G[Continuous Deployment]
+    G --> H[Docker Swarm production]
+  end
+  subgraph ops [Operationalization]
+    D --> I[Deploy Monitoring manual]
+    I --> J[Prometheus / Grafana / Loki]
+    H --> J
+  end
+```
+
+#### Pull-request pipeline (QA Deployment)
+
+The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](../.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch.
+
+```mermaid
+sequenceDiagram
+  participant GH as GitHub Actions
+  participant Hub as Docker Hub
+  participant QA as QA droplet
+  participant DB as PostgreSQL QA DB
+
+  GH->>Hub: build and push testminitwit
+  GH->>GH: terraform plan + PR comment
+  GH->>QA: scp env + compose-test.yaml
+  GH->>GH: Docker Scout CVE scan
+  GH->>QA: Deploy Docker Compose
+  Hub->>QA: Pull Latest Image
+  QA->>QA: Docker Compose Up
+  GH->>DB: reset schema / simulator state
+  GH->>GH: run-all-validations
+  GH->>QA: API simulator + Selenium against :8081
+  QA->>DB: Query
+  DB->>QA: Data
+  QA->>GH: API / UI Results
+```
+
+Above flow chart shows the various steps and interactions between systems happening during the QA Deployment and test workflow. The workflow runs at the same time as the static code analysis tools `CodeQL`, `SonarCube` and `Codacy`. 
+
+#### Production release (Continuous Deployment)
+
+The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](../.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
+
+<!--- Describe: buildx build/push minitwitimage:SHA → terraform apply prod → copy compose/promtail to nodes → docker stack deploy on Swarm. -->
+<!--- Explain rolling updates (3 replicas, start-first, delay) and that secrets come from GitHub Actions, not the repo. Semantic versioning on tags. -->
+
+```mermaid
+sequenceDiagram
+  participant GH as GitHub Actions
+  participant Hub as Docker Hub
+  participant DO as DigitalOcean
+  participant Mgr as Swarm manager
+  participant Nodes as Swarm cluster
+  participant DB as Managed PostgreSQL
+
+  GH->>Hub: build and push minitwitimage:SHA
+  GH->>DO: terraform apply prod
+  Note over DO,DB: Applies IaC for VMs network and managed Postgres etc.
+  GH->>Mgr: scp compose.yaml
+  GH->>Mgr: docker stack deploy minitwit
+  Hub->>Nodes: pull image (with-registry-auth)
+  Mgr->>Nodes: rolling update (3 replicas)
+```
+
+#### Monitoring deployment
+
+The monitoring stack deployment is defined in [.github/workflows/monitor-deployment.yaml](../.github/workflows/monitor-deployment.yaml) and runs only when someone manually triggers it.
+
+```mermaid
+sequenceDiagram
+  participant GH as GitHub Actions
+  participant Hub as Docker Hub
+  participant Mon as Monitoring server
+  participant Mgr as Swarm manager
+
+  GH->>Mon: scp repo monitoring/* to /vagrant/monitoring
+  GH->>Mgr: scp repo monitoring/* to /vagrant/monitoring
+  GH->>Mgr: docker stack deploy monitoring
+  Mgr->>Mon: deploy constrained to server
+  Hub->>Mon: Pull Prometheus, Grafana and Loki Images
+  Mon->>Mon: Run Prometheus, Grafana and Loki Containers
+```
+
+#### Deployment & Release Summary
+
+| Environment | How it is updated | Image / orchestration |
+|-------------|-------------------|------------------------|
+| Local | `make app-build` (`compose-test.yaml`, port 8081) | Local Docker Compose |
+| QA (pre-merge) | QA Deployment workflow on PR | `testminitwit:latest`, Compose on test droplet |
+| Production | Tag → Continuous Deployment | `minitwitimage:<sha>`, Docker Swarm (3 replicas) |
+| Monitoring | Manual Deploy Monitoring workflow | Swarm stack `monitoring` |
 
 <!--- How do you monitor your systems and what precisely do you monitor? -->
 ### 2.2
