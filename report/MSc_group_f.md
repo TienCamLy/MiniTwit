@@ -310,6 +310,16 @@ Other security measures were also taken such as:
 - Ensuring the application runs on HTTPS with a TLS certificate and setting up `Nginx` for a reverse proxy in front of the application.
 - Docker images were also security hardened by ensuring only user privileges
 
+<!--- CI pipeline -->
+The static analysis tool **CodeQL** is used to scan for security vulnerabilities in the application code. The tool has been added in Github's in-built code scanning feature with a default setup,
+which automatically discovers source code languages in the repository and dynamically adjusts the scan based on the languages present.
+At the current state of the repository, CodeQL analyzes the following files:
+- C# files
+- Python files
+- Github action files
+
+A Docker image vulnerability scanner **Docker Scout** has been added to CI workflow to ensure any image vulnerabilities are detected before deployment. 
+ 
 <!--- How do you handle availability and scaling in your systems? -->
 ### 2.5 Availability and Scaling
 Availability and scaling in the MiniTwit application are managed by Docker Swarm. A Swarm cluster of the DigitalOcean Droplets is joined into a single Swarm cluster,
