@@ -29,6 +29,18 @@ In particular, the following descriptions should be included: -->
 
 <!--- Brief description of how you security hardened your systems. -->
 ### 2.4
+<!--- Firewalls -->
+The firewall for the DigitalOcean Droplets was configured to improve security. Inbound firewall rules were configured in DigitalOcean to provide an clear overview of the rules for each Droplet instead of `ufw`, 
+such that the rules can be conveniently managed by each group member through the user interface. 
+Inbound rules defines the traffic allowed to the Droplets on which ports and from which sources, and all other incoming traffic is blocked. In addition, Docker does not bypass DigitalOcean's firewalls. 
+
+The production application were given firewall rules for:
+- Standard internet and access ports (TCP 22, TCP 80, TCP 443)
+- Docker port (TCP 2376)
+- Docker Swarm infrastructure ports (TCP 2377, UDP 4789, TCP/UDP 7946)
+- Application ports (TCP 8080)
+- Grafana Loki log aggregation port (TCP 3100)
+- Prometheus ports (TCP 9090, TCP 9095, TCP 9096, TCP 9100)
 
 <!--- How do you handle availability and scaling in your systems? -->
 ### 2.5
