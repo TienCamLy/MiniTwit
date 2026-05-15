@@ -11,7 +11,19 @@
 ### 1.2
 
 <!--- Describe the current state of your systems, for example using results of static analysis and quality assessments. -->
-### 1.3
+### 1.3 Current State of Our Systems
+The current state of our system leaves it steadily functional across performance, scalability, code quality, security, and testing. However there are still some limiting factors that exclude it from being entirely production-ready. 
+
+In regards to performance and scalability, the primary issue we encountered is the resources available to the server being insufficient for exceptionally high traffic. However, that is relatively easily managed by upgrading the server plan on DigitalOcean. 
+
+The test coverage is quite extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
+
+#### Static Analysis and Code Quality Tools
+    - **SonarQube** indicate some potential security hotspots and issues with reliability, but overall still rates the application A-ratings in security and maintainability. 
+    - **Codacy** gives the application as a whole an A-rating, but also indicates a few potential security hotspots.
+    - **CodeQL** passes on all its vulnerability checks. It only fails on javascript due to a file being empty.
+    - **Hadolint** and **Rosylnator** show no issues.
+
 
 ## 2. Process' perspective
 <!--- 
