@@ -128,35 +128,41 @@ Monitoring is deployed manually in a separate workflow. The monitoring droplet w
 The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare and we therefore did not find it necessary.
 
 Below is an overview of the different stages of development towards operationalization. In the following sections we will deep dive into the QA deployment workflow, continuous deployment release workflow and the monitoring deployment workflow.
+
+![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.svg)
+<!--- 
 ```mermaid
 flowchart LR
   subgraph dev [Development Branch]
-    A[Branch Work] --> B[Make a PR]
-    B --> C[QA Deployment workflow]
-    B --> K[Automated Checks]
-    C --> L[Peer Review]
-    K --> L[Peer Review]
+    A[Branch Work] -- > B[Make a PR]
+    B -- > C[QA Deployment workflow]
+    B -- > K[Automated Checks]
+    C -- > L[Peer Review]
+    K -- > L[Peer Review]
   end
   subgraph merge [Main Branch]
-    L --> D[Merge to main]
-    D --> E[Report build on report changes]
+    L -- > D[Merge to main]
+    D -- > E[Report build on report changes]
   end
   subgraph release [Release Tagging]
-    D --> F[Semantic version tag]
-    F --> G[Continuous Deployment]
-    G --> H[Docker Swarm production]
+    D -- > F[Semantic version tag]
+    F -- > G[Continuous Deployment]
+    G -- > H[Docker Swarm production]
   end
   subgraph ops [Operationalization]
-    D --> I[Deploy Monitoring manual]
-    I --> J[Prometheus / Grafana / Loki]
-    H --> J
+    D -- > I[Deploy Monitoring manual]
+    I -- > J[Prometheus / Grafana / Loki]
+    H -- > J
   end
 ```
+-->
 
 #### Pull-request pipeline (QA Deployment)
 
 The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](../.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch.
 
+![Complete QA Build Workflow](images/mermaid_qa_flow.svg)
+<!--
 ```mermaid
 sequenceDiagram
   participant GH as GitHub Actions
@@ -178,6 +184,7 @@ sequenceDiagram
   DB->>QA: Data
   QA->>GH: API / UI Results
 ```
+-->
 
 Above flow chart shows the various steps and interactions between systems happening during the QA Deployment and test workflow. The workflow runs at the same time as the static code analysis tools `CodeQL`, `SonarCube` and `Codacy`. 
 
@@ -185,6 +192,8 @@ Above flow chart shows the various steps and interactions between systems happen
 
 The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](../.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
 
+![Complete Prod Build Workflow](images/mermaid_prod_flow.svg)
+<!--
 ```mermaid
 sequenceDiagram
   participant GH as GitHub Actions
@@ -202,11 +211,14 @@ sequenceDiagram
   Hub->>Nodes: pull image (with-registry-auth)
   Mgr->>Nodes: rolling update (3 replicas)
 ```
+-->
 
 #### Monitoring deployment
 
 The monitoring stack deployment is defined in [.github/workflows/monitor-deployment.yaml](../.github/workflows/monitor-deployment.yaml) and runs only when someone manually triggers it.
 
+![Complete Monitoring Build Workflow](images/mermaid_monitor_flow.svg)
+<!--
 ```mermaid
 sequenceDiagram
   participant GH as GitHub Actions
@@ -221,6 +233,7 @@ sequenceDiagram
   Hub->>Mon: Pull Prometheus, Grafana and Loki Images
   Mon->>Mon: Run Prometheus, Grafana and Loki Containers
 ```
+-->
 
 #### Deployment & Release Summary
 
