@@ -299,26 +299,39 @@ An improvement of the monitoring deployment would be to trigger it on changes to
 
 ### 3.3 Maintenance
 
+We rarely ran into maintenance issues per se. The system ran without errors most of the time from the time the simulator started, and most of the downtime we encoutered were not due to the system suddenly stopping its operation, but the deployment of new functionality which didn't go as planned, such as Docker Swarm or Terraform.
+
+[more examples]
+
+The most prominent maintenance issue was arguably the Loki logging instance that repeatedly stopped working for no apparent reason. It was fixed multiple times, and seemed to be working for a while, only to crash again at some point. This was a long-lasting debugging task that stretched into weeks as the cause was not immediately clear, and caused some frustration. 
+
+The final consideration relates to the maintenance of group member's knowledge about the moving parts of the project throughout the semester. It was sometimes the case that a functionality developed by one member reported errors not seen before or broke for no apparent reason, only to find out later that it was cause by a new functionality developed by another group member. One example of such a case is API tests suddenly failing due to a security measure allowing only a certain amount of requests to reach the server from a single IP, preventing DOS attacks. 
+
 ## 4. Use of Generative AI
 
-The generative AI tool Cursor ([https://cursor.com/](https://cursor.com/)) was used to discuss issues and warnings throughout the project and provide guidance on issues that we had not encountered before. This was beneficial to the development process as it unblocked us in completing tasks.
-We used Cursor to improve the code in terms of maintainability by standardizing the format and structure along with industry standard formatting / linting tools (i.e. using a mix of CLI tools and GenAI).
-We also employed Cursor to summarize branch work in our log.md and other documentation, to ensure chore tasks were being done rather than neglected. These logs and documentation are used to remind us of the work and considerations throughout the different stages of the project which have been written / read for internal use.
+<!--- Mie -->
 
-Claude and ChatGPT were used to quickly bounce ideas off of and to help identify the pros/cons of options when many were presented. Additionally, they were very useful in quickly parsing large error logs. 
+The use of generative AI tools varied among group members, and so we decided to include separate passages of its use, written by each group member. During groupwork, when we shared the screen and worked on code together, the tool preferred by the person leading the session was used.
 
-ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
+Mie mostly consulted the generative AI tool [Cursor](https://cursor.com/) to discuss issues and warnings throughout the project and provide guidance on issues that we had not encountered before. This was beneficial to the development process as it often unblocked progress, resulting in time savings. Cursor was also helpful in improving the code in terms of maintainability by standardizing its format and structure. It worked quite well together with industry standard formatting / linting tools, making us effectively use a mix of CLI tools and GenAI for improving the code quality in the project. Cursor was also very helpful in summaring branch work in our log.md and other documentation, ensuring that the chore tasks were actually being done rather than neglected. These logs and documentation written for internal use often reminded us of the work and decisionmaking performed at different stages of the project.
 
-The AI tool Github Copilot was used throughout the course for better code understanding, serving as interactive documentation. It was also used for very specific code fixes, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions that sometimes felt like an overkill.
+<!--- Daniel -->
+Daniel used Claude and ChatGPT to quickly bounce ideas off of it and to help identify the pros and cons of development options with many of them presented. Additionally, both tools were very useful in quickly parsing large error logs. 
 
-When it came to the use of GAI, ChatGPT and GitHub Copilot was used to better understand coding errors and thereby helping in solving them.
-Another aspect of using AI, would be on how to do specific things in different languages. 
-For example "How do i write inline code in .md?" or "How do i change the rejection status code on the rate limiter?".
+<!--- Mads -->
+Mads used [ChatGPT](https://chatgpt.com/) to debug GitHub Actions, Docker, and DevOps setup issues. He found that it often hindered the work on the deployment workflows, yet helped significantly with commands used in the terminal.
 
-The **Google Gemini 3 model** has primarily been used for debugging and to resolve technical uncertainty during development. 
+<!--- Chris -->
+Chris mainly employed Github Copilot as interactive documentation to assist in programming. It was also used to propose code changes for very specific improvement cases, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to actually implement security and maintainability solutions which sometimes felt like an overkill.
 
-This includes asking the generative AI model to: 
+<!--- Patrick -->
+For Patrick, when it came to the use of GAI, ChatGPT and GitHub Copilot were used to aid the understanding of code errors and thereby helped in solving them. They also showed their utility in queries about writing specific things in different languages, for example: *"How do I write inline code in .md?"* or *"How do I change the rejection status code on the rate limiter?"*
+
+<!--- Tien -->
+Finally, for Tien, the **Google Gemini 3 model** was the primary consultation source used for debugging and resolving technical uncertainty during development. 
+
+This included asking the generative AI model to: 
 - find possible fixes for errors, as well as explaining how and why they appeared. 
 - provide an overview and understanding of important features and commands of new tools and technologies. 
 - review developer decisions to ensure that any changes to the application is correct.
-- check for grammar and phrasings when writing documentation or report.
+- check grammar and phrasings when writing documentation or report.
