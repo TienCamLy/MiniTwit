@@ -33,6 +33,7 @@ In particular, the following descriptions should be included: -->
 The firewall for the DigitalOcean Droplets was configured to improve security. Inbound firewall rules were configured in DigitalOcean to provide an clear overview of the rules for each Droplet instead of `ufw`, 
 such that the rules can be conveniently managed by each group member through the user interface. 
 Inbound rules defines the traffic allowed to the Droplets on which ports and from which sources, and all other incoming traffic is blocked. In addition, Docker does not bypass DigitalOcean's firewalls. 
+This ensures that the sensitive ports is only accessed by internal Droplets, preventing security risks from unnecessary exposed ports. 
 
 The production application were given firewall rules for:
 - Standard internet and access ports (TCP 22, TCP 80, TCP 443)
