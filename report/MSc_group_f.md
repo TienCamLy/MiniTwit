@@ -32,14 +32,17 @@ In particular, the following descriptions should be included: -->
 
 <!--- How do you handle availability and scaling in your systems? -->
 ### 2.5 Availability and Scaling
+Availability and scaling in the MiniTwit application are managed by Docker Swarm. A Swarm cluster of the DigitalOcean Droplets is joined into a single Swarm cluster,
+which continuously monitors and enforces the declared desired state.
 
-availability:
-- declarative Scaling (three replicas)
+**High availability** is handled by having manager redundancy, three production container replicas, and automatic self-healing. 
+All three nodes in the cluster are given the `manager` role to prevent a single point of failure if one of the manager nodes crashes. 
+When a node in the cluster crashes, the Swarm detects a difference between the actual state and the declared desired state, such that 
+the number of actual running replicas is lower than three, which triggers *self-healing* to restore the third replica. 
 
-scaling:
-- internal load balancing (ingress routing mesh)
-  - The ingress mesh acts as an internal load balancer. Swarm automatically distributes the traffic across all healthy replicas
-
+**Scaling** is handled by Docker Swarm's built-in Ingress Routing Mesh which functions as a load balancer. 
+Swarm evenly distributes incoming user requests across all three healthy replicas of the production container to handle high amounts of concurrent requests. 
+This parallelizes the workload across the nodes, such that a container does not consume all the resources of a single node.
 
 To ensure low downtime during the transition from the standalone containers to a Docker Swarm cluster, 
 the stack was deployed with a **blue-green service deployment** strategy from the start, such that the running containers were gradually replaced by the updated ones. 
@@ -52,7 +55,7 @@ before starting a new one. This is called `stop-first`. By terminating the conta
 during the window between container termination and container initialization.
 
 While our strategy should have ensured low downtime during the transition to Docker Swarm, the production application still experienced downtime 
-due to overlooked human errors. These errors came as a result of separate Docker Swarm migration issues. 
+due to overlooked human errors. These errors came as a result of debugging separate Docker Swarm migration issues. 
 Specifically, the Swarm Ingress routing mesh overwrote the port of the development environment on one of our DigitalOcean Droplets, 
 and the Loki logs failed to display on our Grafana dashboards. During the debugging process, accidental downtime of the application was introduced 
 when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, 
