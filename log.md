@@ -79,13 +79,14 @@
 * Cleanup of unused images on `webserver-test` before running tests to address running out of space issues.
 * Added additional debug printouts to `test-api-simulator`
 
-### Week 13 (May 1 - May 7)
+### Week 13 (May 1 - May 6)
 * Added `.mailmap` file to consolidate authors into persons
 * Added `Docker-Scout` to the CD workflow, which scans for vulnerabilities.
 * Added `Codeql` but its not a workflow file. its a setting enabled within github that automatically scan our code
 * Added two new static analysis tool to `continuous-QA-deployment`, `hadolint` for testing the linting of Dockerfiles and Roslynator for analyzing the C# code. 
 * **Monitor deployment / Docker Swarm**:** Migrated the workflow and the monitoring services to Docker Swarm by deploying the services to the cluster through Webserver (manager node). 
 * Reviewed the idempotence of our configuration files. Applied small changes to both Dockerfiles; reviewed both Vagrantfiles but found no issues; applied changes to the Makefile; updated the readme.
+* **Security Assessment**: Implemented input sanitization for posts and user creation to prevent XSS attacks and added a rate limiter globally to minimize the maximum requests per minute based on IP address.
 
 ### Week 14 (May 8 - May 14)
 * Updated workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24 on June 2nd.
@@ -99,5 +100,7 @@
 * Fix missing environment variable in Continuous Deployment workflow causing it to fail.
 * Fix the token fetching from lecturer code, as the previous version was not reproducible amongst multiple machines and only works when the apply is always run from the same machine and that machine does not remove the temp directory.
 * Fix the code provided by examiners to not use two different variables for the same path of whihc one was configured wrongly such that the SSH command failed.
+* Update the README with the current state of the project
 * Add compilation from markdown -> pdf in a separate build
 * Rescale resources using Terraform to fit current processing requirements (i.e. reduce or increase such that all our services are available but not blown out of proportion)
+* Changing Terraform configuration files to match having three manager nodes in Docker Swarm.
