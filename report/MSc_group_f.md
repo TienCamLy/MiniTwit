@@ -294,6 +294,9 @@ We also employed Cursor to summarize branch work in our log.md and other documen
 The AI tool Github Copilot was used throughout the course for better code understanding, serving as interactive documentation. It was also used for very specific code fixes, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions which sometimes felt like an overkill.
 
 <!--- Patrick -->
+When it came to the use of GAI, ChatGPT and GitHub Copilot was used to better understand coding errors and thereby helping in solving them.
+Another aspect of using AI, would be on how to do specific things in different languages. 
+For example "How do i write inline code in .md?" or "How do i change the rejection status code on the rate limiter?".
 
 <!--- Tien -->
 The **Google Gemini 3 model** has primarily been used for debugging and to resolve technical uncertainty during development. 
