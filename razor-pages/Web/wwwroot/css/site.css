@@ -167,6 +167,11 @@ ul.flashes li {
   font-size: 13px;
 }
 
+ul.flashes .flash-error {
+  background: #f3b9bf;
+  border: 1px solid #ce8189;
+}
+
 div.error {
   margin: 10px 0;
   background: #FAE4E4;

@@ -1,10 +1,11 @@
+using System.Threading.RateLimiting;
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using DotNetEnv;
-using Infrastructure.Context.Services;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 using Prometheus;
@@ -43,10 +44,24 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 
-var app = builder.Build();
+// Add rate limiter
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim() // Take client-ip (avoid proxies)
+                          ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 240,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+    options.RejectionStatusCode = 429;
+});
 
-app.MapRazorPages();
-app.MapControllers();
+var app = builder.Build();
 
 // Apply migrations
 using (var scope = app.Services.CreateScope())
@@ -77,6 +92,8 @@ if (httpsConfigured)
 
 app.UseRouting();
 
+app.UseRateLimiter(); // Enable rate limiter
+
 app.UseMetricServer();
 app.UseHttpMetrics();
 
@@ -84,7 +101,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-app.MapRazorPages()
-    .WithStaticAssets();
+app.MapRazorPages().WithStaticAssets();
+app.MapControllers();
 
 app.Run();
