@@ -31,7 +31,6 @@ public class RegisterModel : PageModel
     {
         if (string.IsNullOrEmpty(Username))
             Error = "You have to enter a username";
-
         else if (string.IsNullOrEmpty(Email) || !Email.Contains("@"))
             Error = "You have to enter a valid email address";
         else if (string.IsNullOrEmpty(Password))

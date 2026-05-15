@@ -1,6 +1,8 @@
 ﻿using Infrastructure.Context;
 using Prometheus;
 
+namespace Infrastructure.Services;
+
 public class MetricsService
 {
     private static readonly Gauge UsersGauge = Metrics.CreateGauge(
