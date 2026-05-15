@@ -133,8 +133,6 @@ public class MessageRepository : IMessageRepository
             throw new Exception("User not found");
         }
 
-        text = InputSanitizer.SanitizePlainText(text);
-
         var message = new Message
         {
             AuthorId = authorId,

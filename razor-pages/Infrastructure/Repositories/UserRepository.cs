@@ -80,9 +80,6 @@ public class UserRepository : IUserRepository
 
         var hash = new PasswordHasher<User>();
 
-        username = InputSanitizer.SanitizePlainText(username);
-        email = InputSanitizer.SanitizePlainText(email);
-
         var user = new User
         {
             UserName = username,
