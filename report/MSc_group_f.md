@@ -35,8 +35,10 @@ which automatically discovers source code languages in the repository and dynami
 At the current state of the repository, CodeQL analyzes the following files:
 - C# files
 - Python files
-- Github action files 
+- Github action files
 
+A Docker image vulnerability scanner **Docker Scout** has been added to CI workflow to ensure any image vulnerabilities are detected before deployment. 
+ 
 <!--- How do you handle availability and scaling in your systems? -->
 ### 2.5
 
