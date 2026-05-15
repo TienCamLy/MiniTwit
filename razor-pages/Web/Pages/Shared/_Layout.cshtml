@@ -34,6 +34,12 @@
             <li>@TempData["FlashMessage"]</li>
         </ul>
     }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <ul class="flashes">
+            <li class="flash-error">@TempData["ErrorMessage"]</li>
+        </ul>
+    }
     <div class=body>
         <main role="main" class="pb-3">
             @RenderBody()

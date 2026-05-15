@@ -1,0 +1,57 @@
+name: Report Building
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'report/MSc_group_f.md'
+      - 'report/images/**'
+      - '.github/workflows/report-build.yaml'
+  # allow manual triggers too
+  workflow_dispatch:
+
+permissions:
+  # Required so the workflow can commit and push the rebuilt report PDF
+  contents: write
+
+jobs:
+  # Skip when this workflow’s own report push re-triggers the PR (would loop / waste minutes).
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Generate a secure token using the App ID and Private Key secrets
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "action@github.com"
+          gh auth setup-git
+
+          git fetch origin main
+          git checkout -B main origin/main
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Compile Report
+        run: make install-and-build-report
+        
+      - name: Add Report
+        run: git add report/build/MSc_group_f.pdf
+
+      - name: Commit Report
+        run: git commit -m "Automatic Build and Update of Report"
+    
+      - name: Push Report
+        run: git push origin "HEAD:refs/heads/main"

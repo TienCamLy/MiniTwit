@@ -110,7 +110,7 @@ resource "digitalocean_droplet" "minitwit-swarm-manager" {
   image  = var.droplet_image
   name   = "${var.swarm_manager_name_prefix}-${count.index}"
   region = var.region
-  size   = var.droplet_size
+  size   = lookup(var.swarm_manager_size_overrides, tostring(count.index), var.droplet_size)
   tags   = var.swarm_manager_tags
   # add public ssh key so we can access the machine
   ssh_keys = var.ssh_key_fingerprints
@@ -186,7 +186,7 @@ resource "digitalocean_droplet" "minitwit-swarm-worker" {
   image  = var.droplet_image
   name   = "${var.swarm_worker_name_prefix}-${count.index}"
   region = var.region
-  size   = var.droplet_size
+  size   = lookup(var.swarm_worker_size_overrides, tostring(count.index), var.droplet_size)
   tags   = var.swarm_worker_tags
   # add public ssh key so we can access the machine
   ssh_keys = var.ssh_key_fingerprints

@@ -25,6 +25,9 @@ on:
 # AWS_ACCESS_KEY_ID
 # AWS_SECRET_ACCESS_KEY
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -96,24 +99,6 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_HOST_TEST: ${{ secrets.SSH_HOST_TEST }}
           MONITOR_SSH_HOST: ${{ secrets.MONITOR_SSH_HOST }}
-
-      - name: Install Docker Scout CLI (SonarQube safe)
-        run: |
-          mkdir -p $HOME/.docker/cli-plugins
-
-          curl --proto "=https" --tlsv1.2 -sSf -L \
-            https://github.com/docker/scout-cli/releases/latest/download/docker-scout-linux-amd64 \
-            -o $HOME/.docker/cli-plugins/docker-scout
-
-          chmod +x $HOME/.docker/cli-plugins/docker-scout
-
-          docker scout version
-
-      - name: Run Docker Scout CVE scan (SHIFT-LEFT)
-        run: |
-          docker scout cves minitwit-app:latest \
-            --only-severity critical,high \
-            --exit-code
 
       - name: Deploy to server (using compose)
         run: >

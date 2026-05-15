@@ -22,8 +22,20 @@ variable "droplet_image" {
 
 variable "droplet_size" {
   type        = string
-  description = "Droplet size slug (vCPU/RAM/disk plan) applied to leader, managers, and workers."
+  description = "Default droplet size slug for leader, managers, and workers. Per-worker overrides use swarm_worker_size_overrides."
   default     = "s-1vcpu-1gb"
+}
+
+variable "swarm_worker_size_overrides" {
+  type        = map(string)
+  description = "Optional droplet size per worker index (map keys: \"0\", \"1\", ...). Indexes not listed use droplet_size."
+  default     = {}
+}
+
+variable "swarm_manager_size_overrides" {
+  type        = map(string)
+  description = "Optional droplet size per manager index (map keys: \"0\", \"1\", ...). Indexes not listed use droplet_size."
+  default     = {}
 }
 
 variable "swarm_leader_name" {
@@ -65,13 +77,11 @@ variable "swarm_worker_name_prefix" {
 variable "swarm_manager_count" {
   type        = number
   description = "Number of manager nodes in addition to the leader (each joins with a manager token)."
-  default     = 1
 }
 
 variable "swarm_worker_count" {
   type        = number
   description = "Number of worker nodes joining the swarm with a worker token."
-  default     = 1
 }
 
 variable "docker_stack_file_source" {
