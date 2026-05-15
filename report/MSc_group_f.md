@@ -16,6 +16,9 @@ The architecture of the project follows a layered onion architecture split into 
 - The Infrastructure focuses on the database context, migrations and the implementation of repository interfaces. This layer depends only on the Core, whilst having no reference to the Web layer.
 - The Web handles the UI through razor pages along with the API. It also acts as the base of the system handling the dependency injection and referencing both the Core and Infrastructure layers of the application.
 
+#### 1.1.1 Choice of Final Infrastructure-as-Code Architecture
+We ended up migrating to Terraform towards the end of the project as it allows easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined Documentation for Digital Ocean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources therefore did not have much extra overhead.
+
 <!--- All dependencies of your ITU-MiniTwit systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on. -->
 ### 1.2 Dependencies of MiniTwit
 
@@ -342,8 +345,27 @@ Also reflect and describe what was the "DevOps" style of your work. For example,
 ### 3.1 Evolution and Refactoring
 On first refactoring from Pyhton to RazorPages with C# we ran into unforseen issues with the methods not working as intended. This slowed us down but once the bugs were solved we were able to make our release.
 We had no issues Refactoring to our Onion Structure. It was time-consuming but that half the group being familiar with the framework made the proces smooth.
+
+We discussed that it may have been useful to have defined the infrastructure in Terraform from the beginning and that it may have led us to avoid having the amount of "Click-Ops" we had during the project (setting up a managed database, modifying network rules for droplets etc.) giving better reproducibility and version history.
+
 <!--- operation -->
 ### 3.2 Operation
+<!--- QA Building -->
+To increase robustness we added a QA deployment on Pull Requests, requiring the application to be built, pushed and tests to pass before merging it into the main branch. This allowed us to test all of our features fully before releasing them to our main application and thereby decreased the amount of bugs and operational work.
+<!--- Database CPU Overload -->
+In early April we started receiving warnings from the built-in resource alert system in Digital Ocean that our Database Cluster was above 90% CPU utilization. We started investigating the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
+We chose to resize the cluster such that it had an extra virtual CPU after cost-benefit analysis concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time consuming versus the cost of upgrading the database cluster.
+The database was resized with no downtime.
+<!--- Monitoring Droplet CPU Overload -->
+Once we had fully migrated to swarm, including log shipping from all our droplets, the droplet containing the monitoring application ended up being overloaded such that our monitoring application became unreachable. This warranted an upgrade of the droplet containing the monitoring application. If we had access to spin up more droplets, we may have considered horizontal scaling instead of vertical.
+The monitoring droplet was resized using terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
+
+![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
+
+<!--- Grafana Restart / Volume Management -->
+We struggled with the continuous deployment of our monitoring application in terms of ensuring new dashboards would appear and an unintended addition of a flag that reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the issues and accepted the loss of earlier metrics & logs.
+
+An improvement of the monitoring deployment would be to trigger it on changes to the particular folder containing monitoring definitions instead of only manual trigger.
 
 <!--- maintenance -->
 ### 3.3 Maintenance
