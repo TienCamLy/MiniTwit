@@ -299,13 +299,11 @@ An improvement of the monitoring deployment would be to trigger it on changes to
 
 ### 3.3 Maintenance
 
-We rarely ran into maintenance issues per se. The system ran without errors most of the time from the time the simulator started, and most of the downtime we encoutered were not due to the system suddenly stopping its operation, but the deployment of new functionality which didn't go as planned, such as Docker Swarm or Terraform.
+We rarely ran into maintenance issues per se. The system ran without errors most of the time from the time the simulator started, and most of the downtime we encoutered was not due to the system suddenly stopping its operation due to an undefined error, but rather due to the deployment of new functionality which didn't go as planned, such as Docker Swarm or Terraform.
 
-[more examples]
+The most prominent maintenance issue was arguably the Loki logging instance that repeatedly stopped working for no apparent reason. It was fixed multiple times, and seemed to be working for a while, only to crash again at some point. This was a long-lasting debugging task that stretched into weeks as the cause was not immediately clear, and caused some frustration. Another hiccup we encountered was related to a fluke in the connection between prometheus and grafana, causing an alert to be fired repeatedly. The issue went away after redeployment, and we couldn't definitively arrive at the underlying issue.
 
-The most prominent maintenance issue was arguably the Loki logging instance that repeatedly stopped working for no apparent reason. It was fixed multiple times, and seemed to be working for a while, only to crash again at some point. This was a long-lasting debugging task that stretched into weeks as the cause was not immediately clear, and caused some frustration. 
-
-The final consideration relates to the maintenance of group member's knowledge about the moving parts of the project throughout the semester. It was sometimes the case that a functionality developed by one member reported errors not seen before or broke for no apparent reason, only to find out later that it was cause by a new functionality developed by another group member. One example of such a case is API tests suddenly failing due to a security measure allowing only a certain amount of requests to reach the server from a single IP, preventing DOS attacks. 
+It was also sometimes the case that a functionality developed by one member reported errors with their source not immediatelly clear, to find out later that it was triggered by a new functionality developed by another group member. One example of such case was when API tests suddenly started failing due to a security measure allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
 
 ## 4. Use of Generative AI
 
