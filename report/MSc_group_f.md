@@ -289,7 +289,9 @@ We also employed Cursor to summarize branch work in our log.md and other documen
 
 <!--- Mads -->
 [ChatGPT](https://chatgpt.com/) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
-<!--- Kris -->
+
+<!--- Chris -->
+The AI tool Github Copilot was used throughout the course for better code understanding, serving as interactive documentation. It was also used for very specific code fixes, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions which sometimes felt like an overkill.
 
 <!--- Patrick -->
 
