@@ -158,9 +158,6 @@ Above flow chart shows the various steps and interactions between systems happen
 
 The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](../.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
 
-<!--- Describe: buildx build/push minitwitimage:SHA → terraform apply prod → copy compose/promtail to nodes → docker stack deploy on Swarm. -->
-<!--- Explain rolling updates (3 replicas, start-first, delay) and that secrets come from GitHub Actions, not the repo. Semantic versioning on tags. -->
-
 ```mermaid
 sequenceDiagram
   participant GH as GitHub Actions
