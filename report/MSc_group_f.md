@@ -259,6 +259,20 @@ all live logs are shipped to grafana
 ![alt text](images/imageGrafanaLogging.png)
 <!--- Brief description of how you security hardened your systems. -->
 ### 2.4 Security Hardening
+<!--- Firewalls -->
+The firewall for the DigitalOcean Droplets was configured to improve security. Inbound firewall rules were configured in DigitalOcean to provide an clear overview of the rules for each Droplet instead of `ufw`, 
+such that the rules can be conveniently managed by each group member through the user interface. 
+Inbound rules defines the traffic allowed to the Droplets on which ports and from which sources, and all other incoming traffic is blocked. In addition, Docker does not bypass DigitalOcean's firewalls. 
+This ensures that the sensitive ports is only accessed by internal Droplets, preventing security risks from unnecessary exposed ports. 
+
+The production application were given firewall rules for:
+- Standard internet and access ports (TCP 22, TCP 80, TCP 443)
+- Docker port (TCP 2376)
+- Docker Swarm infrastructure ports (TCP 2377, UDP 4789, TCP/UDP 7946)
+- Application ports (TCP 8080)
+- Grafana Loki log aggregation port (TCP 3100)
+- Prometheus ports (TCP 9090, TCP 9095, TCP 9096, TCP 9100)
+
 For the security hardening of our system a security assessment was made showing an overview of assets/threats/risks:
 
 **Assets**
