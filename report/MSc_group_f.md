@@ -22,7 +22,22 @@ In particular, the following descriptions should be included: -->
 ### 2.1
 
 <!--- How do you monitor your systems and what precisely do you monitor? -->
-### 2.2
+### 2.2 Monitoring
+The monitoring of our application is done through the use of Prometheus and Grafana. 
+
+The data collection is handled by Prometheus' .NET client library, prometheus-net, with UseMetricServer collecting and exposing metrics for use by Grafana. Additional http request metrics are collected through the use of the UseHttpMetrics middleware provided by Prometheus. Custom metric gatherers were also implemented to retrieve metrics from the application's database. 
+
+Grafana is then used to retrieve these exposed metrics provided by Prometheus and allows for the construction of various visualizations. We also implemented a Grafana alert based on the up-time metric to inform us when the server was down.
+
+#### Monitoring Panels
+- Current and uptime of container status
+- CPU utilization
+- Memory utilized by dotnet processes, as well as total physical allocated memory
+- Total tweets and tweet rate
+- Total users and registration rate
+- Http request response latency by their action
+- Http GET and POST request rates over time by their response status codes
+
 
 <!--- What do you log in your systems and how do you aggregate logs? -->
 ### 2.3
