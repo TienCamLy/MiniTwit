@@ -306,7 +306,7 @@ For the security hardening of our system a security assessment was made showing 
 
 **Risk Analysis**
 | Scenario                   | Likelihood      | Impact | Risk     |
-|:---------------------------|:---------------:|:------:|:--------:|
+|----------------------------|-----------------|--------|----------|
 | SQL Injection              | High/Common     | High   | Critical |
 | Cross-Site Scripting (XSS) | High/Common     | High   | High     |
 | DDoS Attack                | Medium/Uncommon | Medium | Medium   |
