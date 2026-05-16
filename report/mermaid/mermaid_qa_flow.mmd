@@ -1,0 +1,19 @@
+sequenceDiagram
+  participant GH as GitHub Actions
+  participant Hub as Docker Hub
+  participant QA as QA droplet
+  participant DB as PostgreSQL QA DB
+
+  GH->>Hub: build and push testminitwit
+  GH->>GH: terraform plan + PR comment
+  GH->>QA: scp env + compose-test.yaml
+  GH->>GH: Docker Scout CVE scan
+  GH->>QA: Deploy Docker Compose
+  Hub->>QA: Pull Latest Image
+  QA->>QA: Docker Compose Up
+  GH->>DB: reset schema / simulator state
+  GH->>GH: run-all-validations
+  GH->>QA: API simulator + Selenium against :8081
+  QA->>DB: Query
+  DB->>QA: Data
+  QA->>GH: API / UI Results

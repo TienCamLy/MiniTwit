@@ -1,0 +1,23 @@
+%%{init: {"flowchart": {"htmlLabels": false}}}%%
+flowchart LR
+  subgraph dev [Development Branch]
+    A[Branch Work] --> B[Make a PR]
+    B --> C[QA Deployment workflow]
+    B --> K[Automated Checks]
+    C --> L[Peer Review]
+    K --> L[Peer Review]
+  end
+  subgraph merge [Main Branch]
+    L --> D[Merge to main]
+    D --> E[Report build on report changes]
+  end
+  subgraph release [Release Tagging]
+    D --> F[Semantic version tag]
+    F --> G[Continuous Deployment]
+    G --> H[Docker Swarm production]
+  end
+  subgraph ops [Operationalization]
+    D --> I[Deploy Monitoring manual]
+    I --> J[Prometheus / Grafana / Loki]
+    H --> J
+  end
