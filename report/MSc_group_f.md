@@ -303,6 +303,8 @@ As preventive maintenance, at one point we updated the workflow action versions 
 
 ### 3.4 DevOps Approach
 
+We described the "DevOps" style of our work extensively in the project's `README.md`. Overall, we were much more structured and organized in this work compared to previous projects. We made use of the Trello board to track our progress, made sure the sizing of tasks made them self-contained, added a `log.md` to track our work, extensively tested our code through workflows, and insisted on rigorous code reviews as well as a self-check checklist to follow for each pull request, proiding continous feedback to group members. We didn't blame anyone for mistakes, but rather offered help and treated each doubt as an opportunity for growth.
+
 ## 4. Use of Generative AI
 
 The use of generative AI tools varied among group members, and so we decided to include separate passages of its use, written by each group member. During groupwork, when we shared the screen and worked on code together, the tool preferred by the person leading the session was used.
