@@ -102,7 +102,7 @@ The test coverage is quite extensive across the API and browser-based UI levels,
 - **SonarQube** indicates a few potential reliability and maintainability issues, as well as some security hotspots, but still gives it an A-rating in the main issue categories. 
 - **Codacy** gives the application as a whole an A-rating, but also indicates a few potential security hotspots.
 - **CodeQL** passes on all its vulnerability checks.
-- **Hadolint** and **Rosylnator** show no issues.
+- **Hadolint** and **Roslynator** show no issues.
 
 **SonarQube's Quality Assessment:**
 
