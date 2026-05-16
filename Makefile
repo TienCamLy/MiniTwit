@@ -90,6 +90,9 @@ tf-plan:
 # Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
 monitor-build:
 	cd monitoring && docker compose up --build
+	
+monitor-build-down:
+	cd monitoring && docker compose down -v && docker compose up --build
 
 # Tests
 test-api-simulator: 
