@@ -170,6 +170,16 @@ regenerate-mermaid-charts:
 			$(MERMAID_IMAGE) \
 			-i "/data/$$name.mmd" \
 			-o "/out/$$name.svg"; \
+		if [ "$$name" = "mermaid_end_to_end" ]; then \
+			echo "Generating $$name.png (for PDF — flowchart SVG labels break in pandoc) ..."; \
+			docker run --rm \
+				-v "$(MERMAID_DIR):/data" \
+				-v "$(CURDIR)/report/images:/out" \
+				$(MERMAID_IMAGE) \
+				-i "/data/$$name.mmd" \
+				-o "/out/$$name.png" \
+				-b white; \
+		fi; \
 	done
 
 # Build report pdf (pandoc uses pdflatex; install TeX Live & svg support)

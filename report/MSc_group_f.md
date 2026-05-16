@@ -128,7 +128,7 @@ The monitoring deployment could have been automatically deployed if changes appe
 
 Below is an overview of the different stages of development towards operationalization. In the following sections we will deep dive into the QA deployment workflow, continuous deployment release workflow and the monitoring deployment workflow.
 
-![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.svg)
+![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
 
 #### Pull-request pipeline (QA Deployment)
 
