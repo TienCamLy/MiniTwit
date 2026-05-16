@@ -1,0 +1,174 @@
+---
+name: QA Deployment
+
+on:
+  pull_request:
+    branches:
+      - main
+  # allow manual triggers too
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+  contents: read
+
+# Remember to set the following secrets in your repository's settings:
+# https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
+# DOCKER_USERNAME
+# DOCKER_PASSWORD
+
+# SSH_USER
+# SSH_PRIVATE_KEY
+# SSH_HOST
+# SSH_HOST_TEST
+# MONITOR_SSH_HOST
+
+# TESTCONNECTIONSTRING
+# API_TOKEN
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up Docker Buildx (for docker compose)
+        run: echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
+
+      # promtail/.env must be copied to the QA droplet; Promtail only reads it on the server, not from CI.
+      - name: Create .env file for compose
+        run: |
+          echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
+          echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
+          echo "LOKI_URL=$LOKI_URL" > promtail/.env
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          CONNECTIONSTRING: ${{ secrets.TESTCONNECTIONSTRING }}
+          # loki-dev on the monitoring stack (host port 3101). Open TCP 3101 from this QA droplet on the monitor firewall.
+          LOKI_URL: ${{ secrets.QA_LOKI_URL }}
+
+      - name: Build & push minitwit image
+        run: docker compose -f compose-test.yaml build && docker compose -f compose-test.yaml push
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          IMAGE_NAME: testminitwit
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/do_ssh_key
+          echo "$SSH_KEY_PUB" > ~/.ssh/do_ssh_key.pub
+          chmod 600 ~/.ssh/do_ssh_key
+          chmod 600 ~/.ssh/do_ssh_key.pub
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KEY_PUB: ${{ secrets.SSH_PUBLIC_KEY }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+      
+      - name: Run Terraform Init
+        run: |
+          make tf-init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Run Terraform plan
+        run: |
+          make tf-plan
+        env:
+          TF_VAR_do_token: ${{ secrets.DO_TOKEN }}
+          TF_VAR_pub_key: "~/.ssh/do_ssh_key.pub"
+          TF_VAR_pvt_key: "~/.ssh/do_ssh_key"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Post Terraform Plan Comment in PR
+        uses: towardsthecloud/terraform-plan-pr-commenter@e0e93b3396eb8dfbf70109c06340dc64ce26c818
+        with:
+          planfile: plan.out
+          working-directory: infrastructure/environments/prod
+          
+      - name: Copy .env files to server
+        run: |
+          ssh -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no "${SSH_USER}@${SSH_HOST}" 'mkdir -p /vagrant/promtail'
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./razor-pages/Web/.env "${SSH_USER}@${SSH_HOST}:/vagrant/razor-pages/Web/.env"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/.env "${SSH_USER}@${SSH_HOST}:/vagrant/promtail/.env"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./promtail/promtail-config.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/promtail/promtail-config.yaml"
+          scp -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no ./compose-test.yaml "${SSH_USER}@${SSH_HOST}:/vagrant/compose-test.yaml"
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
+
+      - name: Install Docker Scout CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -fsSL \
+            https://raw.githubusercontent.com/docker/scout-cli/main/install.sh \
+            -o install-scout.sh
+
+          sh install-scout.sh
+
+          docker scout version
+
+      - name: Run Docker Scout CVE scan (SHIFT-LEFT)
+        run: |
+          docker scout cves $DOCKER_USERNAME/testminitwit:latest \
+          --only-severity critical,high \
+          --exit-code
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+      - name: Deploy to server (using compose)
+        run: >
+          ssh $SSH_USER@$SSH_HOST
+          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+          'export DOCKER_USERNAME='"$DOCKER_USERNAME"' 
+          && docker image prune -a -f
+          && cd /vagrant 
+          && export IMAGE_NAME=testminitwit 
+          && docker compose -f compose-test.yaml pull 
+          && docker compose -f compose-test.yaml up -d --remove-orphans --force-recreate'
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST_TEST }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+      - name: Reset test database state before running tests
+        run: |
+          psql "$TESTCONNECTIONSTRING" <<'SQL'
+          BEGIN;
+          TRUNCATE TABLE
+          "Followers",
+          "Messages",
+          "AspNetUserTokens",
+          "AspNetUserRoles",
+          "AspNetUserLogins",
+          "AspNetUserClaims",
+          "AspNetUsers"
+          RESTART IDENTITY CASCADE;
+          DELETE FROM "SimulatorLatest";
+          INSERT INTO "SimulatorLatest" ("Id", "latest_id") VALUES (1, 0);
+          COMMIT;
+          SQL
+
+        env:
+          TESTCONNECTIONSTRING: ${{ secrets.PSQL_TESTCONNECTIONSTRING }}
+
+      - name: Run tests
+        run: |
+          export REGISTRATION_PAGE="http://${TEST_GUI_IP}:8081/register"
+          make run-all-validations
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          TEST_GUI_IP: ${{ secrets.SSH_HOST_TEST }}

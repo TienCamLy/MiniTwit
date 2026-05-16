@@ -1,70 +1,82 @@
 services:
   prometheus:
-    container_name: prometheus
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.10.0
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - /vagrant/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-storage:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-    
+    deploy:
+      placement:
+        constraints: [node.hostname == webserver-worker-1]
+    networks:
+      - monitor_net
+  
   prometheus-dev:
-    container_name: prometheus-dev
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.10.0
     ports:
       - "9091:9091"
     volumes:
-      - ./prometheus-dev.yml:/etc/prometheus/prometheus.yml
+      - /vagrant/monitoring/prometheus-dev.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-storage-dev:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.listen-address=0.0.0.0:9091'
+    deploy:
+      placement:
+        constraints: [node.hostname == webserver-worker-1]
+    networks:
+      - monitor_net
 
-  # Promtail runs on the application server (root compose.yaml) and pushes here.
-  # Restrict host firewall: allow TCP 3100 only from app server IPs.
   loki:
     image: grafana/loki:3.6.7
-    container_name: loki
     ports:
       - "3100:3100"
     volumes:
-      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+      - /vagrant/monitoring/loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
       - loki-data:/loki
     command: -config.file=/etc/loki/local-config.yaml
+    deploy:
+      placement:
+        constraints: [node.hostname == webserver-worker-1]
+    networks:
+      - monitor_net
 
-  # Promtail runs on the application server (root compose.yaml) and pushes here.
-  # Restrict host firewall: allow TCP 3100 only from app server IPs.
   loki-dev:
     image: grafana/loki:3.6.7
-    container_name: loki-dev
     ports:
       - "3101:3101"
     volumes:
-      - ./loki/loki-dev-config.yaml:/etc/loki/local-config.yaml
+      - /vagrant/monitoring/loki/loki-dev-config.yaml:/etc/loki/local-config.yaml:ro
       - loki-data-dev:/loki
     command: -config.file=/etc/loki/local-config.yaml
+    deploy:
+      placement:
+        constraints: [node.hostname == webserver-worker-1]
+    networks:
+      - monitor_net
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.4.0
     ports:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-temp}
     volumes:
       - grafana-storage:/var/lib/grafana
-      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
-      - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-    depends_on:
-      - loki
-      - loki-dev
-      - prometheus
-      - prometheus-dev
-    restart: unless-stopped
+      - /vagrant/monitoring/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - /vagrant/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    deploy:
+      placement:
+        constraints: [node.hostname == webserver-worker-1]
+      restart_policy:
+        condition: any
+    networks:
+      - monitor_net
 
 volumes:
   prometheus-storage:
@@ -72,3 +84,8 @@ volumes:
   grafana-storage:
   loki-data:
   loki-data-dev:
+
+networks:
+  monitor_net:
+    driver: overlay
+    attachable: true

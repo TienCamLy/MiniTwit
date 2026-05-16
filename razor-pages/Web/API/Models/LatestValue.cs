@@ -19,7 +19,7 @@ using Newtonsoft.Json;
 using Web.API.Converters;
 
 namespace Web.API.Models
-{ 
+{
     /// <summary>
     /// 
     /// </summary>
@@ -30,7 +30,7 @@ namespace Web.API.Models
         /// The latest global value
         /// </summary>
         /// <value>The latest global value</value>
-        [DataMember(Name="latest", EmitDefaultValue=true)]
+        [DataMember(Name = "latest", EmitDefaultValue = true)]
         public int? Latest { get; set; }
 
         /// <summary>
@@ -77,10 +77,10 @@ namespace Web.API.Models
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     Latest == other.Latest ||
-                    
+
                     Latest.Equals(other.Latest)
                 );
         }
@@ -95,14 +95,14 @@ namespace Web.API.Models
             {
                 var hashCode = 41;
                 // Suitable nullity checks etc, of course :)
-                    
-                    hashCode = hashCode * 59 + Latest.GetHashCode();
+
+                hashCode = hashCode * 59 + Latest.GetHashCode();
                 return hashCode;
             }
         }
 
         #region Operators
-        #pragma warning disable 1591
+#pragma warning disable 1591
 
         public static bool operator ==(LatestValue left, LatestValue right)
         {
@@ -114,7 +114,7 @@ namespace Web.API.Models
             return !Equals(left, right);
         }
 
-        #pragma warning restore 1591
+#pragma warning restore 1591
         #endregion Operators
     }
 }

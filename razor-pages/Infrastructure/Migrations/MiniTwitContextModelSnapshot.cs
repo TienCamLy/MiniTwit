@@ -66,6 +66,27 @@ namespace Infrastructure.Migrations
                     b.ToTable("Messages");
                 });
 
+            modelBuilder.Entity("Infrastructure.Entities.SimulatorLatest", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LatestId")
+                        .HasColumnType("integer")
+                        .HasColumnName("latest_id");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SimulatorLatest", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            LatestId = 0
+                        });
+                });
+
             modelBuilder.Entity("Infrastructure.Entities.User", b =>
                 {
                     b.Property<int>("Id")

@@ -36,7 +36,12 @@
 
 ### Week 7 – DevOps & repo polish (Mar 13 – Mar 19)
 * Chore: split app and monitoring layout; workflow env path for compose.
-* Merged monitoring and restructure branches; added PR template.
+* Merged monitoring and restructure branches; continued deployment workflow fixes (SSH/options, known_hosts, env).
+* PostgreSQL migration was merged experimentally then **reverted** (#37); stayed on the existing SQLite + EF setup due to some parts not working.
+* Grafana dashboards updated for clearer layout / beautification (#36).
+* Added GitHub **pull request template** (#38);
+* **Removed legacy Python MiniTwit** from the repo (C# app is the single source); SonarCube-driven cleanups on API models, repositories, and pages (#39 and related).
+* Security / hygiene: dropped obsolete `python-version` usage and addressed prominent security findings (#39).
 
 ### Week 8 - Logging (Mar 20 - Mar 26)
 * Added new droplet for running test-deployments to avoid failing on PROD.
@@ -50,5 +55,52 @@
 
 ### Week 9 - Docker Swarm (Mar 27 - Apr 9)
 * Added local development connecting to test database and ensured QA workflow connects to the test database as well.
+* Added Docker Swarm, such it contains three replicas. The PROD droplet functions as the manager node, while the two other droplets act as worker nodes.  
 
 ### Week 10 (Apr 10 - Apr 16)
+* **Grafana monitoring dashboard (PROD):** Reworked `monitoring/grafana/dashboards/dashboard.json` for a clearer layout. Where appropriate, panels now use **rates** instead of raw **totals** so traffic and counters are easier to interpret over time. Added **subsections / row groupings** so visuals are easier to scan and to separate concerns when analysing monitoring data.
+* **Monitor deployment workflow:** Dropped **`--force-recreate`** (and rely on `docker compose up -d --build` without recreating all services) so Prometheus/Loki/Grafana **named volumes** are not wiped on each deploy.
+* Specified versions for prometheus and grafana for project version consistency, so as to avoid sudden issues arising from updates to them.
+* Added function to get message count for the MyTimeline page, and fixed paginator functionality for both MyTimeline and UserTimeline. 
+
+### Week 11 (Apr 17 - Apr 23)
+* **Monitor deployment / Grafana:** After `docker compose up -d --build`, the workflow now runs **`docker compose restart grafana`** so Grafana reloads provisioning on every deploy. Otherwise the Grafana container often stayed running when only bind-mounted dashboard JSON changed, so dashboards stored in the **`grafana-storage`** volume did not pick up repo updates.
+* Removed login_success/failure metrics and their associated graph in grafana as they ceased to work, were redundant, and were primarily implemented as a basic first graph example to test grafana. 
+* Implemented SonarQube's security recommendation to not expand secrets inside run blocks, instead expanding it in an environment block and referencing that in the run. 
+* Changed CI/CD workflow to handle the Docker Swarm changes. 
+* **Simulator `latest` counter:** Dropped the in-memory static field; the value now lives in Postgres (`SimulatorLatest`, one row, `latest_id`, EF migration). Endpoints read and update that row, so it survives restarts and stays shared when several instances talk to the same database.
+
+### Week 12 (Apr 24 - Apr 30)
+* GitHub Actions **PR validation** workflow: on pull requests to `main`, run `make test-all` (Docker build + tests).
+* **`tests/` layout:** API simulator scenario moved to `tests/API_Spec/`; simulator uses **`API_TOKEN`** from `.env` / secrets instead of hardcoded credentials.
+* **Selenium UI tests** under `tests/selenium/` with Dockerfile and compose; Makefile targets `test-ui-selenium`, `test-api-simulator`, `test-all`.
+* Root **`compose.yaml` / Makefile** updated so app build, API simulator, and Selenium tests run consistently in CI and locally.
+* Simulator and UI tests now use a remote postgres-based db `minitwit-test-db` to run validation. The database tables are truncated at the beginning of each workflow ensuring state consistency.
+* Cleanup of unused images on `webserver-test` before running tests to address running out of space issues.
+* Added additional debug printouts to `test-api-simulator`
+
+### Week 13 (May 1 - May 6)
+* Added `.mailmap` file to consolidate authors into persons
+* Added `Docker-Scout` to the CD workflow, which scans for vulnerabilities.
+* Added `Codeql` but its not a workflow file. its a setting enabled within github that automatically scan our code
+* Added two new static analysis tool to `continuous-QA-deployment`, `hadolint` for testing the linting of Dockerfiles and Roslynator for analyzing the C# code. 
+* **Monitor deployment / Docker Swarm**:** Migrated the workflow and the monitoring services to Docker Swarm by deploying the services to the cluster through Webserver (manager node). 
+* Reviewed the idempotence of our configuration files. Applied small changes to both Dockerfiles; reviewed both Vagrantfiles but found no issues; applied changes to the Makefile; updated the readme.
+* **Security Assessment**: Implemented input sanitization for posts and user creation to prevent XSS attacks and added a rate limiter globally to minimize the maximum requests per minute based on IP address.
+
+### Week 14 (May 8 - May 14)
+* Updated workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24 on June 2nd.
+* Specified permissions in github action workflows to satisfy CodeQL's warnings. 
+* **Terraform / IaC on DigitalOcean:** Added `infrastructure/` with **dev** and **prod** root modules, **remote state** via DigitalOcean Spaces (`backend.tf` / `backend.tfvars`, `terraform init -backend-config=…`), and documented prerequisites, secrets (`do_token`, SSH key paths), and `plan` / `apply` with `dev.tfvars` / `prod.tfvars` in the README.
+* **IaC Modules:** `do-ssh-key` (upload SSH public key), `do-single-droplet` (single VM + compose file artifact for provisioning), `do-docker-swarm` (Swarm leader + worker droplets and stack from compose), `do-public-ip` (floating IP on the target droplet), `do-postgres-db` (managed PostgreSQL with firewall rules so only the relevant droplet(s) can reach the DB).
+* **Environments:** **Dev** — one droplet and `minitwit-test-db`. **Prod** — Swarm layout (leader `webserver`, two workers) and `minitwit-db`, with DB firewall `droplet_firewall_entries` covering leader, managers, and workers; tightened firewall configuration toward **one firewall resource with multiple allowances** instead of one per droplet where applicable.
+* Small **`.gitignore`** updates for Terraform artifacts alongside the new tree.
+* Terraform Import for all existing resources in digital ocean to have non-destructive swap-over and allow managing existing resources using terraform going forward.
+* Fix the Continuous Deployment Terraform Apply step to have the auto-approve flag.
+* Fix missing environment variable in Continuous Deployment workflow causing it to fail.
+* Fix the token fetching from lecturer code, as the previous version was not reproducible amongst multiple machines and only works when the apply is always run from the same machine and that machine does not remove the temp directory.
+* Fix the code provided by examiners to not use two different variables for the same path of whihc one was configured wrongly such that the SSH command failed.
+* Update the README with the current state of the project
+* Add compilation from markdown -> pdf in a separate build
+* Rescale resources using Terraform to fit current processing requirements (i.e. reduce or increase such that all our services are available but not blown out of proportion)
+* Changing Terraform configuration files to match having three manager nodes in Docker Swarm.

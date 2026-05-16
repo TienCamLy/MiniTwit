@@ -1,6 +1,10 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+
+# Bake in the APP_UID explicitly instead of inheriting this value from the online image
+ENV APP_UID=1654
+
 WORKDIR /app
-RUN mkdir -p /app/keys && chown -R $APP_UID:$APP_UID /app/keys && chmod 700 /app/keys
+RUN mkdir -p /app/keys && chown -R "$APP_UID:$APP_UID" /app/keys && chmod 700 /app/keys
 
 USER $APP_UID
 EXPOSE 8080
@@ -26,6 +30,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 USER root
-RUN chown -R $APP_UID:$APP_UID /app
+RUN chown -R "$APP_UID:$APP_UID" /app
 USER $APP_UID
 ENTRYPOINT ["dotnet", "Web.dll"]
