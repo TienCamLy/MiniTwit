@@ -22,68 +22,66 @@ We ended up migrating to Terraform towards the end of the project as it allows e
 <!--- All dependencies of your ITU-MiniTwit systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on. -->
 ### 1.2 Dependencies of MiniTwit
 
-| Technology | Stage | Role |
-|------------|-------|------|
-| Git / GitHub | Development, CI/CD | Source control, reviews, and workflow hosting |
-| Trello | Development, operations | Backlog management and work tracking |
-| Discord | Development, operations | Team communication and receiving alerts (for example from GitHub & Grafana webhooks) |
-| C# / .NET | Development, production | Application language and runtime |
-| NuGet | Development, CI/CD | Package restore and feeds for .NET dependencies |
-| ASP.NET Core (Razor Pages) | Development, production | Web UI and HTTP API |
-| Entity Framework Core | Development, production | Database access and migrations |
-| PostgreSQL | Development, testing, production | Primary data store (managed in DigitalOcean) |
-| Docker | Development, CI/CD, production | Container images and runtime isolation |
-| Docker Hub | CI/CD, production | Registry for built application images |
-| Docker Compose | Development, testing | Local and test multi-container setups |
-| Docker Swarm | Production | Orchestration and rolling updates |
-| DigitalOcean | Infrastructure, production | Cloud VMs, managed database, and networking |
-| DigitalOcean Spaces (S3-compatible) | Infrastructure, CI/CD | Object storage with an S3-compatible API (Terraform remote state backend) |
-| Terraform | Infrastructure, CI/CD | Infrastructure as code for managing cloud resources |
-| GitHub Actions | CI/CD | Continuous integration and deployment pipelines |
-| Third-party GitHub Actions | CI/CD | Marketplace and vendor-maintained workflow steps (for example checkout, Docker login, Terraform setup, PR plan commenter, GitHub App token) |
-| GitHub CLI | CI/CD | Command-line GitHub integration in workflows (for example `gh auth setup-git` for automated commits) |
-| Ubuntu | CI/CD, production | Base operating system on GitHub-hosted runners and provisioned droplets |
-| SSH (OpenSSH) | CI/CD, production | Remote deploy, file copy, and server access from pipelines |
-| Prometheus | Monitoring | Metrics collection |
-| Grafana | Monitoring | Dashboards and alerting |
-| Loki | Monitoring | Centralized log storage |
-| Promtail | Monitoring | Shipping container logs to Loki |
-| Python | Testing (local and CI/CD) | API simulator test driver and test scripts |
-| Selenium | Testing (local and CI/CD) | Browser-based UI tests (with Chrome in Docker) |
-| dotnet format | Development, CI/CD | C# formatting and verifying the tree matches the formatter in CI |
-| Roslynator | Development, CI/CD | C# static analysis (Roslyn-based diagnostics) |
-| Codespell | Development, CI/CD | Spell checking across the repository |
-| Hadolint | Development, CI/CD | Linting Dockerfiles |
-| Codacy | Development, CI/CD | Hosted static analysis and pull-request quality checks |
-| SonarCloud | Development, CI/CD | SonarQube-family analysis and quality gate on pull requests |
-| CodeQL | Development, CI/CD | Semantic security and quality scanning (for example C# and Python) on pull requests |
-| Docker Scout | CI/CD | Container image vulnerability scanning on QA builds |
-| OpenAPI Generator | Development | Generating the API simulator stub from the OpenAPI description |
-| Pandoc / LaTeX | CI/CD | Building the report PDF in automation |
-| GNU Make | Development, CI/CD | Task automation (local and in workflows) |
+- **Git / GitHub** *(Development, CI/CD)* Source control, reviews, and workflow hosting
+- **Trello** *(Development, operations)* Backlog management and work tracking
+- **Discord** *(Development, operations)* Team communication and receiving alerts (for example from GitHub & Grafana webhooks)
+- **C# / .NET** *(Development, production)* Application language and runtime
+- **NuGet** *(Development, CI/CD)* Package restore and feeds for .NET dependencies
+- **ASP.NET Core (Razor Pages)** *(Development, production)* Web UI and HTTP API
+- **Entity Framework Core** *(Development, production)* Database access and migrations
+- **PostgreSQL** *(Development, testing, production)* Primary data store (managed in DigitalOcean)
+- **Docker** *(Development, CI/CD, production)* Container images and runtime isolation
+- **Docker Hub** *(CI/CD, production)* Registry for built application images
+- **Docker Compose** *(Development, testing)* Local and test multi-container setups
+- **Docker Swarm** *(Production)* Orchestration and rolling updates
+- **DigitalOcean** *(Infrastructure, production)* Cloud VMs, managed database, and networking
+- **DigitalOcean Spaces (S3-compatible)** *(Infrastructure, CI/CD)* Object storage with an S3-compatible API (Terraform remote state backend)
+- **Terraform** *(Infrastructure, CI/CD)* Infrastructure as code for managing cloud resources
+- **GitHub Actions** *(CI/CD)* Continuous integration and deployment pipelines
+- **Third-party GitHub Actions** *(CI/CD)* Marketplace and vendor-maintained workflow steps (for example checkout, Docker login, Terraform setup, PR plan commenter, GitHub App token)
+- **GitHub CLI** *(CI/CD)* Command-line GitHub integration in workflows (for example `gh auth setup-git` for automated commits)
+- **Ubuntu** *(CI/CD, production)* Base operating system on GitHub-hosted runners and provisioned droplets
+- **SSH (OpenSSH)** *(CI/CD, production)* Remote deploy, file copy, and server access from pipelines
+- **Prometheus** *(Monitoring)* Metrics collection
+- **Grafana** *(Monitoring)* Dashboards and alerting
+- **Loki** *(Monitoring)* Centralized log storage
+- **Promtail** *(Monitoring)* Shipping container logs to Loki
+- **Python** *(Testing (local and CI/CD))* API simulator test driver and test scripts
+- **Selenium** *(Testing (local and CI/CD))* Browser-based UI tests (with Chrome in Docker)
+- **dotnet format** *(Development, CI/CD)* C# formatting and verifying the tree matches the formatter in CI
+- **Roslynator** *(Development, CI/CD)* C# static analysis (Roslyn-based diagnostics)
+- **Codespell** *(Development, CI/CD)* Spell checking across the repository
+- **Hadolint** *(Development, CI/CD)* Linting Dockerfiles
+- **Codacy** *(Development, CI/CD)* Hosted static analysis and pull-request quality checks
+- **SonarCloud** *(Development, CI/CD)* SonarQube-family analysis and quality gate on pull requests
+- **CodeQL** *(Development, CI/CD)* Semantic security and quality scanning (for example C# and Python) on pull requests
+- **Docker Scout** *(CI/CD)* Container image vulnerability scanning on QA builds
+- **OpenAPI Generator** *(Development)* Generating the API simulator stub from the OpenAPI description
+- **Pandoc** *(Report CI/CD)* Converting the report Markdown to PDF in automation
+- **LaTeX (pdflatex / TeX Live)** *(Report CI/CD)* PDF engine used by Pandoc for report builds
+- **librsvg (rsvg-convert)** *(Report CI/CD)* Converting committed SVG figures (for example Mermaid diagrams) for inclusion in the PDF
+- **GNU Make** *(Development, CI/CD)* Task automation (local and in workflows)
 
 #### Libraries
 
 NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-pages/Infrastructure`). Direct Python libraries for automated tests are listed below; the UI test lockfile also pins transitive versions (see `tests/selenium/requirements.txt`).
 
-| Library | Context | Usage |
-|---------|---------|-------|
-| Microsoft.AspNetCore.Identity.EntityFrameworkCore | Web, Infrastructure | ASP.NET Core Identity integrated with EF Core |
-| Microsoft.EntityFrameworkCore.Design | Web, Infrastructure | EF Core design-time support and migrations |
-| Npgsql.EntityFrameworkCore.PostgreSQL | Web, Infrastructure | EF Core provider for PostgreSQL |
-| Newtonsoft.Json | Web | JSON serialization and deserialization |
-| Swashbuckle.AspNetCore.Annotations | Web | OpenAPI metadata and attributes for the HTTP API |
-| Swashbuckle.AspNetCore.Newtonsoft | Web | OpenAPI generation using Newtonsoft.Json |
-| DotNetEnv | Web | Loading environment variables from `.env` files |
-| prometheus-net.AspNetCore | Web | Prometheus metrics for ASP.NET Core |
-| Microsoft.CodeAnalysis.Analyzers | Infrastructure | Build-time Roslyn analyzers |
-| Microsoft.Extensions.Hosting | Infrastructure | Hosting abstractions for background-style infrastructure code |
-| prometheus-net | Infrastructure | Prometheus metric registration and exposition primitives |
-| Npgsql | Infrastructure | PostgreSQL data provider (ADO.NET) alongside EF |
-| TimeZoneConverter | Infrastructure | Resolving time zones in infrastructure logic |
-| requests | tests/API_Spec | HTTP calls from the API simulator |
-| pytest | tests/selenium | Test runner for the Selenium UI suite |
-| selenium | tests/selenium | WebDriver client driving the remote Chrome grid |
+- **Microsoft.AspNetCore.Identity.EntityFrameworkCore** *(Web, Infrastructure)* ASP.NET Core Identity integrated with EF Core
+- **Microsoft.EntityFrameworkCore.Design** *(Web, Infrastructure)* EF Core design-time support and migrations
+- **Npgsql.EntityFrameworkCore.PostgreSQL** *(Web, Infrastructure)* EF Core provider for PostgreSQL
+- **Newtonsoft.Json** *(Web)* JSON serialization and deserialization
+- **Swashbuckle.AspNetCore.Annotations** *(Web)* OpenAPI metadata and attributes for the HTTP API
+- **Swashbuckle.AspNetCore.Newtonsoft** *(Web)* OpenAPI generation using Newtonsoft.Json
+- **DotNetEnv** *(Web)* Loading environment variables from `.env` files
+- **prometheus-net.AspNetCore** *(Web)* Prometheus metrics for ASP.NET Core
+- **Microsoft.CodeAnalysis.Analyzers** *(Infrastructure)* Build-time Roslyn analyzers
+- **Microsoft.Extensions.Hosting** *(Infrastructure)* Hosting abstractions for background-style infrastructure code
+- **prometheus-net** *(Infrastructure)* Prometheus metric registration and exposition primitives
+- **Npgsql** *(Infrastructure)* PostgreSQL data provider (ADO.NET) alongside EF
+- **TimeZoneConverter** *(Infrastructure)* Resolving time zones in infrastructure logic
+- **requests** *(tests/API_Spec)* HTTP calls from the API simulator
+- **pytest** *(tests/selenium)* Test runner for the Selenium UI suite
+- **selenium** *(tests/selenium)* WebDriver client driving the remote Chrome grid
 
 
 <!--- Describe the current state of your systems, for example using results of static analysis and quality assessments. -->
