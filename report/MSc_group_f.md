@@ -1,3 +1,9 @@
+---
+colorlinks: true
+linkcolor: blue
+urlcolor: blue
+---
+
 # Report
 
 ## 1. System's Perspective
@@ -18,68 +24,66 @@ We ended up migrating to Terraform towards the end of the project as it allows e
 
 ### 1.2 Dependencies of MiniTwit
 
-| Technology | Stage | Role |
-|------------|-------|------|
-| Git / GitHub | Development, CI/CD | Source control, reviews, and workflow hosting |
-| Trello | Development, operations | Backlog management and work tracking |
-| Discord | Development, operations | Team communication and receiving alerts (for example from GitHub & Grafana webhooks) |
-| C# / .NET | Development, production | Application language and runtime |
-| NuGet | Development, CI/CD | Package restore and feeds for .NET dependencies |
-| ASP.NET Core (Razor Pages) | Development, production | Web UI and HTTP API |
-| Entity Framework Core | Development, production | Database access and migrations |
-| PostgreSQL | Development, testing, production | Primary data store (managed in DigitalOcean) |
-| Docker | Development, CI/CD, production | Container images and runtime isolation |
-| Docker Hub | CI/CD, production | Registry for built application images |
-| Docker Compose | Development, testing | Local and test multi-container setups |
-| Docker Swarm | Production | Orchestration and rolling updates |
-| DigitalOcean | Infrastructure, production | Cloud VMs, managed database, and networking |
-| DigitalOcean Spaces (S3-compatible) | Infrastructure, CI/CD | Object storage with an S3-compatible API (Terraform remote state backend) |
-| Terraform | Infrastructure, CI/CD | Infrastructure as code for managing cloud resources |
-| GitHub Actions | CI/CD | Continuous integration and deployment pipelines |
-| Third-party GitHub Actions | CI/CD | Marketplace and vendor-maintained workflow steps (for example checkout, Docker login, Terraform setup, PR plan commenter, GitHub App token) |
-| GitHub CLI | CI/CD | Command-line GitHub integration in workflows (for example `gh auth setup-git` for automated commits) |
-| Ubuntu | CI/CD, production | Base operating system on GitHub-hosted runners and provisioned droplets |
-| SSH (OpenSSH) | CI/CD, production | Remote deploy, file copy, and server access from pipelines |
-| Prometheus | Monitoring | Metrics collection |
-| Grafana | Monitoring | Dashboards and alerting |
-| Loki | Monitoring | Centralized log storage |
-| Promtail | Monitoring | Shipping container logs to Loki |
-| Python | Testing (local and CI/CD) | API simulator test driver and test scripts |
-| Selenium | Testing (local and CI/CD) | Browser-based UI tests (with Chrome in Docker) |
-| dotnet format | Development, CI/CD | C# formatting and verifying the tree matches the formatter in CI |
-| Roslynator | Development, CI/CD | C# static analysis (Roslyn-based diagnostics) |
-| Codespell | Development, CI/CD | Spell checking across the repository |
-| Hadolint | Development, CI/CD | Linting Dockerfiles |
-| Codacy | Development, CI/CD | Hosted static analysis and pull-request quality checks |
-| SonarCloud | Development, CI/CD | SonarQube-family analysis and quality gate on pull requests |
-| CodeQL | Development, CI/CD | Semantic security and quality scanning (for example C# and Python) on pull requests |
-| Docker Scout | CI/CD | Container image vulnerability scanning on QA builds |
-| OpenAPI Generator | Development | Generating the API simulator stub from the OpenAPI description |
-| Pandoc / LaTeX | CI/CD | Building the report PDF in automation |
-| GNU Make | Development, CI/CD | Task automation (local and in workflows) |
+- **Git / GitHub** *(Development, CI/CD)* Source control, reviews, and workflow hosting
+- **Trello** *(Development, operations)* Backlog management and work tracking
+- **Discord** *(Development, operations)* Team communication and receiving alerts (for example from GitHub & Grafana webhooks)
+- **C# / .NET** *(Development, production)* Application language and runtime
+- **NuGet** *(Development, CI/CD)* Package restore and feeds for .NET dependencies
+- **ASP.NET Core (Razor Pages)** *(Development, production)* Web UI and HTTP API
+- **Entity Framework Core** *(Development, production)* Database access and migrations
+- **PostgreSQL** *(Development, testing, production)* Primary data store (managed in DigitalOcean)
+- **Docker** *(Development, CI/CD, production)* Container images and runtime isolation
+- **Docker Hub** *(CI/CD, production)* Registry for built application images
+- **Docker Compose** *(Development, testing)* Local and test multi-container setups
+- **Docker Swarm** *(Production)* Orchestration and rolling updates
+- **DigitalOcean** *(Infrastructure, production)* Cloud VMs, managed database, and networking
+- **DigitalOcean Spaces (S3-compatible)** *(Infrastructure, CI/CD)* Object storage with an S3-compatible API (Terraform remote state backend)
+- **Terraform** *(Infrastructure, CI/CD)* Infrastructure as code for managing cloud resources
+- **GitHub Actions** *(CI/CD)* Continuous integration and deployment pipelines
+- **Third-party GitHub Actions** *(CI/CD)* Marketplace and vendor-maintained workflow steps (for example checkout, Docker login, Terraform setup, PR plan commenter, GitHub App token)
+- **GitHub CLI** *(CI/CD)* Command-line GitHub integration in workflows (for example `gh auth setup-git` for automated commits)
+- **Ubuntu** *(CI/CD, production)* Base operating system on GitHub-hosted runners and provisioned droplets
+- **SSH (OpenSSH)** *(CI/CD, production)* Remote deploy, file copy, and server access from pipelines
+- **Prometheus** *(Monitoring)* Metrics collection
+- **Grafana** *(Monitoring)* Dashboards and alerting
+- **Loki** *(Monitoring)* Centralized log storage
+- **Promtail** *(Monitoring)* Shipping container logs to Loki
+- **Python** *(Testing (local and CI/CD))* API simulator test driver and test scripts
+- **Selenium** *(Testing (local and CI/CD))* Browser-based UI tests (with Chrome in Docker)
+- **dotnet format** *(Development, CI/CD)* C# formatting and verifying the tree matches the formatter in CI
+- **Roslynator** *(Development, CI/CD)* C# static analysis (Roslyn-based diagnostics)
+- **Codespell** *(Development, CI/CD)* Spell checking across the repository
+- **Hadolint** *(Development, CI/CD)* Linting Dockerfiles
+- **Codacy** *(Development, CI/CD)* Hosted static analysis and pull-request quality checks
+- **SonarCloud** *(Development, CI/CD)* SonarQube-family analysis and quality gate on pull requests
+- **CodeQL** *(Development, CI/CD)* Semantic security and quality scanning (for example C# and Python) on pull requests
+- **Docker Scout** *(CI/CD)* Container image vulnerability scanning on QA builds
+- **OpenAPI Generator** *(Development)* Generating the API simulator stub from the OpenAPI description
+- **Pandoc** *(Report CI/CD)* Converting the report Markdown to PDF in automation
+- **LaTeX (pdflatex / TeX Live)** *(Report CI/CD)* PDF engine used by Pandoc for report builds
+- **librsvg (rsvg-convert)** *(Report CI/CD)* Converting committed SVG figures (for example Mermaid diagrams) for inclusion in the PDF
+- **GNU Make** *(Development, CI/CD)* Task automation (local and in workflows)
 
 #### Libraries
 
 NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-pages/Infrastructure`). Direct Python libraries for automated tests are listed below; the UI test lockfile also pins transitive versions (see `tests/selenium/requirements.txt`).
 
-| Library | Context | Usage |
-|---------|---------|-------|
-| Microsoft.AspNetCore.Identity.EntityFrameworkCore | Web, Infrastructure | ASP.NET Core Identity integrated with EF Core |
-| Microsoft.EntityFrameworkCore.Design | Web, Infrastructure | EF Core design-time support and migrations |
-| Npgsql.EntityFrameworkCore.PostgreSQL | Web, Infrastructure | EF Core provider for PostgreSQL |
-| Newtonsoft.Json | Web | JSON serialization and deserialization |
-| Swashbuckle.AspNetCore.Annotations | Web | OpenAPI metadata and attributes for the HTTP API |
-| Swashbuckle.AspNetCore.Newtonsoft | Web | OpenAPI generation using Newtonsoft.Json |
-| DotNetEnv | Web | Loading environment variables from `.env` files |
-| prometheus-net.AspNetCore | Web | Prometheus metrics for ASP.NET Core |
-| Microsoft.CodeAnalysis.Analyzers | Infrastructure | Build-time Roslyn analyzers |
-| Microsoft.Extensions.Hosting | Infrastructure | Hosting abstractions for background-style infrastructure code |
-| prometheus-net | Infrastructure | Prometheus metric registration and exposition primitives |
-| Npgsql | Infrastructure | PostgreSQL data provider (ADO.NET) alongside EF |
-| TimeZoneConverter | Infrastructure | Resolving time zones in infrastructure logic |
-| requests | tests/API_Spec | HTTP calls from the API simulator |
-| pytest | tests/selenium | Test runner for the Selenium UI suite |
-| selenium | tests/selenium | WebDriver client driving the remote Chrome grid |
+- **Microsoft.AspNetCore.Identity.EntityFrameworkCore** *(Web, Infrastructure)* ASP.NET Core Identity integrated with EF Core
+- **Microsoft.EntityFrameworkCore.Design** *(Web, Infrastructure)* EF Core design-time support and migrations
+- **Npgsql.EntityFrameworkCore.PostgreSQL** *(Web, Infrastructure)* EF Core provider for PostgreSQL
+- **Newtonsoft.Json** *(Web)* JSON serialization and deserialization
+- **Swashbuckle.AspNetCore.Annotations** *(Web)* OpenAPI metadata and attributes for the HTTP API
+- **Swashbuckle.AspNetCore.Newtonsoft** *(Web)* OpenAPI generation using Newtonsoft.Json
+- **DotNetEnv** *(Web)* Loading environment variables from `.env` files
+- **prometheus-net.AspNetCore** *(Web)* Prometheus metrics for ASP.NET Core
+- **Microsoft.CodeAnalysis.Analyzers** *(Infrastructure)* Build-time Roslyn analyzers
+- **Microsoft.Extensions.Hosting** *(Infrastructure)* Hosting abstractions for background-style infrastructure code
+- **prometheus-net** *(Infrastructure)* Prometheus metric registration and exposition primitives
+- **Npgsql** *(Infrastructure)* PostgreSQL data provider (ADO.NET) alongside EF
+- **TimeZoneConverter** *(Infrastructure)* Resolving time zones in infrastructure logic
+- **requests** *(tests/API_Spec)* HTTP calls from the API simulator
+- **pytest** *(tests/selenium)* Test runner for the Selenium UI suite
+- **selenium** *(tests/selenium)* WebDriver client driving the remote Chrome grid
 
 ### 1.3 Current State of Our Systems
 The current state of our system leaves it steadily functional across performance, scalability, code quality, security, and testing. However there are still some limiting factors that exclude it from being entirely production-ready. 
@@ -94,7 +98,8 @@ The test coverage is quite extensive across the API and browser-based UI levels,
 - **CodeQL** passes on all its vulnerability checks. It only fails on javascript due to a file being empty.
 - **Hadolint** and **Rosylnator** show no issues.
 
-#### SonarQube's Quality Assessment:
+**SonarQube's Quality Assessment:**
+
 ![SonarQubeQuality](images/SonarQubeAnalysis.png)
 
 
@@ -118,108 +123,35 @@ Monitoring is deployed manually in a separate workflow. The monitoring droplet w
 The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare and we therefore did not find it necessary.
 
 Below is an overview of the different stages of development towards operationalization. In the following sections we will deep dive into the QA deployment workflow, continuous deployment release workflow and the monitoring deployment workflow.
-```mermaid
-flowchart LR
-  subgraph dev [Development Branch]
-    A[Branch Work] --> B[Make a PR]
-    B --> C[QA Deployment workflow]
-    B --> K[Automated Checks]
-    C --> L[Peer Review]
-    K --> L[Peer Review]
-  end
-  subgraph merge [Main Branch]
-    L --> D[Merge to main]
-    D --> E[Report build on report changes]
-  end
-  subgraph release [Release Tagging]
-    D --> F[Semantic version tag]
-    F --> G[Continuous Deployment]
-    G --> H[Docker Swarm production]
-  end
-  subgraph ops [Operationalization]
-    D --> I[Deploy Monitoring manual]
-    I --> J[Prometheus / Grafana / Loki]
-    H --> J
-  end
-```
+
+![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
 
 #### Pull-request pipeline (QA Deployment)
 
-The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](../.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch.
+The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch.
 
-```mermaid
-sequenceDiagram
-  participant GH as GitHub Actions
-  participant Hub as Docker Hub
-  participant QA as QA droplet
-  participant DB as PostgreSQL QA DB
-
-  GH->>Hub: build and push testminitwit
-  GH->>GH: terraform plan + PR comment
-  GH->>QA: scp env + compose-test.yaml
-  GH->>GH: Docker Scout CVE scan
-  GH->>QA: Deploy Docker Compose
-  Hub->>QA: Pull Latest Image
-  QA->>QA: Docker Compose Up
-  GH->>DB: reset schema / simulator state
-  GH->>GH: run-all-validations
-  GH->>QA: API simulator + Selenium against :8081
-  QA->>DB: Query
-  DB->>QA: Data
-  QA->>GH: API / UI Results
-```
+![Complete QA Build Workflow](images/mermaid_qa_flow.svg)
 
 Above flow chart shows the various steps and interactions between systems happening during the QA Deployment and test workflow. The workflow runs at the same time as the static code analysis tools `CodeQL`, `SonarCube` and `Codacy`. 
 
 #### Production release (Continuous Deployment)
 
-The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](../.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
+The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
 
-```mermaid
-sequenceDiagram
-  participant GH as GitHub Actions
-  participant Hub as Docker Hub
-  participant DO as DigitalOcean
-  participant Mgr as Swarm manager
-  participant Nodes as Swarm cluster
-  participant DB as Managed PostgreSQL
-
-  GH->>Hub: build and push minitwitimage:SHA
-  GH->>DO: terraform apply prod
-  Note over DO,DB: Applies IaC for VMs network and managed Postgres etc.
-  GH->>Mgr: scp compose.yaml
-  GH->>Mgr: docker stack deploy minitwit
-  Hub->>Nodes: pull image (with-registry-auth)
-  Mgr->>Nodes: rolling update (3 replicas)
-```
+![Complete Prod Build Workflow](images/mermaid_prod_flow.svg)
 
 #### Monitoring deployment
 
-The monitoring stack deployment is defined in [.github/workflows/monitor-deployment.yaml](../.github/workflows/monitor-deployment.yaml) and runs only when someone manually triggers it.
+The monitoring stack deployment is defined in [.github/workflows/monitor-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/monitor-deployment.yaml) and runs only when someone manually triggers it.
 
-```mermaid
-sequenceDiagram
-  participant GH as GitHub Actions
-  participant Hub as Docker Hub
-  participant Mon as Monitoring server
-  participant Mgr as Swarm manager
-
-  GH->>Mon: scp repo monitoring/* to /vagrant/monitoring
-  GH->>Mgr: scp repo monitoring/* to /vagrant/monitoring
-  GH->>Mgr: docker stack deploy monitoring
-  Mgr->>Mon: deploy constrained to server
-  Hub->>Mon: Pull Prometheus, Grafana and Loki Images
-  Mon->>Mon: Run Prometheus, Grafana and Loki Containers
-```
+![Complete Monitoring Build Workflow](images/mermaid_monitor_flow.svg)
 
 #### Deployment & Release Summary
 
-| Environment | How it is updated | Image / orchestration |
-|-------------|-------------------|------------------------|
-| Local | `make app-build` (`compose-test.yaml`, port 8081) | Local Docker Compose |
-| QA (pre-merge) | QA Deployment workflow on PR | `testminitwit:latest`, Compose on test droplet |
-| Production | Tag → Continuous Deployment | `minitwitimage:<sha>`, Docker Swarm (3 replicas) |
-| Monitoring | Manual Deploy Monitoring workflow | Swarm stack `monitoring` |
+- **Local** *(via `make app-build` — `compose-test.yaml`, port 8081)* Using Local Docker Compose
+- **QA (pre-merge)** *(QA Deployment workflow on pull request)* With Docker Hub image `testminitwit:latest`, Using Compose on test droplet
+- **Production** *(tag, then Continuous Deployment)* With Docker Hub image `minitwitimage:<sha>`, Using Docker Swarm (3 replicas)
+- **Monitoring** *(manual Deploy Monitoring workflow)* Using Swarm stack `monitoring`
 
 ### 2.2 Monitoring
 The monitoring of our application is done through the use of Prometheus and Grafana. 
@@ -238,11 +170,11 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 - Http GET and POST request rates over time by their response status codes
 
 ### 2.3 Aggregated logs
-All assignment completions for each week have been aggregated in [View project log](../log.md)
-. It was standard practice for everyone to document which tasks they completed.
-A type of "Meta" log used is the [README file](../README.md) it serves as how we ought to implement the assignments as well as principle on how work as a group
+All assignment completions for each week have been aggregated in [View project log](https://github.com/TienCamLy/MiniTwit/blob/main/log.md). It was standard practice for everyone to document which tasks they completed.
+A type of "Meta" log used is the [README file](https://github.com/TienCamLy/MiniTwit/blob/main/README.md); it serves as how we ought to implement the assignments as well as principle on how work as a group.
 Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
 all live logs are shipped to grafana 
+
 ![alt text](images/imageGrafanaLogging.png)
 
 ### 2.4 Security Hardening
@@ -279,8 +211,9 @@ For the security hardening of our system a security assessment was made showing 
 - An attacker uses a script to spam an API endpoint, resulting in a denial of service.
 
 **Risk Analysis**
+
 | Scenario                   | Likelihood      | Impact | Risk     |
-|:---------------------------|:---------------:|:------:|:--------:|
+|:--------------------------:|:---------------:|:------:|:--------:|
 | SQL Injection              | High/Common     | High   | Critical |
 | Cross-Site Scripting (XSS) | High/Common     | High   | High     |
 | DDoS Attack                | Medium/Uncommon | Medium | Medium   |

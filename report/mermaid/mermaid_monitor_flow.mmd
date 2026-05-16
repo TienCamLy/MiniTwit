@@ -1,0 +1,12 @@
+sequenceDiagram
+  participant GH as GitHub Actions
+  participant Hub as Docker Hub
+  participant Mon as Monitoring server
+  participant Mgr as Swarm manager
+
+  GH->>Mon: scp repo monitoring/* to /vagrant/monitoring
+  GH->>Mgr: scp repo monitoring/* to /vagrant/monitoring
+  GH->>Mgr: docker stack deploy monitoring
+  Mgr->>Mon: deploy constrained to server
+  Hub->>Mon: Pull Prometheus, Grafana and Loki Images
+  Mon->>Mon: Run Prometheus, Grafana and Loki Containers
