@@ -111,7 +111,7 @@ Nothing is immediately pushed to production as we deemed that we wanted our rele
 The control of timing is important to ensure stability of the application and timely action given a failure/bug.
 
 We used an automated deployment pipeline to deploy our production services that automatically triggers when a tag is pushed to the repository.
-We attempted to follow a form of [semantic versioning](https://semver.org/) for tag names, to have a consistent format and a notion of how big each release was.
+We attempted to follow a form of semantic versioning ([https://semver.org/](https://semver.org/)) for tag names, to have a consistent format and a notion of how big each release was.
 The automated deployment builds a docker image and deploys the stack on the swarm leader node.
 
 Monitoring is deployed manually in a separate workflow. The monitoring droplet was initially a stand-alone droplet, but given the Digital Ocean limitation on droplets, this droplet was also later included in the swarm. 
@@ -369,13 +369,13 @@ An improvement of the monitoring deployment would be to trigger it on changes to
 
 ## 4. Use of Generative AI
 
-The generative AI tool [Cursor](https://cursor.com/) was used to discuss issues and warnings throughout the project and provide guidance on issues that we had not encountered before. This was beneficial to the development process as it unblocked us in completing tasks.
+The generative AI tool Cursor ([https://cursor.com/](https://cursor.com/)) was used to discuss issues and warnings throughout the project and provide guidance on issues that we had not encountered before. This was beneficial to the development process as it unblocked us in completing tasks.
 We used Cursor to improve the code in terms of maintainability by standardizing the format and structure along with industry standard formatting / linting tools (i.e. using a mix of CLI tools and GenAI).
 We also employed Cursor to summarize branch work in our log.md and other documentation, to ensure chore tasks were being done rather than neglected. These logs and documentation are used to remind us of the work and considerations throughout the different stages of the project which have been written / read for internal use.
 
 Claude and ChatGPT were used to quickly bounce ideas off of and to help identify the pros/cons of options when many were presented. Additionally, they were very useful in quickly parsing large error logs. 
 
-[ChatGPT](https://chatgpt.com/) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
+ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
 
 The AI tool Github Copilot was used throughout the course for better code understanding, serving as interactive documentation. It was also used for very specific code fixes, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions which sometimes felt like an overkill.
 
