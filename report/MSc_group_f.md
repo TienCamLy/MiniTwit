@@ -98,7 +98,7 @@ The test coverage is quite extensive across the API and browser-based UI levels,
 - **CodeQL** passes on all its vulnerability checks. It only fails on javascript due to a file being empty.
 - **Hadolint** and **Rosylnator** show no issues.
 
-#### SonarQube's Quality Assessment:
+**SonarQube's Quality Assessment:**
 
 ![SonarQubeQuality](images/SonarQubeAnalysis.png)
 
