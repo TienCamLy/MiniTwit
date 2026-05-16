@@ -7,7 +7,7 @@ positions:
   filename: /tmp/positions.yaml
 
 clients:
-  - url: ${PROD_LOKI_URL}
+  - url: ${LOKI_URL}
 
 scrape_configs:
   - job_name: docker
