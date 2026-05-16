@@ -108,7 +108,7 @@ jobs:
            export IMAGE_TAG='${{ github.sha }}' && 
            export API_TOKEN='"$API_TOKEN"' &&
            export CONNECTIONSTRING='"$CONNECTIONSTRING"' &&
-           export PROD_LOKI_URL='"$PROD_LOKI_URL"' &&
+           export LOKI_URL='"$PROD_LOKI_URL"' &&
            cd /vagrant &&  
            docker stack deploy --with-registry-auth --resolve-image always -c compose.yaml minitwit"
         env:
