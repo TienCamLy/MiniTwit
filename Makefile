@@ -154,7 +154,25 @@ auto-lint:
 	dotnet format razor-pages/Web/ && \
 	dotnet format razor-pages/Core/
 
-# Build report pdf (pandoc uses pdflatex; install TeX Live & svg support
+# Mermaid charts must be compiled to SVG before being committed to the repository.
+# Note that some charts use html labels and if they do need to be converted to png.
+MERMAID_DIR := $(CURDIR)/report/mermaid
+MERMAID_IMAGE := minlag/mermaid-cli
+
+regenerate-mermaid-charts:
+	@for f in "$(MERMAID_DIR)"/*.mmd; do \
+		[ -e "$$f" ] || continue; \
+		name=$$(basename "$$f" .mmd); \
+		echo "Generating $$name.svg ..."; \
+		docker run --rm \
+			-v "$(MERMAID_DIR):/data" \
+			-v "$(CURDIR)/report/images:/out" \
+			$(MERMAID_IMAGE) \
+			-i "/data/$$name.mmd" \
+			-o "/out/$$name.svg"; \
+	done
+
+# Build report pdf (pandoc uses pdflatex; install TeX Live & svg support)
 install-pandoc:
 	sudo apt-get update -qq && \
 	sudo DEBIAN_FRONTEND=noninteractive apt-get install \
