@@ -2,9 +2,6 @@
 
 ## 1. System's Perspective
 
-<!--- A description and illustration of the: -->
-
-<!--- Design and architecture of your ITU-MiniTwit systems. -->
 ### 1.1 Design and Architecture
 When tasked with switching to another language for the system, C# was chosen. In correlation the project was built with Razor Pages and Entity Framework Core. The choice of C# was due to the groups already existing knowledge of the language, which streamlined the development process especially when it came to the architecture.
 
@@ -19,7 +16,6 @@ The architecture of the project follows a layered onion architecture split into 
 #### 1.1.1 Choice of Final Infrastructure-as-Code Architecture
 We ended up migrating to Terraform towards the end of the project as it allows easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined Documentation for Digital Ocean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources therefore did not have much extra overhead.
 
-<!--- All dependencies of your ITU-MiniTwit systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on. -->
 ### 1.2 Dependencies of MiniTwit
 
 | Technology | Stage | Role |
@@ -85,8 +81,6 @@ NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-p
 | pytest | tests/selenium | Test runner for the Selenium UI suite |
 | selenium | tests/selenium | WebDriver client driving the remote Chrome grid |
 
-
-<!--- Describe the current state of your systems, for example using results of static analysis and quality assessments. -->
 ### 1.3 Current State of Our Systems
 The current state of our system leaves it steadily functional across performance, scalability, code quality, security, and testing. However there are still some limiting factors that exclude it from being entirely production-ready. 
 
@@ -105,11 +99,7 @@ The test coverage is quite extensive across the API and browser-based UI levels,
 
 
 ## 2. Process' perspective
-<!--- 
-This perspective should clarify how code or other artifacts come from idea into the running system and everything that happens on the way.
-In particular, the following descriptions should be included: -->
 
-<!--- A complete description and illustration of stages and tools included in the CI/CD pipelines, including deployment and release of your systems. -->
 ### 2.1 CI/CD pipelines, deployment, and release
 
 All development work is done on branches and requires a pull request to be merged into the main branch.
@@ -231,7 +221,6 @@ sequenceDiagram
 | Production | Tag → Continuous Deployment | `minitwitimage:<sha>`, Docker Swarm (3 replicas) |
 | Monitoring | Manual Deploy Monitoring workflow | Swarm stack `monitoring` |
 
-<!--- How do you monitor your systems and what precisely do you monitor? -->
 ### 2.2 Monitoring
 The monitoring of our application is done through the use of Prometheus and Grafana. 
 
@@ -248,8 +237,6 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 - Http request response latency by their action
 - Http GET and POST request rates over time by their response status codes
 
-
-<!--- What do you log in your systems and how do you aggregate logs? -->
 ### 2.3 Aggregated logs
 All assignment completions for each week have been aggregated in [View project log](../log.md)
 . It was standard practice for everyone to document which tasks they completed.
@@ -257,9 +244,9 @@ A type of "Meta" log used is the [README file](../README.md) it serves as how we
 Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
 all live logs are shipped to grafana 
 ![alt text](images/imageGrafanaLogging.png)
-<!--- Brief description of how you security hardened your systems. -->
+
 ### 2.4 Security Hardening
-<!--- Firewalls -->
+
 The firewall for the DigitalOcean Droplets was configured to improve security. Inbound firewall rules were configured in DigitalOcean to provide an clear overview of the rules for each Droplet instead of `ufw`, 
 such that the rules can be conveniently managed by each group member through the user interface. 
 Inbound rules defines the traffic allowed to the Droplets on which ports and from which sources, and all other incoming traffic is blocked. In addition, Docker does not bypass DigitalOcean's firewalls. 
@@ -310,7 +297,6 @@ Other security measures were also taken such as:
 - Ensuring the application runs on HTTPS with a TLS certificate and setting up `Nginx` for a reverse proxy in front of the application.
 - Docker images were also security hardened by ensuring only user privileges
 
-<!--- CI pipeline -->
 The static analysis tool **CodeQL** is used to scan for security vulnerabilities in the application code. The tool has been added in Github's in-built code scanning feature with a default setup,
 which automatically discovers source code languages in the repository and dynamically adjusts the scan based on the languages present.
 At the current state of the repository, CodeQL analyzes the following files:
@@ -319,8 +305,7 @@ At the current state of the repository, CodeQL analyzes the following files:
 - Github action files
 
 A Docker image vulnerability scanner **Docker Scout** has been added to CI workflow to ensure any image vulnerabilities are detected before deployment. 
- 
-<!--- How do you handle availability and scaling in your systems? -->
+
 ### 2.5 Availability and Scaling
 Availability and scaling in the MiniTwit application are managed by Docker Swarm. A Swarm cluster of the DigitalOcean Droplets is joined into a single Swarm cluster,
 which continuously monitors and enforces the declared desired state.
@@ -351,76 +336,53 @@ and the Loki logs failed to display on our Grafana dashboards. During the debugg
 when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, 
 which prevented the simulator from reaching it. 
 
-<!--- Move to reflection part? -->
 To avoid these issues in the future, a solution could be to replicate the Docker Swarm infrastructure 
 within an isolated development environment, so any configuration changes during the transition does not affect live production. 
 
 
 ## 3. Reflection Perspective
 
-<!--- Describe the biggest issues, how you solved them, and which are major lessons learned with regards to: evolution and refactoring, operation, and maintenance 
-
-of your ITU-MiniTwit systems. Link back to respective commit messages, issues, tickets, etc. to illustrate these.
-
-Also reflect and describe what was the "DevOps" style of your work. For example, what did you do differently to previous development projects and how did it work?
--->
-
-<!--- evolution and refactoring -->
 ### 3.1 Evolution and Refactoring
 On first refactoring from Pyhton to RazorPages with C# we ran into unforseen issues with the methods not working as intended. This slowed us down but once the bugs were solved we were able to make our release.
 We had no issues Refactoring to our Onion Structure. It was time-consuming but that half the group being familiar with the framework made the proces smooth.
 
 We discussed that it may have been useful to have defined the infrastructure in Terraform from the beginning and that it may have led us to avoid having the amount of "Click-Ops" we had during the project (setting up a managed database, modifying network rules for droplets etc.) giving better reproducibility and version history.
 
-<!--- operation -->
 ### 3.2 Operation
-<!--- QA Building -->
+
 To increase robustness we added a QA deployment on Pull Requests, requiring the application to be built, pushed and tests to pass before merging it into the main branch. This allowed us to test all of our features fully before releasing them to our main application and thereby decreased the amount of bugs and operational work.
-<!--- Database CPU Overload -->
+
 In early April we started receiving warnings from the built-in resource alert system in Digital Ocean that our Database Cluster was above 90% CPU utilization. We started investigating the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
 We chose to resize the cluster such that it had an extra virtual CPU after cost-benefit analysis concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time consuming versus the cost of upgrading the database cluster.
 The database was resized with no downtime.
-<!--- Monitoring Droplet CPU Overload -->
+
 Once we had fully migrated to swarm, including log shipping from all our droplets, the droplet containing the monitoring application ended up being overloaded such that our monitoring application became unreachable. This warranted an upgrade of the droplet containing the monitoring application. If we had access to spin up more droplets, we may have considered horizontal scaling instead of vertical.
 The monitoring droplet was resized using terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
 
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
-<!--- Grafana Restart / Volume Management -->
 We struggled with the continuous deployment of our monitoring application in terms of ensuring new dashboards would appear and an unintended addition of a flag that reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the issues and accepted the loss of earlier metrics & logs.
 
 An improvement of the monitoring deployment would be to trigger it on changes to the particular folder containing monitoring definitions instead of only manual trigger.
 
-<!--- maintenance -->
 ### 3.3 Maintenance
 
 ## 4. Use of Generative AI
-<!---
-ITU's rules on the use of generative AI apply for this report too. They are described here and in detail here. 
-Please follow them. For your report that means that you have to state which generative AI tools have been used for which task(s) in your projects. 
-Additionally, describe how generative AI tools have been used and briefly reflect and discuss how they supported or hindered your work process.
--->
 
-<!--- Mie -->
 The generative AI tool [Cursor](https://cursor.com/) was used to discuss issues and warnings throughout the project and provide guidance on issues that we had not encountered before. This was beneficial to the development process as it unblocked us in completing tasks.
 We used Cursor to improve the code in terms of maintainability by standardizing the format and structure along with industry standard formatting / linting tools (i.e. using a mix of CLI tools and GenAI).
 We also employed Cursor to summarize branch work in our log.md and other documentation, to ensure chore tasks were being done rather than neglected. These logs and documentation are used to remind us of the work and considerations throughout the different stages of the project which have been written / read for internal use.
 
-<!--- Daniel -->
 Claude and ChatGPT were used to quickly bounce ideas off of and to help identify the pros/cons of options when many were presented. Additionally, they were very useful in quickly parsing large error logs. 
 
-<!--- Mads -->
 [ChatGPT](https://chatgpt.com/) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
 
-<!--- Chris -->
 The AI tool Github Copilot was used throughout the course for better code understanding, serving as interactive documentation. It was also used for very specific code fixes, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions which sometimes felt like an overkill.
 
-<!--- Patrick -->
 When it came to the use of GAI, ChatGPT and GitHub Copilot was used to better understand coding errors and thereby helping in solving them.
 Another aspect of using AI, would be on how to do specific things in different languages. 
 For example "How do i write inline code in .md?" or "How do i change the rejection status code on the rate limiter?".
 
-<!--- Tien -->
 The **Google Gemini 3 model** has primarily been used for debugging and to resolve technical uncertainty during development. 
 
 This includes asking the generative AI model to: 
