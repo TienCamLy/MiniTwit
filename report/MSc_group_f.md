@@ -101,6 +101,7 @@ The test coverage is quite extensive across the API and browser-based UI levels,
 - **Hadolint** and **Rosylnator** show no issues.
 
 #### SonarQube's Quality Assessment:
+
 ![SonarQubeQuality](images/SonarQubeAnalysis.png)
 
 
@@ -269,7 +270,9 @@ All assignment completions for each week have been aggregated in [View project l
 A type of "Meta" log used is the [README file](../README.md) it serves as how we ought to implement the assignments as well as principle on how work as a group
 Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
 all live logs are shipped to grafana 
+
 ![alt text](images/imageGrafanaLogging.png)
+
 <!--- Brief description of how you security hardened your systems. -->
 ### 2.4 Security Hardening
 <!--- Firewalls -->
