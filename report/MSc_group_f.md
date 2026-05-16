@@ -1,3 +1,9 @@
+---
+colorlinks: true
+linkcolor: blue
+urlcolor: blue
+---
+
 # Report
 
 ## 1. System's Perspective
@@ -132,7 +138,7 @@ Below is an overview of the different stages of development towards operationali
 
 #### Pull-request pipeline (QA Deployment)
 
-The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](../.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch.
+The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch.
 
 ![Complete QA Build Workflow](images/mermaid_qa_flow.svg)
 
@@ -140,13 +146,13 @@ Above flow chart shows the various steps and interactions between systems happen
 
 #### Production release (Continuous Deployment)
 
-The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](../.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
+The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
 
 ![Complete Prod Build Workflow](images/mermaid_prod_flow.svg)
 
 #### Monitoring deployment
 
-The monitoring stack deployment is defined in [.github/workflows/monitor-deployment.yaml](../.github/workflows/monitor-deployment.yaml) and runs only when someone manually triggers it.
+The monitoring stack deployment is defined in [.github/workflows/monitor-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/monitor-deployment.yaml) and runs only when someone manually triggers it.
 
 ![Complete Monitoring Build Workflow](images/mermaid_monitor_flow.svg)
 
@@ -177,9 +183,8 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 
 <!--- What do you log in your systems and how do you aggregate logs? -->
 ### 2.3 Aggregated logs
-All assignment completions for each week have been aggregated in [View project log](../log.md)
-. It was standard practice for everyone to document which tasks they completed.
-A type of "Meta" log used is the [README file](../README.md) it serves as how we ought to implement the assignments as well as principle on how work as a group
+All assignment completions for each week have been aggregated in [View project log](https://github.com/TienCamLy/MiniTwit/blob/main/log.md). It was standard practice for everyone to document which tasks they completed.
+A type of "Meta" log used is the [README file](https://github.com/TienCamLy/MiniTwit/blob/main/README.md); it serves as how we ought to implement the assignments as well as principle on how work as a group.
 Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
 all live logs are shipped to grafana 
 

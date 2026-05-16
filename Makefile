@@ -195,11 +195,14 @@ install-pandoc:
 build-report-pdf:
 	mkdir -p report/build && \
 	pandoc report/MSc_group_f.md \
-		--from=gfm \
+		--from=gfm+yaml_metadata_block \
 		--resource-path=report \
 		--to=pdf \
 		-o report/build/MSc_group_f.pdf \
-		--pdf-engine=pdflatex
+		--pdf-engine=pdflatex \
+		-V colorlinks=true \
+		-V linkcolor=blue \
+		-V urlcolor=blue
 
 install-and-build-report:
 	make install-pandoc && make build-report-pdf
