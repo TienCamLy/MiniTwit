@@ -154,18 +154,24 @@ auto-lint:
 	dotnet format razor-pages/Web/ && \
 	dotnet format razor-pages/Core/
 
-# Build report pdf (pandoc uses pdflatex; install TeX Live — pandoc .deb alone does not ship it)
+# Build report pdf (pandoc uses pdflatex; install TeX Live & svg support
 install-pandoc:
 	sudo apt-get update -qq && \
 	sudo DEBIAN_FRONTEND=noninteractive apt-get install \
 		pandoc \
+		librsvg2-bin \
 		texlive-latex-base \
 		texlive-fonts-recommended \
 		texlive-latex-extra
 
 build-report-pdf:
 	mkdir -p report/build && \
-	pandoc report/MSc_group_f.md --from=gfm --to=pdf -o report/build/MSc_group_f.pdf --pdf-engine=pdflatex
+	pandoc report/MSc_group_f.md \
+		--from=gfm \
+		--resource-path=report \
+		--to=pdf \
+		-o report/build/MSc_group_f.pdf \
+		--pdf-engine=pdflatex
 
 install-and-build-report:
 	make install-pandoc && make build-report-pdf
