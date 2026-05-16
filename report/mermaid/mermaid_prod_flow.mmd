@@ -1,0 +1,15 @@
+sequenceDiagram
+  participant GH as GitHub Actions
+  participant Hub as Docker Hub
+  participant DO as DigitalOcean
+  participant Mgr as Swarm manager
+  participant Nodes as Swarm cluster
+  participant DB as Managed PostgreSQL
+
+  GH->>Hub: build and push minitwitimage:SHA
+  GH->>DO: terraform apply prod
+  Note over DO,DB: Applies IaC for VMs network and managed Postgres etc.
+  GH->>Mgr: scp compose.yaml
+  GH->>Mgr: docker stack deploy minitwit
+  Hub->>Nodes: pull image (with-registry-auth)
+  Mgr->>Nodes: rolling update (3 replicas)
