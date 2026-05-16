@@ -186,20 +186,6 @@ All live logs are shipped to Grafana
 dedicated logging section of grafana
 ![alt text](images/DedicatedLogging.png)
 ### 2.4 Security Hardening
-
-The firewall for the DigitalOcean Droplets was configured to improve security. Inbound firewall rules were configured in DigitalOcean to provide an clear overview of the rules for each Droplet instead of `ufw`, 
-such that the rules can be conveniently managed by each group member through the user interface. 
-Inbound rules defines the traffic allowed to the Droplets on which ports and from which sources, and all other incoming traffic is blocked. In addition, Docker does not bypass DigitalOcean's firewalls. 
-This ensures that the sensitive ports is only accessed by internal Droplets, preventing security risks from unnecessary exposed ports. 
-
-The production application were given firewall rules for:
-- Standard internet and access ports (TCP 22, TCP 80, TCP 443)
-- Docker port (TCP 2376)
-- Docker Swarm infrastructure ports (TCP 2377, UDP 4789, TCP/UDP 7946)
-- Application ports (TCP 8080)
-- Grafana Loki log aggregation port (TCP 3100)
-- Prometheus ports (TCP 9090, TCP 9095, TCP 9096, TCP 9100)
-
 For the security hardening of our system a security assessment was made showing an overview of assets/threats/risks:
 
 **Assets**
@@ -232,20 +218,25 @@ To solve the various risk scenarios the following measures were taken:
 - DDoS Attack: Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
 
 **Other Security Measures**
+- Setting up inbound firewall rules on DigitalOcean and utilizing `ufw` on the server only allowing specific traffic through on specified ports. Docker does not bypass DigitalOcean's firewalls. 
+
+The production application were given firewall rules for:
+- Standard internet and access ports (TCP 22, TCP 80, TCP 443)
+- Docker port (TCP 2376)
+- Docker Swarm infrastructure ports (TCP 2377, UDP 4789, TCP/UDP 7946)
+- Application ports (TCP 8080)
+- Grafana Loki log aggregation port (TCP 3100)
+- Prometheus ports (TCP 9090, TCP 9095, TCP 9096, TCP 9100)
 
 Other security measures were also taken such as:
-- Setting up a firewall (using `ufw`) on the server only allowing specific traffic through on specified ports.
+
 - Ensuring the application runs on HTTPS with a TLS certificate and setting up `Nginx` for a reverse proxy in front of the application.
 - Docker images were also security hardened by ensuring only user privileges
-
-The static analysis tool **CodeQL** is used to scan for security vulnerabilities in the application code. The tool has been added in Github's in-built code scanning feature with a default setup,
-which automatically discovers source code languages in the repository and dynamically adjusts the scan based on the languages present.
-At the current state of the repository, CodeQL analyzes the following files:
-- C# files
-- Python files
-- Github action files
-
-A Docker image vulnerability scanner **Docker Scout** has been added to CI workflow to ensure any image vulnerabilities are detected before deployment. 
+- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool automatically discovers source code languages in the repository and dynamically adjusts the scan based on the languages present. CodeQL analyzes the following files in the repository:
+  - C# files
+  - Python files
+  - Github action files
+- A Docker image vulnerability scanner Docker Scout has been added to CI workflow to ensure any image vulnerabilities are detected before deployment. 
 
 ### 2.5 Availability and Scaling
 Availability and scaling in the MiniTwit application are managed by Docker Swarm. A Swarm cluster of the DigitalOcean Droplets is joined into a single Swarm cluster,
