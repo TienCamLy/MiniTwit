@@ -52,7 +52,7 @@ jobs:
         run: |
           echo "API_TOKEN=$API_TOKEN" > razor-pages/Web/.env
           echo "CONNECTIONSTRINGS__DEFAULTCONNECTION=$CONNECTIONSTRING" >> razor-pages/Web/.env
-          echo "LOKI_URL=$LOKI_URL" > promtail/.env
+          echo "PROD_LOKI_URL=$LOKI_URL" > promtail/.env
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.TESTCONNECTIONSTRING }}
