@@ -177,12 +177,14 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 
 ### 2.3 Aggregated logs
 All assignment completions for each week have been aggregated in [View project log](https://github.com/TienCamLy/MiniTwit/blob/main/log.md). It was standard practice for everyone to document which tasks they completed.
-A type of "Meta" log used is the [README file](https://github.com/TienCamLy/MiniTwit/blob/main/README.md); it serves as how we ought to implement the assignments as well as principle on how work as a group.
+A type of "Meta" log used is the [README file](https://github.com/TienCamLy/MiniTwit/blob/main/README.md); it serves as how we ought to implement the assignments as well as principles on how work as a group.
 Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
-all live logs are shipped to grafana 
+All live logs are shipped to Grafana 
 
 ![alt text](images/imageGrafanaLogging.png)
 
+dedicated logging section of grafana
+![alt text](images/DedicatedLogging.png)
 ### 2.4 Security Hardening
 
 The firewall for the DigitalOcean Droplets was configured to improve security. Inbound firewall rules were configured in DigitalOcean to provide an clear overview of the rules for each Droplet instead of `ufw`, 
@@ -282,8 +284,8 @@ within an isolated development environment, so any configuration changes during 
 ## 3. Reflection Perspective
 
 ### 3.1 Evolution and Refactoring
-On first refactoring from Pyhton to RazorPages with C# we ran into unforseen issues with the methods not working as intended. This slowed us down but once the bugs were solved we were able to make our release.
-We had no issues Refactoring to our Onion Structure. It was time-consuming but that half the group being familiar with the framework made the proces smooth.
+On first refactoring from Python to RazorPages with C# we ran into unforseen issues with the methods not working as intended. This slowed us down but once the bugs were solved we were able to make our release.
+We had no issues Refactoring to our Onion Structure. It was time-consuming but that half the group being familiar with the framework made the process smooth.
 
 We discussed that it may have been useful to have defined the infrastructure in Terraform from the beginning and that it may have led us to avoid having the amount of "Click-Ops" we had during the project (setting up a managed database, modifying network rules for droplets etc.) giving better reproducibility and version history.
 
@@ -316,7 +318,7 @@ Claude and ChatGPT were used to quickly bounce ideas off of and to help identify
 
 ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
 
-The AI tool Github Copilot was used throughout the course for better code understanding, serving as interactive documentation. It was also used for very specific code fixes, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions which sometimes felt like an overkill.
+The AI tool Github Copilot was used throughout the course for better code understanding, serving as interactive documentation. It was also used for very specific code fixes, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions that sometimes felt like an overkill.
 
 When it came to the use of GAI, ChatGPT and GitHub Copilot was used to better understand coding errors and thereby helping in solving them.
 Another aspect of using AI, would be on how to do specific things in different languages. 
