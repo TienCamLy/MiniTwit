@@ -180,6 +180,9 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 - Http request response latency by their action
 - Http GET and POST request rates over time by their response status codes
 
+#### Example Visuals:
+![General Statistics](images/monitor_grafana_dash_0.png)
+![HTTP Requests](images/monitor_grafana_dash_4.png)
 
 <!--- What do you log in your systems and how do you aggregate logs? -->
 ### 2.3 Aggregated logs
