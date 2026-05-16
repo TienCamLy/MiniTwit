@@ -152,12 +152,10 @@ The monitoring stack deployment is defined in [.github/workflows/monitor-deploym
 
 #### Deployment & Release Summary
 
-| Environment | How it is updated | Image / orchestration |
-|-------------|-------------------|------------------------|
-| Local | `make app-build` (`compose-test.yaml`, port 8081) | Local Docker Compose |
-| QA (pre-merge) | QA Deployment workflow on PR | `testminitwit:latest`, Compose on test droplet |
-| Production | Tag → Continuous Deployment | `minitwitimage:<sha>`, Docker Swarm (3 replicas) |
-| Monitoring | Manual Deploy Monitoring workflow | Swarm stack `monitoring` |
+- **Local** *(via `make app-build` — `compose-test.yaml`, port 8081)* Using Local Docker Compose
+- **QA (pre-merge)** *(QA Deployment workflow on pull request)* With Docker Hub image `testminitwit:latest`, Using Compose on test droplet
+- **Production** *(tag, then Continuous Deployment)* With Docker Hub image `minitwitimage:<sha>`, Using Docker Swarm (3 replicas)
+- **Monitoring** *(manual Deploy Monitoring workflow)* Using Swarm stack `monitoring`
 
 <!--- How do you monitor your systems and what precisely do you monitor? -->
 ### 2.2 Monitoring
