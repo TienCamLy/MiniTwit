@@ -282,12 +282,13 @@ This approach was considered, but not possible to do in practice, due to the Dig
 ## 3. Reflection Perspective
 
 ### 3.1 Evolution and Refactoring
-On first refactoring from Python to RazorPages with C# we ran into unforeseen issues with the methods not working as intended. This slowed us down but once the bugs were solved we were able to make our release.
-We had no issues Refactoring to our Onion Structure. It was time-consuming but with half the group being familiar with the framework, the process became smooth.
+On the first refactoring from Python Flask to C# RazorPages we ran into unforeseen issues with the methods not working as intended, which slowed us down and required more than expected bug-fixing before making the release.
+We had no issues Refactoring to Onion Architecture. It was time-consuming but with half of the group being familiar with the framework the process was relatively smooth.
 
-We discussed that it may have been useful to have defined the infrastructure in Terraform from the beginning and that it may have led us to avoid having the amount of "Click-Ops" we had during the project (setting up a managed database, modifying network rules for droplets etc.) giving better reproducibility, version history and shared understanding of which resources we actually had.
+We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led us to avoiding the amount of "Click-Ops" we had during the project (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
 
 ### 3.2 Operation
+We rarely ran into operation issues per se. The system ran without errors most of the time from when the simulator started. For robustness, we set up a QA deployment on Pull Requests, requiring the application to be built, pushed and having its tests pass before merging it into the main branch. This allowed us to test all of our features fully before releasing them, and thereby decreased the amount of bugs and operational work. The experienced downtime was rather due to the deployment of new functionality which didn't go as planned, such as Docker Swarm or Terraform.
 
 To increase robustness we added a QA deployment on Pull Requests. This allowed us to test all of our features fully before releasing them to our main application and thereby decreased the amount of bugs and operational work.
 
@@ -297,14 +298,14 @@ In early April we started receiving warnings from the built-in resource alert sy
 
 We investigated the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
 We chose to resize the cluster such that it had an extra virtual CPU after a cost-benefit analysis concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time consuming versus the cost of upgrading the database cluster.
-The database cluster was resized with no downtime.
+The database was resized with no downtime.
 
-Once we had fully migrated to swarm, including log shipping from all our droplets, the droplet containing the monitoring application ended up being overloaded such that our monitoring application became unreachable. If we had access to spin up more droplets, we may have considered horizontal scaling instead of vertical.
-The monitoring droplet was resized using terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
+Once we had fully migrated to Swarm, including log shipping from all our Droplets, the Droplet containing the monitoring application ended up being overloaded such that our monitoring application became unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
+The monitoring Droplet was resized using Terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
 
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
-We struggled with the continuous deployment of our monitoring application in terms of ensuring new dashboards would appear and an unintended addition of a flag that reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the issues and accepted the loss of earlier metrics & logs.
+At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment can be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
 
 The Grafana alert fired at some points, but it was during expected down-time periods while doing various migrations. This confirmed that our alerting system worked as intended even as it was alerting us of a known down-time.
 
@@ -316,26 +317,36 @@ We could also see the data outage afterwards within the Grafana dashboard:
 
 ### 3.3 Maintenance
 
+The most prominent maintenance issue was arguably the Loki logging instance that repeatedly stopped working for no apparent reason, not affecting operations but hindering development insights. It was fixed multiple times, and seemed to be working for a while, only to crash again at some point. This was a long-lasting debugging task that stretched into weeks as the cause was not immediately clear, with it being a mix of network communication issues, misconfigured ports and an environment name mismatch.
+
+Another hiccup we encountered was related to a fluke in the connection between Prometheus and Grafana, causing an alert to be fired repeatedly. The issue went away after redeployment, and we couldn't definitively arrive at the underlying cause.
+
+There were cases where a functionality developed by one member experienced errors with no clear explanation, only for it to be discovered later that it was caused by a new functionality developed by another group member. One example of such case was when API tests suddenly started failing due to a security measure allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
+
+As preventive maintenance, we updated the workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24, which issued deprecation warnings.
+
+### 3.4 DevOps Approach
+
+We described the "DevOps" style of our work extensively in the project's `README.md`. Overall, we were much more structured and organized in this work compared to previous projects. We made use of the Trello board to track our progress, made sure the sizing of tasks made them self-contained, added a `log.md` to track our work, extensively tested our code through workflows, and insisted on rigorous code reviews as well as a self-check checklist to follow for each pull request, proiding continous feedback to group members. We didn't blame anyone for mistakes, but rather offered help and treated each doubt as an opportunity for growth.
+
 ## 4. Use of Generative AI
 
-The generative AI tool Cursor ([https://cursor.com/](https://cursor.com/)) was used to discuss issues and warnings throughout the project and provide guidance on issues that we had not encountered before. This was beneficial to the development process as it unblocked us in completing tasks.
-We used Cursor to improve the code in terms of maintainability by standardizing the format and structure along with industry standard formatting / linting tools (i.e. using a mix of CLI tools and GenAI).
-We also employed Cursor to summarize branch work in our log.md and other documentation, to ensure chore tasks were being done rather than neglected. These logs and documentation are used to remind us of the work and considerations throughout the different stages of the project which have been written / read for internal use.
+The use of generative AI tools varied among group members, and so we decided to include separate passages of its use, written by each group member. During groupwork, when we shared the screen and worked on code together, the tool preferred by the person leading the session was used.
 
-Claude and ChatGPT were used to quickly bounce ideas off of and to help identify the pros/cons of options when many were presented. Additionally, they were very useful in quickly parsing large error logs. 
+Mie mostly consulted the generative AI tool Cursor([https://cursor.com/](https://cursor.com/)) to discuss issues and warnings throughout the project and provide guidance on issues that we had not encountered before. This was beneficial to the development process as it often unblocked progress, resulting in time savings. Cursor was also helpful in improving the code in terms of maintainability by standardizing its format and structure. It worked quite well together with industry standard formatting / linting tools, making us effectively use a mix of CLI tools and GenAI for improving the code quality in the project. Cursor was also very helpful in summarizing branch work in our log.md and other documentation, ensuring that the chore tasks were actually being done rather than neglected. These logs and documentation written for internal use often reminded us of the work and decision-making performed at different stages of the project.
 
-ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) was used for debugging GitHub Actions, Docker, and DevOps setup issues, it often hindered our work on the Deployment workflows but helped significantly on Command lines in the terminal.
+Daniel used Claude ([https://claude.ai](https://claude.ai)) and ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) to quickly bounce ideas off of it and to help identify the pros and cons of development options with many of them presented. Additionally, both tools were very useful in quickly parsing large error logs. 
 
-The AI tool Github Copilot was used throughout the course for better code understanding, serving as interactive documentation. It was also used for very specific code fixes, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions that sometimes felt like an overkill.
+Mads used ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) to debug GitHub Actions, Docker, and DevOps setup issues. He found that it often hindered the work on the deployment workflows, yet helped significantly with commands used in the terminal.
 
-When it came to the use of GAI, ChatGPT and GitHub Copilot was used to better understand coding errors and thereby helping in solving them.
-Another aspect of using AI, would be on how to do specific things in different languages. 
-For example "How do i write inline code in .md?" or "How do i change the rejection status code on the rate limiter?".
+Chris mainly employed GitHub Copilot ([https://github.com/features/copilot](https://github.com/features/copilot)) as interactive documentation to assist in programming. It was also used to propose code changes for very specific improvement cases, usually hinted by SonarQube, such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to actually implement security and maintainability solutions which sometimes felt like an overkill.
 
-The **Google Gemini 3 model** has primarily been used for debugging and to resolve technical uncertainty during development. 
+For Patrick, ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) and GitHub Copilot ([https://github.com/features/copilot](https://github.com/features/copilot)) were used to aid the understanding of code errors and thereby helped in solving them. They also showed their utility in queries about writing specific things in different languages, for example: *"How do I write inline code in .md?"* or *"How do I change the rejection status code on the rate limiter?"*
 
-This includes asking the generative AI model to: 
+Finally, for Tien, the Google Gemini([https://gemini.google.com/](https://gemini.google.com/)) was the primary consultation source used for debugging and resolving technical uncertainty during development. 
+
+This included asking the generative AI model to: 
 - find possible fixes for errors, as well as explaining how and why they appeared. 
 - provide an overview and understanding of important features and commands of new tools and technologies. 
 - review developer decisions to ensure that any changes to the application is correct.
-- check for grammar and phrasings when writing documentation or report.
+- check grammar and phrasings when writing documentation or report.
