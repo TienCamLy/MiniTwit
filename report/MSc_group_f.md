@@ -288,7 +288,7 @@ To increase robustness we added a QA deployment on Pull Requests. This allowed u
 
 In early April we started receiving warnings from the built-in resource alert system in Digital Ocean that our Database Cluster was above 90% CPU utilization.
 
-![](images/operations_do_alert.png)
+![Email CPU Utilization Alert from Digital Ocean](images/operations_do_alert.png)
 
 We investigated the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
 We chose to resize the cluster such that it had an extra virtual CPU after a cost-benefit analysis concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time consuming versus the cost of upgrading the database cluster.
