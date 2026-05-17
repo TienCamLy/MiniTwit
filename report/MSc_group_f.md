@@ -284,7 +284,7 @@ When a node in the cluster crashes, the Swarm detects a difference between the a
 Swarm evenly distributes incoming user requests across all three healthy replicas of the production container to handle high amounts of concurrent requests. 
 This parallelizes the workload across the nodes, such that a container does not consume all the resources of a single node.
 
-To ensure low downtime during the transition from the standalone containers to a Docker Swarm cluster,
+To ensure low downtime during both the transition from the standalone containers to a Docker Swarm cluster and during re-deployments,
 the stack was deployed with a **blue-green service deployment** strategy from the start, such that the running containers were gradually replaced by the updated ones.
 This is achieved by configuring the deployment settings within the Docker Compose file to set the update order to `start-first` and 
 a delay parameter that dictates how long Docker Swarm should wait after starting an updated container before terminating an old one, 
