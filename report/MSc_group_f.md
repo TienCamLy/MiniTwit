@@ -41,7 +41,7 @@ Tien Cam Ly & tily@itu.dk \\
 
 ### 1.1 Design and Architecture
 We chose C# as the programming language for refactoring. The project was built with Razor Pages ([Documentation](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-10.0&tabs=visual-studio)) and Entity Framework Core (EF Core) ([Documentation](https://learn.microsoft.com/en-us/ef/core/)).
-The choice of C# was made due to part of the group's existing familiarity with the language, which streamlined development, especially when it came to the architecture.
+The choice of C# was made due to part of the group's existing familiarity with the language, which streamlined development.
 
 The project follows Onion Architecture in three layers: Core, Infrastructure, and Web. The visualization below shows each layer's responsibilities:
 
@@ -218,11 +218,6 @@ We made a security assessment showing an overview of assets/threats/risks:
 - DDoS Attack
 - Brute force attack
 
-**Risk Scenarios**
-- An attacker uses SQL injection on the web application to gain access to the database.
-- An attacker injects a script into a post, which is executed on other users’ browsers, allowing the attacker to steal session tokens.
-- An attacker uses a script to spam an API endpoint, resulting in a denial of service.
-
 **Risk Analysis**
 
 | Scenario                   | Likelihood      | Impact | Risk     |
@@ -334,7 +329,7 @@ As preventive maintenance, we updated workflow action versions for the GitHub Ac
 
 We described our DevOps style in the project's `README.md`. We were more structured than in previous projects.
 We made use of Trello for progress tracking, self-contained task sizing, a `log.md` for work tracking, extensive workflow testing, code reviews, and a per-pull-request self-check checklist.
-We didn't blame anyone for mistakes, but offered help and treated each doubt as an opportunity for growth.
+We didn't blame anyone for mistakes, but offered help and support.
 
 ## 4. Use of Generative AI
 
