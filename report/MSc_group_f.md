@@ -374,10 +374,6 @@ Chris mainly employed GitHub Copilot ([https://github.com/features/copilot](http
 
 For Patrick, ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) and GitHub Copilot ([https://github.com/features/copilot](https://github.com/features/copilot)) were used to aid the understanding of code errors and thereby helped in solving them. They also showed their utility in queries about writing specific things in different languages, for example: *"How do I write inline code in .md?"* or *"How do I change the rejection status code on the rate limiter?"*
 
-Finally, for Tien, the Google Gemini([https://gemini.google.com/](https://gemini.google.com/)) was the primary consultation source used for debugging and resolving technical uncertainty during development. 
+Finally, for Tien, Google Gemini([https://gemini.google.com/](https://gemini.google.com/)) was the primary consultation source used for debugging and resolving technical uncertainty during development. 
 
-This included asking the generative AI model to: 
-- find possible fixes for errors, as well as explaining how and why they appeared. 
-- provide an overview and understanding of important features and commands of new tools and technologies. 
-- review developer decisions to ensure that any changes to the application is correct.
-- check grammar and phrasings when writing documentation or report.
+This included asking the generative AI model to find possible fixes for errors and explaining how and why they appeared, provide an overview of important features and commands of new tools and technologies, review developer decisions to ensure that any changes to the application is correct and check grammar and phrasings when writing documentation or the report.
