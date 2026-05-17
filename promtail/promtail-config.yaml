@@ -24,6 +24,6 @@ scrape_configs:
         target_label: 'service_name'
     pipeline_stages:
       - regex:
-          expression: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+\s+(?P<level>INFO|WARN|ERROR)?\s*'
+          expression: '.*(?P<level>info|warn|error).*'
       - labels:
           level:
