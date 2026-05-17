@@ -57,7 +57,7 @@ jobs:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           CONNECTIONSTRING: ${{ secrets.TESTCONNECTIONSTRING }}
           # loki-dev on the monitoring stack (host port 3101). Open TCP 3101 from this QA droplet on the monitor firewall.
-          LOKI_URL: ${{ secrets.QA_LOKI_URL }}
+          LOKI_URL: ${{ secrets.PROD_LOKI_URL }}
 
       - name: Build & push minitwit image
         run: docker compose -f compose-test.yaml build && docker compose -f compose-test.yaml push
