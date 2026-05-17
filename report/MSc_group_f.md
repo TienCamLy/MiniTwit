@@ -98,22 +98,22 @@ We migrated to Terraform late in the project for easier maintenance and resource
 
 NuGet references come from `razor-pages/Web` and `razor-pages/Infrastructure`. Python test libraries are listed below with some having pinned versions in `tests/selenium/requirements.txt`.
 
-- **Microsoft.AspNetCore.Identity.EntityFrameworkCore** *(Web, Infrastructure)* ASP.NET Core Identity integrated with EF Core
-- **Microsoft.EntityFrameworkCore.Design** *(Web, Infrastructure)* EF Core design-time support and migrations
-- **Npgsql.EntityFrameworkCore.PostgreSQL** *(Web, Infrastructure)* EF Core provider for PostgreSQL
-- **Newtonsoft.Json** *(Web)* JSON serialization and deserialization
-- **Swashbuckle.AspNetCore.Annotations** *(Web)* OpenAPI metadata and attributes for the HTTP API
-- **Swashbuckle.AspNetCore.Newtonsoft** *(Web)* OpenAPI generation using Newtonsoft.Json
-- **DotNetEnv** *(Web)* Loading environment variables from `.env` files
-- **prometheus-net.AspNetCore** *(Web)* Prometheus metrics for ASP.NET Core
-- **Microsoft.CodeAnalysis.Analyzers** *(Infrastructure)* Build-time Roslyn analyzers
-- **Microsoft.Extensions.Hosting** *(Infrastructure)* Hosting abstractions for background-style infrastructure code
-- **prometheus-net** *(Infrastructure)* Prometheus metric registration and exposition primitives
-- **Npgsql** *(Infrastructure)* PostgreSQL data provider (ADO.NET) alongside EF
-- **TimeZoneConverter** *(Infrastructure)* Resolving time zones in infrastructure logic
-- **requests** *(tests/API_Spec)* HTTP calls from the API simulator
-- **pytest** *(tests/selenium)* Test runner for the Selenium UI suite
-- **selenium** *(tests/selenium)* WebDriver client driving the remote Chrome grid
+- **Microsoft.AspNetCore.Identity.EntityFrameworkCore** *(Web, Infrastructure)* Identity with EF Core
+- **Microsoft.EntityFrameworkCore.Design** *(Web, Infrastructure)* EF design-time and migrations
+- **Npgsql.EntityFrameworkCore.PostgreSQL** *(Web, Infrastructure)* PostgreSQL EF provider
+- **Newtonsoft.Json** *(Web)* JSON serialization
+- **Swashbuckle.AspNetCore.Annotations** *(Web)* OpenAPI metadata
+- **Swashbuckle.AspNetCore.Newtonsoft** *(Web)* OpenAPI with Newtonsoft.Json
+- **DotNetEnv** *(Web)* `.env` file loading
+- **prometheus-net.AspNetCore** *(Web)* Prometheus metrics (ASP.NET Core)
+- **Microsoft.CodeAnalysis.Analyzers** *(Infrastructure)* Roslyn analyzers
+- **Microsoft.Extensions.Hosting** *(Infrastructure)* Hosting abstractions
+- **prometheus-net** *(Infrastructure)* Prometheus metric primitives
+- **Npgsql** *(Infrastructure)* PostgreSQL ADO.NET provider
+- **TimeZoneConverter** *(Infrastructure)* Time zone resolution
+- **requests** *(tests/API_Spec)* API simulator HTTP client
+- **pytest** *(tests/selenium)* Selenium test runner
+- **selenium** *(tests/selenium)* WebDriver for remote Chrome
 
 ### 1.3 Current State of Our Systems
 Our system is steadily functional across performance, scalability, code quality, security, and testing. However, some limiting factors remain before it is production-ready.
