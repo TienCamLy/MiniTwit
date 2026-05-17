@@ -244,10 +244,7 @@ Production firewall rules:
 - Using HTTPS with a TLS certificate.
 - `nginx` as a reverse proxy.
 - Docker images only having user privileges.
-- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool discovers source code languages in the repository, hereunder:
-  - C# files
-  - Python files
-  - GitHub Action files
+- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool discovers source code languages in the repository.
 - Docker Scout has been added to the QA workflow to ensure image vulnerabilities are detected before merging. 
 
 ### 2.5 Availability and Scaling
@@ -257,17 +254,12 @@ Docker Swarm manages availability and scaling across DigitalOcean Droplets joine
 All three nodes in the cluster are given the `manager` role to prevent a single point of failure if a manager nodes crashes. 
 When a node in the cluster crashes, the Swarm detects a difference between the actual state and the declared desired state, which triggers *self-healing* to restore the third replica. 
 
-**Scaling** is handled by Docker Swarm's built-in Ingress Routing Mesh, which functions as a load balancer. 
-The Swarm evenly distributes incoming user requests across all three healthy replicas of the production container to handle high amounts of concurrent requests. 
+**Scaling** is handled by Docker Swarm's Ingress Routing Mesh, which functions as a load balancer. 
+The Swarm distributes incoming user requests across all three healthy replicas to handle high amounts of concurrent requests. 
 This parallelizes the workload across the nodes, such that a container does not consume all the resources of a single node.
 
-To ensure low downtime during both the transition from the standalone containers to a Docker Swarm cluster and during re-deployments,
-the stack was deployed with a **blue-green service deployment** strategy from the start, such that the running containers were gradually replaced by the updated ones.
-This is achieved by configuring the deployment settings within the Docker Compose file to set the update order to `start-first` and 
-a delay parameter that dictates how long Docker Swarm should wait after starting an updated container before terminating an old one, 
-allowing the new container to initialize.
-
-Services therefore stay available during deployment. By default, Swarm uses `stop-first` rolling updates that terminate the old container before starting a new one.
+To ensure low downtime during both the transition from the standalone containers to a Docker Swarm cluster and during re-deployments, the stack was deployed with a **blue-green service deployment** strategy from the start, such that the running containers were gradually replaced by the updated ones.
+This is achieved by configuring the deployment settings within the Docker Compose file to set the update order to `start-first` and a delay parameter that dictates how long Docker Swarm should wait after starting an updated container before terminating an old one, allowing the new container to initialize.
 
 Despite this strategy, migration and deployment debugging still caused brief production outages; see Section 3.1.
 
@@ -299,8 +291,8 @@ Traffic had outgrown what the database could handle.
 After a cost-benefit analysis, we added a virtual CPU to the cluster rather than spending developer time optimizing the ORM to send fewer queries.
 The database was resized with no downtime.
 
-Once we had migrated to Swarm, the Droplet containing the monitoring application ended up overloaded making it unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
-The monitoring Droplet was resized using Terraform and had minimal downtime. The process took ~6 minutes:
+Once we had migrated to Swarm, the Droplet containing the monitoring application ended up overloaded making it unreachable. This warranted an upgrade of the Droplet containing the monitoring application. Given funds, we would have opted for horizontal scaling.
+The monitoring Droplet was resized using Terraform and had minimal downtime.
 
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
@@ -321,7 +313,7 @@ The most prominent maintenance issue was the Loki logging instance that repeated
 Another hiccup we encountered was related to a fluke in the connection between Prometheus and Grafana, causing an alert to be fired repeatedly. The issue went away after redeployment, and we couldn't arrive at the underlying cause.
 
 Sometimes, functionality developed by one member experienced errors with no clear explanation, only to discover that it was caused by a new functionality developed by another group member.
-One example was when API tests started failing due to a security measure, allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
+One example was when API tests once failed when a new per-IP rate limit blocked the simulator. 
 
 As preventive maintenance, we updated workflow action versions for the GitHub Actions Node.js 24 runtime upgrade, which had issued deprecation warnings.
 
