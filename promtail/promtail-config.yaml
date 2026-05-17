@@ -22,9 +22,8 @@ scrape_configs:
         target_label: 'logstream'
       - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
         target_label: 'service_name'
-
-pipeline_stages:
-  - regex:
-      expression: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+\s+(?P<level>INFO|WARN|ERROR)?\s*'
-  - labels:
-      level:
+    pipeline_stages:
+      - regex:
+          expression: '.*(?P<level>info|warn|error).*'
+      - labels:
+          level:
