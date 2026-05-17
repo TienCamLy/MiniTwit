@@ -111,23 +111,22 @@ The issues mainly consist of code quality and maintainability problems, such as 
 ### 2.1 CI/CD pipelines, deployment, and release
 
 All development work is done on branches and requires a pull request to be merged into the main branch.
-Pull Requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, test and deployment to a QA droplet and database. 
-Note, that due to limitations on number of allowed droplets in our Digital Ocean account level, this QA droplet was later included in the production swarm as well.
+Pull Requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, deployment and test. 
+Note, that due to limitations on number of allowed droplets in our Digital Ocean account level, the dedicated QA droplet was later included in the production swarm as well.
 
-After merging a pull request into main, the report pdf is built iff changes have been made in the relevant files.
-Nothing is immediately pushed to production as we deemed that we wanted our releases to contain more than a single small change and have more control of when releases to production were made.
-The control of timing is important to ensure stability of the application and timely action given a failure/bug.
+After merging a pull request into main, the report pdf is built if changes have been made in the relevant files.
+Application code changes are immediately pushed to production as we deemed that we wanted our releases to contain more than a single small change and have more control of when releases to production were made.
+The control of timing was important to ensure stability of the application and timely action given a failure/bug.
 
-We used an automated deployment pipeline to deploy our production services that automatically triggers when a tag is pushed to the repository.
-We attempted to follow a form of semantic versioning ([https://semver.org/](https://semver.org/)) for tag names, to have a consistent format and a notion of how big each release was.
-The automated deployment builds a docker image and deploys the stack on the swarm leader node.
+We used an automated deployment pipeline to deploy our production services which automatically triggers when a tag is pushed to the repository.
+We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag names, to have a consistent format and a notion of how big each release is.
 
-Monitoring is deployed manually in a separate workflow. The monitoring droplet was initially a stand-alone droplet, but given the Digital Ocean limitation on droplets, this droplet was also later included in the swarm. 
+Monitoring is deployed manually in a separate workflow. The monitoring droplet was initially a stand-alone droplet, but given the Digital Ocean limitation on droplets, this droplet was also later included in the swarm.
 The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare and we therefore did not find it necessary.
 
-Below is an overview of the different stages of development towards operationalization. In the following sections we will deep dive into the QA deployment workflow, continuous deployment release workflow and the monitoring deployment workflow.
-
 ![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
+
+Above is an overview of the different stages of development towards operationalization. In the following sections we will deep dive into the QA deployment workflow, continuous deployment release workflow and the monitoring deployment workflow.
 
 #### Pull-request pipeline (QA Deployment)
 
@@ -153,15 +152,18 @@ The monitoring stack deployment is defined in [.github/workflows/monitor-deploym
 
 - **Local** *(via `make app-build` — `compose-test.yaml`, port 8081)* Using Local Docker Compose
 - **QA (pre-merge)** *(QA Deployment workflow on pull request)* With Docker Hub image `testminitwit:latest`, Using Compose on test droplet
-- **Production** *(tag, then Continuous Deployment)* With Docker Hub image `minitwitimage:<sha>`, Using Docker Swarm (3 replicas)
+- **Production** *(tag triggering Continuous Deployment)* With Docker Hub image `minitwitimage:<sha>`, Using Docker Swarm (3 replicas)
 - **Monitoring** *(manual Deploy Monitoring workflow)* Using Swarm stack `monitoring`
 
 ### 2.2 Monitoring
 The monitoring of our application is done through the use of Prometheus and Grafana. 
 
-The data collection is handled by Prometheus' .NET client library, prometheus-net, with UseMetricServer collecting and exposing metrics for use by Grafana. Additional http request metrics are collected through the use of the UseHttpMetrics middleware provided by Prometheus. Custom metric gatherers were also implemented to retrieve metrics from the application's database. 
+The data collection is handled by Prometheus' .NET client library, prometheus-net, with UseMetricServer collecting and exposing metrics. 
+Additional http request metrics are collected through the use of the UseHttpMetrics middleware provided by Prometheus.
+Custom metric gatherers were also implemented to retrieve metrics from the application's database. 
 
-Grafana is then used to retrieve these exposed metrics provided by Prometheus and allows for the construction of various visualizations. We also implemented a Grafana alert based on the up-time metric to inform us when the server was down.
+Grafana is used to build dashboard visualizing data collected by Prometheus and allows for setting up alerts on metrics.
+We implemented a Grafana alert based on the up-time metric to inform us when the server is down.
 
 #### Monitoring Panels
 - Current and uptime of container status
@@ -187,7 +189,7 @@ All live logs are shipped to Grafana
 dedicated logging section of grafana
 ![alt text](images/DedicatedLogging.png)
 ### 2.4 Security Hardening
-For the security hardening of our system a security assessment was made showing an overview of assets/threats/risks:
+We made a security assessment showing an overview of assets/threats/risks:
 
 **Assets**
 - Web Application & API Endpoint
@@ -213,10 +215,10 @@ For the security hardening of our system a security assessment was made showing 
 | Cross-Site Scripting (XSS) | High/Common     | High   | High     |
 | DDoS Attack                | Medium/Uncommon | Medium | Medium   |
 
-To solve the various risk scenarios the following measures were taken:
-- SQL Injection: All inputs are sanitized to avoid script injection. This is handled automatically by Entity Framework Core.
-- Cross-Site Scripting (XSS): This gains from the input sanitation, but still needs an output encoding to ensure data is rendered as text. Which is handled by Razor pages rendering all posts as plain text.
-- DDoS Attack: Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
+For each of the risk scenarios the following measures were taken:
+- **SQL Injection:** All inputs are sanitized to avoid script injection. This is handled automatically by Entity Framework Core.
+- **Cross-Site Scripting (XSS):** This gains from the input sanitation, but still needs an output encoding to ensure data is rendered as text. Which is handled by Razor pages rendering all posts as plain text.
+- **DDoS Attack:** Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
 
 **Other Security Measures**
 - Setting up inbound firewall rules on DigitalOcean and utilizing `ufw` on the server only allowing specific traffic through on specified ports. Docker does not bypass DigitalOcean's firewalls. 
@@ -240,11 +242,11 @@ Other security measures were also taken such as:
 - A Docker image vulnerability scanner Docker Scout has been added to CI workflow to ensure any image vulnerabilities are detected before deployment. 
 
 ### 2.5 Availability and Scaling
-Availability and scaling in the MiniTwit application are managed by Docker Swarm. A Swarm cluster of the DigitalOcean Droplets is joined into a single Swarm cluster,
+Availability and scaling is managed by Docker Swarm. A Swarm cluster of DigitalOcean Droplets is joined into a single Swarm cluster,
 which continuously monitors and enforces the declared desired state.
 
 **High availability** is handled by having manager redundancy, three production container replicas, and automatic self-healing. 
-All three nodes in the cluster are given the `manager` role to prevent a single point of failure if one of the manager nodes crashes. 
+All three nodes in the cluster are given the `manager` role to prevent a single point of failure if a manager nodes crashes. 
 When a node in the cluster crashes, the Swarm detects a difference between the actual state and the declared desired state, such that 
 the number of actual running replicas is lower than three, which triggers *self-healing* to restore the third replica. 
 
@@ -258,9 +260,7 @@ This is achieved by configuring the deployment settings within the Docker Compos
 a delay parameter that dictates how long Docker Swarm should wait after starting an updated container before terminating an old one, 
 allowing the new container to initialize.
 
-As a result, the services remain available during deployment. By default, Docker Swarm uses the rolling update strategy which terminates the old container 
-before starting a new one. This is called `stop-first`. By terminating the containers first, the default strategy forces the application to experience downtime 
-during the window between container termination and container initialization.
+As a result, the services remain available during deployment. By default, Docker Swarm uses the rolling update strategy which terminates the old container before starting a new one. This is called `stop-first`.
 
 While our strategy should have ensured low downtime during the transition to Docker Swarm, the production application still experienced downtime 
 due to overlooked human errors. These errors came as a result of debugging separate Docker Swarm migration issues. 
@@ -270,7 +270,8 @@ when pulling the wrong container image due to misconfigured environment secrets,
 which prevented the simulator from reaching it. 
 
 To avoid these issues in the future, a solution could be to replicate the Docker Swarm infrastructure 
-within an isolated development environment, so any configuration changes during the transition does not affect live production. 
+within an isolated development environment, so any configuration changes during the transition does not affect live production.
+This approach was considered, but not possible to do in practice, due to the DigitalOcean account level.
 
 
 ## 3. Reflection Perspective
