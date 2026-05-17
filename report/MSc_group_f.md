@@ -98,7 +98,7 @@ We ended up migrating to Terraform towards the end of the project, as it allowed
 
 #### Libraries
 
-NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-pages/Infrastructure`). Python libraries for automated tests are listed below as well with the UI test requirements file having pinned versions (see `tests/selenium/requirements.txt`).
+NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-pages/Infrastructure`). Python libraries for automated tests are listed below, as well with the UI test requirements file having pinned versions (see `tests/selenium/requirements.txt`).
 
 - **Microsoft.AspNetCore.Identity.EntityFrameworkCore** *(Web, Infrastructure)* ASP.NET Core Identity integrated with EF Core
 - **Microsoft.EntityFrameworkCore.Design** *(Web, Infrastructure)* EF Core design-time support and migrations
@@ -121,7 +121,7 @@ NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-p
 Our system is steadily functional across performance, scalability, code quality, security, and testing. However, there are some limiting factors that should be considered prior to it being a complete product. 
 
 In regards to performance and scalability, the primary issue we encountered was the resources available to the server being insufficient for exceptionally high traffic.
-In a real production case, with more funds, we would have increased availability by upgrading the account plan in Digital Ocean and scaling the application horizontally.
+In a real production case, with more funds, we would have increased availability by upgrading the account plan in DigitalOcean and scaling the application horizontally.
 
 The test coverage is fairly extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
 
@@ -145,22 +145,22 @@ All development work is done on branches and requires a pull request to be merge
 
 ![Snapshot of Trello Backlog During Project Work](images/trello_backlog_management.png)
 
-Pull Requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, deployment and test. 
-Note, that due to limitations on number of allowed droplets in our Digital Ocean account level, the dedicated QA droplet was later included in the production swarm as well.
+Pull requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, deployment, and test. 
+Note that due to limitations on number of allowed droplets in our Digital Ocean account level, the dedicated QA Droplet was later included in the production Swarm as well.
 
 After merging a pull request into main, the report pdf is built if changes have been made in the relevant files.
-Application code changes are not immediately pushed to production as we deemed that we wanted our releases to contain more than a single small change, as well as to have more control of when releases to production were made.
+Application code changes are not immediately pushed to production, as we deemed that we wanted our releases to contain more than a single small change, as well as to have more control of when releases to production were made.
 The control of timing was important to ensure stability of the application and timely action given a failure/bug.
 
-We used an automated deployment pipeline to deploy our production services which automatically triggers when a tag is pushed to the repository.
-We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag namesin order to have a consistent format and a notion of how big each release was.
+We used an automated deployment pipeline to deploy our production services, which automatically triggers when a tag is pushed to the repository.
+We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag names in order to have a consistent format and a notion of how big each release was.
 
-Monitoring is deployed manually in a separate workflow. The monitoring Droplet was initially a stand-alone Droplet, but given the Digital Ocean limitation on Droplets, this Droplet was also later included in the Swarm.
-The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare, and we, therefore, did not find it necessary.
+Monitoring is deployed manually in a separate workflow. The monitoring Droplet was initially a stand-alone Droplet, but given the DigitalOcean limitation on Droplets, this Droplet was also later included in the Swarm.
+The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare, and therefore, we did not find it necessary.
 
 ![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
 
-Above is an overview of the different stages of development towards operationalization. In the following sections we will deep dive into the QA deployment workflow, continuous deployment release workflow and the monitoring deployment workflow.
+Above is an overview of the different stages of development towards operationalization. In the following sections, we will deep dive into the QA deployment workflow, continuous deployment release workflow, and the monitoring deployment workflow.
 
 #### Pull Request Pipeline (QA Deployment)
 
@@ -307,7 +307,7 @@ which prevented the simulator from reaching it.
 
 To avoid these issues in the future, a solution could be to replicate the Docker Swarm infrastructure 
 within an isolated development environment, so any configuration changes during the transition does not affect live production.
-This approach was considered, but not possible to do in practice, due to the DigitalOcean account level.
+This approach was considered, but not possible to do in practice due to the DigitalOcean account level.
 
 
 ## 3. Reflection Perspective
@@ -321,24 +321,24 @@ We discussed defining the infrastructure in Terraform at the beginning of the pr
 ### 3.2 Operation
 We rarely ran into operation issues per se. The system ran without errors most of the time from when the simulator started. For robustness, we set up a QA deployment on pull requests, requiring the application to be built, pushed and having its tests pass before merging it into the main branch. This allowed us to test all of our features fully before releasing them, thereby decreased the amount of bugs and operational work. The experienced downtime was rather due to the deployment of new functionality that didn't go as planned, such as with Docker Swarm or Terraform.
 
-To increase robustness we added a QA deployment on Pull Requests. This allowed us to test all of our features fully before releasing them to our main application and thereby decreased the amount of bugs and operational work.
+To increase robustness, we added a QA deployment on pull requests. This allowed us to test all of our features fully before releasing them to our main application, and thereby decreased the amount of bugs and operational work.
 
-In early April we started receiving warnings from the built-in resource alert system in Digital Ocean that our Database Cluster was above 90% CPU utilization.
+In early April, we started receiving warnings from the built-in resource alert system in DigitalOcean that our database cluster was above 90% CPU utilization.
 
 ![Email CPU Utilization Alert from Digital Ocean](images/operations_do_alert.png)
 
 We investigated the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
-We chose to resize the cluster such that it had an extra virtual CPU after a cost-benefit analysis concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time consuming versus the cost of upgrading the database cluster.
+We chose to resize the cluster such that it had an extra virtual CPU after a cost-benefit analysis, concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time-consuming versus the cost of upgrading the database cluster.
 The database was resized with no downtime.
 
-Once we had fully migrated to Swarm, including log shipping from all our Droplets, the Droplet containing the monitoring application ended up being overloaded, such that our monitoring application became unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
+Once we had fully migrated to Swarm, including log shipping from all our Droplets, the Droplet containing the monitoring application ended up being overloaded such that our monitoring application became unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
 The monitoring Droplet was resized using Terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
 
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
 At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment could be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
 
-The Grafana alert fired at some points, but it was during expected down-time periods while doing various migrations. This confirmed that our alerting system worked as intended even as it was alerting us of a known down-time.
+The Grafana alert fired at some points, but it was during expected downtime periods while doing various migrations. This confirmed that our alerting system worked as intended even as it was alerting us of a known downtime.
 
 ![Discord Alert Message from Grafana](images/monitor_discord_alert.png)
 
@@ -374,6 +374,6 @@ Chris mainly employed GitHub Copilot ([https://github.com/features/copilot](http
 
 For Patrick, ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) and GitHub Copilot ([https://github.com/features/copilot](https://github.com/features/copilot)) were used to aid the understanding of code errors and thereby helped in solving them. They also showed their utility in queries about writing specific things in different languages, for example: *"How do I write inline code in .md?"* or *"How do I change the rejection status code on the rate limiter?"*
 
-Finally, for Tien, Google Gemini([https://gemini.google.com/](https://gemini.google.com/)) was the primary consultation source used for debugging and resolving technical uncertainty during development. 
+Finally for Tien, Google Gemini([https://gemini.google.com/](https://gemini.google.com/)) was the primary consultation source used for debugging and resolving technical uncertainty during development. 
 
 This included asking the generative AI model to find possible fixes for errors and explaining how and why they appeared, provide an overview of important features and commands of new tools and technologies, review developer decisions to ensure that any changes to the application is correct and check grammar and phrasings when writing documentation or the report.
