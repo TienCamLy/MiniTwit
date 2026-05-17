@@ -110,7 +110,7 @@ The issues mainly consist of maintainability and style problems, such as inconsi
 
 ### 2.1 CI/CD pipelines, deployment, and release
 
-All development work is done on branches and requires a pull request to be merged into the main branch. We tried making sure all tasks were tracked in Trello (see below).
+All development work is done on branches and requires a pull request to be merged into the main branch. We made sure all tasks were tracked in Trello (see below).
 
 ![Snapshot of Trello Backlog During Project Work](images/trello_backlog_management.png)
 
