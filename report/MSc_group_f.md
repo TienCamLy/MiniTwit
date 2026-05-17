@@ -301,6 +301,10 @@ The monitoring droplet was resized using terraform and therefore had minimal pos
 
 We struggled with the continuous deployment of our monitoring application in terms of ensuring new dashboards would appear and an unintended addition of a flag that reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the issues and accepted the loss of earlier metrics & logs.
 
+The Grafana alert fired at some points, but it was during expected down-time periods while doing various migrations. This confirmed that our alerting system worked as intended even as it was alerting us of a known down-time.
+
+![Discord Alert Message from Grafana](images/monitor_discord_alert.png)
+
 ### 3.3 Maintenance
 
 ## 4. Use of Generative AI
