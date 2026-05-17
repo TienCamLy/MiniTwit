@@ -4,7 +4,38 @@ linkcolor: blue
 urlcolor: blue
 ---
 
-# Report
+# DevOps, Software Evolution and Software Maintenance, MSc
+\vspace{1cm}
+
+\begin{center}
+\textbf{Course Code: KSDSESM1KU}
+\end{center}
+
+
+\begin{center}
+\textbf{Assignment By:}
+\end{center}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Name} & \textbf{Email} \\
+\hline
+Daniel Ring Hansen & darh@itu.dk \\
+Krzysztof Michal Parocki & krpa@itu.dk \\
+Mads Orfelt & orfe@itu.dk \\
+Mie Jonasson & miejo@itu.dk \\
+Patrick Tristan Søborg & ptso@itu.dk \\
+Tien Cam Ly & tily@itu.dk \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{center}
+\textbf{18 May 2026}
+\end{center}
+
+\newpage
 
 ## 1. System's Perspective
 
@@ -13,7 +44,7 @@ When tasked with switching to another language for the system, C# was chosen. Ac
 
 The architecture of the project follows a layered onion architecture split into three parts: Core, Infrastructure, and Web. The below visualization shows the responsibilities of each layer:
 
-![System Architecture](./images/system-architecture.png)
+![System Architecture](images/system-architecture.png)
 
 - The Core layer of the system focuses on handling DTOs and repository interfaces. This layer does not reference any frameworks or libraries, staying independent from the rest of the system.
 - The Infrastructure layer focuses on the database context, migrations, and the implementation of repository interfaces. This layer depends only on the Core, whilst having no reference to the Web layer.
@@ -100,7 +131,7 @@ The test coverage is fairly extensive across the API and browser-based UI levels
 
 **SonarQube's Quality Assessment:**
 
-![SonarQubeQuality](images/SonarQubeAnalysis.png)
+![SonarQube Quality Assessment](images/SonarQubeAnalysis.png)
 
 The issues mainly consist of maintainability and style problems, such as inconsistent naming, improper exception handling, and potential accessibility and configuration problems. Additionally, there are a few issues involving some incomplete implementations and asynchronicity handling. 
 
@@ -140,7 +171,7 @@ The above flowchart shows the various steps and interactions between systems hap
 
 The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
 
-![Complete Prod Build Workflow](images/mermaid_prod_flow.svg)
+![Complete Production Build Workflow](images/mermaid_prod_flow.svg)
 
 #### Monitoring deployment
 
@@ -174,14 +205,17 @@ Grafana then retrieves these exposed metrics provided by Prometheus and allows f
 The following images are examples:
 
 ![General Statistics](images/monitor_grafana_dash_0.png)
+
 ![HTTP Requests](images/monitor_grafana_dash_4.png)
+
+\newpage
 
 ### 2.3 Aggregated logs
 We log EF Core's queries and collect them through the built-in Docker functionality `docker logs` for each container. These logs are scraped from all running containers by `promtail`, and then indexed and prepared for presentation in Grafana by `loki`.
 
 The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate replica used to validate pull requests. All logs are visible side by side in a dedicated logging segment in the Drilldown section, as shown in the image below.
 
-![alt text](images/minitwit_replicas_logging.png)
+![Drilldown Logging Segment](images/minitwit_replicas_logging.png)
 
 ### 2.4 Security Hardening
 For the security hardening of our system a security assessment was made showing an overview of assets, threats, and risks:
@@ -283,6 +317,7 @@ We rarely ran into operation issues per se. The system ran without errors most o
 
 Once we had fully migrated to Swarm, including log shipping from all our Droplets, the Droplet containing the monitoring application ended up being overloaded such that our monitoring application became unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had the capacity to provision additional Droplets, we may have considered horizontal scaling instead of vertical.
 The monitoring Droplet was resized using Terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
+
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
 At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment could be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
