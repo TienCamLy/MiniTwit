@@ -56,49 +56,49 @@ We migrated to Terraform late in the project for easier maintenance and resource
 
 ### 1.2 Dependencies of MiniTwit
 
-- **Git / GitHub** *(Development, CI/CD)* Source control, reviews, and workflow hosting
-- **Trello** *(Development, operations)* Backlog management and work tracking
-- **Discord** *(Development, operations)* Team communication and receiving alerts (for example from GitHub & Grafana webhooks)
+- **Git / GitHub** *(Development, CI/CD)* Source control, reviews, workflows
+- **Trello** *(Development, operations)* Backlog and work tracking
+- **Discord** *(Development, operations)* Team communication and alerts (e.g. GitHub & Grafana webhooks)
 - **C# / .NET** *(Development, production)* Application language and runtime
-- **NuGet** *(Development, CI/CD)* Package restore and feeds for .NET dependencies
+- **NuGet** *(Development, CI/CD)* .NET package restore
 - **ASP.NET Core (Razor Pages)** *(Development, production)* Web UI and HTTP API
 - **Entity Framework Core** *(Development, production)* Database access and migrations
-- **PostgreSQL** *(Development, testing, production)* Primary data store (managed in DigitalOcean)
-- **Docker** *(Development, CI/CD, production)* Container images and runtime isolation
-- **Docker Hub** *(CI/CD, production)* Registry for built application images
-- **Docker Compose** *(Development, testing)* Local and test multi-container setups
+- **PostgreSQL** *(Development, testing, production)* Primary data store (DigitalOcean)
+- **Docker** *(Development, CI/CD, production)* Container images and runtime
+- **Docker Hub** *(CI/CD, production)* Application image registry
+- **Docker Compose** *(Development, testing)* Local/test multi-container setups
 - **Docker Swarm** *(Production)* Orchestration and rolling updates
-- **DigitalOcean** *(Infrastructure, production)* Cloud VMs, managed database, and networking
-- **DigitalOcean Spaces (S3-compatible)** *(Infrastructure, CI/CD)* Object storage with an S3-compatible API (Terraform remote state backend)
-- **Terraform** *(Infrastructure, CI/CD)* Infrastructure as code for managing cloud resources
-- **GitHub Actions** *(CI/CD)* Continuous integration and deployment pipelines
-- **Third-party GitHub Actions** *(CI/CD)* Marketplace and vendor-maintained workflow steps (for example checkout, Docker login, Terraform setup, PR plan commenter, GitHub App token)
-- **GitHub CLI** *(CI/CD)* Command-line GitHub integration in workflows (for example `gh auth setup-git` for automated commits)
-- **Ubuntu** *(CI/CD, production)* Base operating system on GitHub-hosted runners and provisioned droplets
-- **SSH (OpenSSH)** *(CI/CD, production)* Remote deploy, file copy, and server access from pipelines
-- **Prometheus** *(Monitoring)* Metrics collection
-- **Grafana** *(Monitoring)* Dashboards and alerting
-- **Loki** *(Monitoring)* Centralized log storage
-- **Promtail** *(Monitoring)* Shipping container logs to Loki
-- **Python** *(Testing (local and CI/CD))* API simulator test driver and test scripts
-- **Selenium** *(Testing (local and CI/CD))* Browser-based UI tests (with Chrome in Docker)
-- **dotnet format** *(Development, CI/CD)* C# formatting and verifying the tree matches the formatter in CI
-- **Roslynator** *(Development, CI/CD)* C# static analysis (Roslyn-based diagnostics)
-- **Codespell** *(Development, CI/CD)* Spell checking across the repository
-- **Hadolint** *(Development, CI/CD)* Linting Dockerfiles
-- **Codacy** *(Development, CI/CD)* Hosted static analysis and pull-request quality checks
-- **SonarCloud** *(Development, CI/CD)* SonarQube-family analysis and quality gate on pull requests
-- **CodeQL** *(Development, CI/CD)* Semantic security and quality scanning (for example C# and Python) on pull requests
-- **Docker Scout** *(CI/CD)* Container image vulnerability scanning on QA builds
-- **OpenAPI Generator** *(Development)* Generating the API simulator stub from the OpenAPI description
-- **Pandoc** *(Report CI/CD)* Converting the report Markdown to PDF in automation
-- **LaTeX (pdflatex / TeX Live)** *(Report CI/CD)* PDF engine used by Pandoc
-- **librsvg (rsvg-convert)** *(Report CI/CD)* Converting committed SVG figures in Pandoc
-- **GNU Make** *(Development, CI/CD)* Task automation (local and in workflows)
+- **DigitalOcean** *(Infrastructure, production)* Cloud VMs, managed DB, networking
+- **DigitalOcean Spaces (S3-compatible)** *(Infrastructure, CI/CD)* Object storage (Terraform state backend)
+- **Terraform** *(Infrastructure, CI/CD)* Infrastructure as code for DigitalOcean
+- **GitHub Actions** *(CI/CD)* CI/CD pipelines
+- **Third-party GitHub Actions** *(CI/CD)* Marketplace workflow steps (e.g. checkout, Docker login, Terraform, PR comments, GitHub App token)
+- **GitHub CLI** *(CI/CD)* GitHub CLI in workflows (e.g. `gh auth setup-git`)
+- **Ubuntu** *(CI/CD, production)* OS on runners and droplets
+- **SSH (OpenSSH)** *(CI/CD, production)* Remote deploy and server access
+- **Prometheus** *(Monitoring)* Metrics Data Gatherer
+- **Grafana** *(Monitoring)* Dashboards and alerts
+- **Loki** *(Monitoring)* Log storage
+- **Promtail** *(Monitoring)* Log shipping to Loki
+- **Python** *(Testing (local and CI/CD))* API simulator driver
+- **Selenium** *(Testing (local and CI/CD))* Browser UI tests (Chrome in Docker)
+- **dotnet format** *(Development, CI/CD)* C# format check in CI
+- **Roslynator** *(Development, CI/CD)* C# static analysis
+- **Codespell** *(Development, CI/CD)* Spell checking
+- **Hadolint** *(Development, CI/CD)* Dockerfile linting
+- **Codacy** *(Development, CI/CD)* Hosted PR static analysis
+- **SonarCloud** *(Development, CI/CD)* Analysis and PR quality gate
+- **CodeQL** *(Development, CI/CD)* Security/quality scanning (e.g. C#, Python) on PRs
+- **Docker Scout** *(CI/CD)* Image vulnerability scans on QA builds
+- **OpenAPI Generator** *(Development)* API simulator stub from OpenAPI
+- **Pandoc** *(Report CI/CD)* Report Markdown to PDF
+- **LaTeX (pdflatex / TeX Live)** *(Report CI/CD)* PDF engine for Pandoc
+- **librsvg (rsvg-convert)** *(Report CI/CD)* SVG conversion for Pandoc
+- **GNU Make** *(Development, CI/CD)* Local and CI task automation
 
 #### Libraries
 
-NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-pages/Infrastructure`). Python libraries for automated tests are listed below, as well with the UI test requirements file having pinned versions (see `tests/selenium/requirements.txt`).
+NuGet references come from `razor-pages/Web` and `razor-pages/Infrastructure`. Python test libraries are listed below with some having pinned versions in `tests/selenium/requirements.txt`.
 
 - **Microsoft.AspNetCore.Identity.EntityFrameworkCore** *(Web, Infrastructure)* ASP.NET Core Identity integrated with EF Core
 - **Microsoft.EntityFrameworkCore.Design** *(Web, Infrastructure)* EF Core design-time support and migrations
