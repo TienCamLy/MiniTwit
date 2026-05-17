@@ -68,12 +68,10 @@ We migrated to Terraform late in the project for easier maintenance and resource
 - **Docker Hub** *(CI/CD, production)* Application image registry
 - **Docker Compose** *(Development, testing)* Local/test multi-container setups
 - **Docker Swarm** *(Production)* Orchestration and rolling updates
-- **DigitalOcean** *(Infrastructure, production)* Cloud VMs, managed DB, networking
-- **DigitalOcean Spaces (S3-compatible)** *(Infrastructure, CI/CD)* Object storage (Terraform state backend)
+- **DigitalOcean** *(Infrastructure, CI/CD, production)* Cloud VMs, managed DB, networking, Spaces Object storage (Terraform state backend)
 - **Terraform** *(Infrastructure, CI/CD)* Infrastructure as code for DigitalOcean
 - **GitHub Actions** *(CI/CD)* CI/CD pipelines
 - **Third-party GitHub Actions** *(CI/CD)* Marketplace workflow steps (e.g. checkout, Docker login, Terraform, PR comments, GitHub App token)
-- **GitHub CLI** *(CI/CD)* GitHub CLI in workflows (e.g. `gh auth setup-git`)
 - **Ubuntu** *(CI/CD, production)* OS on runners and droplets
 - **SSH (OpenSSH)** *(CI/CD, production)* Remote deploy and server access
 - **Prometheus** *(Monitoring)* Metrics Data Gatherer
@@ -158,32 +156,19 @@ Monitoring is deployed manually in a separate workflow. The monitoring Droplet w
 
 ![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
 
-The following sections describe the QA, production release, and monitoring deployment workflows.
+The following sections show the QA, production release, and monitoring deployment workflows.
 
 #### Pull Request Pipeline (QA Deployment)
-
-The QA deployment is in [.github/workflows/continous-QA-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-QA-deployment.yaml) and runs on pull requests to main alongside `CodeQL`, `SonarCube`, and `Codacy`.
 
 ![Complete QA Build Workflow](images/mermaid_qa_flow.svg)
 
 #### Production Release (Continuous Deployment)
 
-Production deployment is in [.github/workflows/continous-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-deployment.yaml) and runs on tags pushed to main.
-
 ![Complete Production Build Workflow](images/mermaid_prod_flow.svg)
 
 #### Monitoring Deployment
 
-The monitoring stack is in [.github/workflows/monitor-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/monitor-deployment.yaml) and runs only when triggered manually.
-
 ![Complete Monitoring Build Workflow](images/mermaid_monitor_flow.svg)
-
-#### Deployment & Release Summary
-
-- **Local** *(via `make app-build` — `compose-test.yaml`, port 8081)* Local Docker Compose
-- **QA (pre-merge)** *(QA Deployment workflow on pull request)* Docker Hub image `testminitwit:latest`, Compose on test Droplet
-- **Production** *(tag triggering Continuous Deployment)* Docker Hub image `minitwitimage:<sha>`, Docker Swarm (3 replicas)
-- **Monitoring** *(manual Deploy Monitoring workflow)* Swarm stack `monitoring`
 
 ### 2.2 Monitoring
 We monitor the application using Prometheus and Grafana.
