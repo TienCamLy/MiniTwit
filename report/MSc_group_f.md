@@ -9,18 +9,18 @@ urlcolor: blue
 ## 1. System's Perspective
 
 ### 1.1 Design and Architecture
-When tasked with switching to another language for the system, C# was chosen. In correlation the project was built with Razor Pages and Entity Framework Core. The choice of C# was due to the groups already existing knowledge of the language, which streamlined the development process especially when it came to the architecture.
+When tasked with switching to another language for the system, C# was chosen. In correlation the project was built with Razor Pages and Entity Framework Core. The choice of C# was due to the group's already existing knowledge of the language, which streamlined the development process, especially when it came to the architecture.
 
-The architecture of the project follows a layered onion architecture split into the three parts: Core, Infrastructure and Web. The below visualization shows the responsibilities of each layer:
+The architecture of the project follows a layered Onion Architecture split into the three parts: Core, Infrastructure and Web. The below visualization shows the responsibilities of each layer:
 
 ![System Architecture](./images/system-architecture.png)
 
-- The Core part of the system focuses on handling DTOs and repository interfaces. This layer does not reference any frameworks or libraries staying independent from the rest of the system.
+- The Core part of the system focuses on handling Data Transfer Objects (DTOs) and repository interfaces. This layer does not reference any frameworks or libraries staying independent from the rest of the system.
 - The Infrastructure focuses on the database context, migrations and the implementation of repository interfaces. This layer depends only on the Core, whilst having no reference to the Web layer.
-- The Web handles the UI through razor pages along with the API. It also acts as the base of the system handling the dependency injection and referencing both the Core and Infrastructure layers of the application.
+- The Web handles the UI through Razor Pages along with the API. It also acts as the base of the system handling the dependency injection and referencing both the Core and Infrastructure layers of the application.
 
 #### 1.1.1 Choice of Final Infrastructure-as-Code Architecture
-We ended up migrating to Terraform towards the end of the project as it allows easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined Documentation for Digital Ocean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources therefore did not have much extra overhead.
+We ended up migrating to Terraform towards the end of the project, as it allows easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined documentation for DigitalOcean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources, therefore, did not have much extra overhead.
 
 ### 1.2 Dependencies of MiniTwit
 
@@ -105,30 +105,30 @@ The test coverage is quite extensive across the API and browser-based UI levels,
 The issues mainly consist of code quality and maintainability problems, such as inconsistent naming, improper exception handling, and minor potential accessibility and configuration problems.
 
 
-## 2. Process' perspective
+## 2. Process' Perspective
 
-### 2.1 CI/CD pipelines, deployment, and release
+### 2.1 CI/CD Pipelines, Deployment, and Release
 
 All development work is done on branches and requires a pull request to be merged into the main branch.
-Pull Requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, test and deployment to a QA droplet and database. 
-Note, that due to limitations on number of allowed droplets in our Digital Ocean account level, this QA droplet was later included in the production swarm as well.
+Pull requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, test and deployment to a QA droplet and database. 
+Note that due to limitations on number of allowed droplets in our DigitalOcean account level, this QA Droplet was later included in the production swarm as well.
 
-After merging a pull request into main, the report pdf is built iff changes have been made in the relevant files.
-Nothing is immediately pushed to production as we deemed that we wanted our releases to contain more than a single small change and have more control of when releases to production were made.
+After merging a pull request into main, the report PDF is built if changes have been made in the relevant files.
+Nothing is immediately pushed to production, as we deemed that we wanted our releases to contain more than a single small change and have more control of when releases to production were made.
 The control of timing is important to ensure stability of the application and timely action given a failure/bug.
 
 We used an automated deployment pipeline to deploy our production services that automatically triggers when a tag is pushed to the repository.
-We attempted to follow a form of semantic versioning ([https://semver.org/](https://semver.org/)) for tag names, to have a consistent format and a notion of how big each release was.
+We attempted to follow a form of semantic versioning ([https://semver.org/](https://semver.org/)) for tag names to have a consistent format and a notion of how big each release was.
 The automated deployment builds a docker image and deploys the stack on the swarm leader node.
 
-Monitoring is deployed manually in a separate workflow. The monitoring droplet was initially a stand-alone droplet, but given the Digital Ocean limitation on droplets, this droplet was also later included in the swarm. 
-The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare and we therefore did not find it necessary.
+Monitoring is deployed manually in a separate workflow. The monitoring Droplet was initially a stand-alone Droplet, but given the Digital Ocean limitation on Droplets, this Droplet was also later included in the Swarm. 
+The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare, and we, therefore, did not find it necessary.
 
-Below is an overview of the different stages of development towards operationalization. In the following sections we will deep dive into the QA deployment workflow, continuous deployment release workflow and the monitoring deployment workflow.
+Below is an overview of the different stages of development towards operationalization. In the following sections, we will deep dive into the QA deployment workflow, continuous deployment release workflow, and the monitoring deployment workflow.
 
 ![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
 
-#### Pull-request pipeline (QA Deployment)
+#### Pull Request Pipeline (QA Deployment)
 
 The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch.
 
@@ -136,13 +136,13 @@ The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml]
 
 Above flow chart shows the various steps and interactions between systems happening during the QA Deployment and test workflow. The workflow runs at the same time as the static code analysis tools `CodeQL`, `SonarCube` and `Codacy`. 
 
-#### Production release (Continuous Deployment)
+#### Production Release (Continuous Deployment)
 
-The Continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
+The continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
 
 ![Complete Prod Build Workflow](images/mermaid_prod_flow.svg)
 
-#### Monitoring deployment
+#### Monitoring Deployment
 
 The monitoring stack deployment is defined in [.github/workflows/monitor-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/monitor-deployment.yaml) and runs only when someone manually triggers it.
 
@@ -151,7 +151,7 @@ The monitoring stack deployment is defined in [.github/workflows/monitor-deploym
 #### Deployment & Release Summary
 
 - **Local** *(via `make app-build` — `compose-test.yaml`, port 8081)* Using Local Docker Compose
-- **QA (pre-merge)** *(QA Deployment workflow on pull request)* With Docker Hub image `testminitwit:latest`, Using Compose on test droplet
+- **QA (pre-merge)** *(QA Deployment workflow on pull request)* With Docker Hub image `testminitwit:latest`, Using Compose on test Droplet
 - **Production** *(tag, then Continuous Deployment)* With Docker Hub image `minitwitimage:<sha>`, Using Docker Swarm (3 replicas)
 - **Monitoring** *(manual Deploy Monitoring workflow)* Using Swarm stack `monitoring`
 
@@ -176,22 +176,22 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 ![HTTP Requests](images/monitor_grafana_dash_4.png)
 
 ### 2.3 Aggregated logs
-All assignment completions for each week have been aggregated in [View project log](https://github.com/TienCamLy/MiniTwit/blob/main/log.md). It was standard practice for everyone to document which tasks they completed.
-A type of "Meta" log used is the [README file](https://github.com/TienCamLy/MiniTwit/blob/main/README.md); it serves as how we ought to implement the assignments as well as principles on how work as a group.
-Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
-All live logs are shipped to Grafana 
+All assignment completions for each week have been aggregated in the [project log](https://github.com/TienCamLy/MiniTwit/blob/main/log.md). It was standard practice for everyone to document which tasks they completed.
+A type of "Meta" log used is the [README file](https://github.com/TienCamLy/MiniTwit/blob/main/README.md); it serves as how we ought to implement the assignments as well as principles on how to work as a group.
+Docker has a built-in log system for each Droplet. This logging system was rarely used except for some debugging cases.
+All live logs are shipped to Grafana. 
 
 ![alt text](images/imageGrafanaLogging.png)
 
-dedicated logging section of grafana
+**Dedicated logging section of Grafana:**
 ![alt text](images/DedicatedLogging.png)
 ### 2.4 Security Hardening
-For the security hardening of our system a security assessment was made showing an overview of assets/threats/risks:
+For the security hardening of our system, a security assessment was made showing an overview of assets/threats/risks:
 
 **Assets**
 - Web Application & API Endpoint
 - PostgreSQL Database
-- Monitoring (Grafana, Loki, Promtail & Prometheus)
+- Monitoring (Grafana, Loki, Promtail, & Prometheus)
 
 **Threat Sources**
 - SQL Injection
@@ -212,9 +212,9 @@ For the security hardening of our system a security assessment was made showing 
 | Cross-Site Scripting (XSS) | High/Common     | High   | High     |
 | DDoS Attack                | Medium/Uncommon | Medium | Medium   |
 
-To solve the various risk scenarios the following measures were taken:
+To solve the various risk scenarios, the following measures were taken:
 - SQL Injection: All inputs are sanitized to avoid script injection. This is handled automatically by Entity Framework Core.
-- Cross-Site Scripting (XSS): This gains from the input sanitation, but still needs an output encoding to ensure data is rendered as text. Which is handled by Razor pages rendering all posts as plain text.
+- Cross-Site Scripting (XSS): This gains from the input sanitation but still needs an output encoding to ensure data is rendered as text, which is handled by Razor Pages rendering all posts as plain text.
 - DDoS Attack: Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
 
 **Other Security Measures**
@@ -230,8 +230,8 @@ The production application were given firewall rules for:
 
 Other security measures were also taken such as:
 
-- Ensuring the application runs on HTTPS with a TLS certificate and setting up `Nginx` for a reverse proxy in front of the application.
-- Docker images were also security hardened by ensuring only user privileges
+- Ensuring the application runs on HTTPS with a TLS certificate and setting up `nginx` for a reverse proxy in front of the application.
+- Docker images were also security hardened by ensuring only user privileges.
 - Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool automatically discovers source code languages in the repository and dynamically adjusts the scan based on the languages present. CodeQL analyzes the following files in the repository:
   - C# files
   - Python files
