@@ -96,8 +96,6 @@ We migrated to Terraform late in the project for easier maintenance and resource
 
 #### Libraries
 
-NuGet references come from `razor-pages/Web` and `razor-pages/Infrastructure`. Python test libraries are listed below with some having pinned versions in `tests/selenium/requirements.txt`.
-
 - **Microsoft.AspNetCore.Identity.EntityFrameworkCore** *(Web, Infrastructure)* Identity with EF Core
 - **Microsoft.EntityFrameworkCore.Design** *(Web, Infrastructure)* EF design-time and migrations
 - **Npgsql.EntityFrameworkCore.PostgreSQL** *(Web, Infrastructure)* PostgreSQL EF provider
