@@ -2,6 +2,11 @@
 name: Deploy Monitoring
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'monitoring/**'
   workflow_dispatch:
 
 # Remember to set the following secrets in your repository's settings:
