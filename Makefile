@@ -198,7 +198,7 @@ install-pandoc:
 build-report-pdf:
 	mkdir -p report/build && \
 	pandoc report/MSc_group_f.md \
-		--from=gfm+yaml_metadata_block \
+		--from=markdown+yaml_metadata_block+raw_tex \
 		--resource-path=report \
 		--to=pdf \
 		-o report/build/MSc_group_f.pdf \
