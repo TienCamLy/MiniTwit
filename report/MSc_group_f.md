@@ -238,7 +238,7 @@ Other security measures were also taken such as:
 
 ### 2.5 Availability and Scaling
 Availability and scaling in the MiniTwit application are managed by Docker Swarm. A Swarm cluster of the DigitalOcean Droplets is joined into a single Swarm cluster,
-which continuously monitors and enforces the desired state.
+which continuously monitors and enforces the declared desired state.
 
 **High availability** is handled by having manager redundancy, three production container replicas, and automatic self-healing. 
 All three nodes in the cluster are given the `manager` role to prevent a single point of failure if one of the manager nodes fails. 
