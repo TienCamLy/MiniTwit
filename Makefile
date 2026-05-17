@@ -90,6 +90,9 @@ tf-plan:
 # Monitoring stack (Loki on monitoring VM; Promtail ships with root compose on app VM)
 monitor-build:
 	cd monitoring && docker compose up --build
+	
+monitor-build-down:
+	cd monitoring && docker compose down -v && docker compose up --build
 
 # Tests
 test-api-simulator: 
@@ -154,18 +157,55 @@ auto-lint:
 	dotnet format razor-pages/Web/ && \
 	dotnet format razor-pages/Core/
 
-# Build report pdf (pandoc uses pdflatex; install TeX Live — pandoc .deb alone does not ship it)
+# Mermaid charts must be compiled to SVG before being committed to the repository.
+# Note that some charts use html labels and if they do need to be converted to png.
+MERMAID_DIR := $(CURDIR)/report/mermaid
+MERMAID_IMAGE := minlag/mermaid-cli
+
+regenerate-mermaid-charts:
+	@for f in "$(MERMAID_DIR)"/*.mmd; do \
+		[ -e "$$f" ] || continue; \
+		name=$$(basename "$$f" .mmd); \
+		echo "Generating $$name.svg ..."; \
+		docker run --rm \
+			-v "$(MERMAID_DIR):/data" \
+			-v "$(CURDIR)/report/images:/out" \
+			$(MERMAID_IMAGE) \
+			-i "/data/$$name.mmd" \
+			-o "/out/$$name.svg"; \
+		if [ "$$name" = "mermaid_end_to_end" ]; then \
+			echo "Generating $$name.png (for PDF — flowchart SVG labels break in pandoc) ..."; \
+			docker run --rm \
+				-v "$(MERMAID_DIR):/data" \
+				-v "$(CURDIR)/report/images:/out" \
+				$(MERMAID_IMAGE) \
+				-i "/data/$$name.mmd" \
+				-o "/out/$$name.png" \
+				-b white; \
+		fi; \
+	done
+
+# Build report pdf (pandoc uses pdflatex; install TeX Live & svg support)
 install-pandoc:
 	sudo apt-get update -qq && \
 	sudo DEBIAN_FRONTEND=noninteractive apt-get install \
 		pandoc \
+		librsvg2-bin \
 		texlive-latex-base \
 		texlive-fonts-recommended \
 		texlive-latex-extra
 
 build-report-pdf:
 	mkdir -p report/build && \
-	pandoc report/MSc_group_f.md --from=gfm --to=pdf -o report/build/MSc_group_f.pdf --pdf-engine=pdflatex
+	pandoc report/MSc_group_f.md \
+		--from=gfm+yaml_metadata_block \
+		--resource-path=report \
+		--to=pdf \
+		-o report/build/MSc_group_f.pdf \
+		--pdf-engine=pdflatex \
+		-V colorlinks=true \
+		-V linkcolor=blue \
+		-V urlcolor=blue
 
 install-and-build-report:
 	make install-pandoc && make build-report-pdf

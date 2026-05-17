@@ -5,6 +5,8 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - '!report/**'
   # allow manual triggers too
   workflow_dispatch:
 
