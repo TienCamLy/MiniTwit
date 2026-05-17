@@ -102,7 +102,7 @@ The test coverage is quite extensive across the API and browser-based UI levels,
 
 ![SonarQubeQuality](images/SonarQubeAnalysis.png)
 
-The issues mainly consist of code quality and maintainability problems, such as inconsistent naming, improper exception handling, and minor potential accessibility and configuration problems.
+The issues mainly consist of maintainability and style problems, such as inconsistent naming, improper exception handling, and potential accessibility and configuration problems. Additionally, there are a few issues involving some incomplete implementations and asynchronicity handling. 
 
 
 ## 2. Process' perspective
