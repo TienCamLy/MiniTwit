@@ -275,31 +275,31 @@ within an isolated development environment, so any configuration changes during 
 ## 3. Reflection Perspective
 
 ### 3.1 Evolution and Refactoring
-On the first refactoring from Python Flask to C# RazorPages we ran into unforseen issues with the methods not working as intended, which slowed us down and required more than expected bug-fixing before making the release.
-We had no issues Refactoring to Onion Architecture. It was time-consuming but with half of the group being familiar with the framework the process was relatively smooth.
+On the first refactoring from Python Flask to C# RazorPages, we ran into unforseen issues with the methods not working as intended, which slowed us down and required more than expected bug-fixing before making the release.
+We had no issues refactoring to the Onion Architecture. It was time-consuming, but with half of the group being familiar with the framework, the process was relatively smooth.
 
 We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led us to avoiding the amount of "Click-Ops" we had during the project (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
 
 ### 3.2 Operation
-We rarely ran into operation issues per se. The system ran without errors most of the time from when the simulator started. For robustness, we set up a QA deployment on Pull Requests, requiring the application to be built, pushed and having its tests pass before merging it into the main branch. This allowed us to test all of our features fully before releasing them, and thereby decreased the amount of bugs and operational work. The experienced downtime was rather due to the deployment of new functionality which didn't go as planned, such as Docker Swarm or Terraform.
+We rarely ran into operation issues per se. The system ran without errors most of the time from when the simulator started. For robustness, we set up a QA deployment on pull requests, requiring the application to be built, pushed and having its tests pass before merging it into the main branch. This allowed us to test all of our features fully before releasing them, thereby decreased the amount of bugs and operational work. The experienced downtime was rather due to the deployment of new functionality that didn't go as planned, such as with Docker Swarm or Terraform.
 
-Once we had fully migrated to Swarm, including log shipping from all our Droplets, the Droplet containing the monitoring application ended up being overloaded such that our monitoring application became unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
+Once we had fully migrated to Swarm, including log shipping from all our Droplets, the Droplet containing the monitoring application ended up being overloaded, such that our monitoring application became unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
 The monitoring Droplet was resized using Terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
-At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment can be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
+At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment would be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
 
-In early April we started receiving warnings from the built-in resource alert system in Digital Ocean that our Database Cluster was above 90% CPU utilization. We started investigating the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
-We chose to resize the cluster such that it had an extra virtual CPU after a cost-benefit analysis concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time consuming versus the cost of upgrading the database cluster.
+In early April, we started receiving warnings from the built-in resource alert system in DigitalOcean that our database cluster was above 90% CPU utilization. We started investigating the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
+We chose to resize the cluster such that it had an extra virtual CPU after a cost-benefit analysis, concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time-consuming versus the cost of upgrading the database cluster.
 The database was resized with no downtime.
 
 ### 3.3 Maintenance
 
-The most prominent maintenance issue was arguably the Loki logging instance that repeatedly stopped working for no apparent reason, not affecting operations but hindering development insights. It was fixed multiple times, and seemed to be working for a while, only to crash again at some point. This was a long-lasting debugging task that stretched into weeks as the cause was not immediately clear, with it being a mix of network communication issues, misconfigured ports and an environment name mismatch.
+The most prominent maintenance issue was arguably the Loki logging instance that repeatedly stopped working for no apparent reason, not affecting operations but hindering development insights. It was fixed multiple times and seemed to be working for a while, only to crash again at some point. This was a long-lasting debugging task that stretched into weeks as the cause was not immediately clear, with it being a mix of network communication issues, misconfigured ports and an environment name mismatch.
 
 Another hiccup we encountered was related to a fluke in the connection between Prometheus and Grafana, causing an alert to be fired repeatedly. The issue went away after redeployment, and we couldn't definitively arrive at the underlying cause.
 
-There were cases where a functionality developed by one member experienced errors with no clear explanation, only for it to be discovered later that it was caused by a new functionality developed by another group member. One example of such case was when API tests suddenly started failing due to a security measure allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
+There were cases where a functionality developed by one member experienced errors with no clear explanation, only for it to be discovered later that it was caused by a new functionality developed by another group member. One example of such case was when API tests suddenly started failing due to a security measure, allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
 
 As preventive maintenance, we updated the workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24, which issued deprecation warnings.
 
