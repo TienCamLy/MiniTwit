@@ -32,7 +32,7 @@ We ended up migrating to Terraform towards the end of the project as it allowed 
 - **NuGet** *(Development, CI/CD)* Package restore and feeds for .NET dependencies
 - **ASP.NET Core (Razor Pages)** *(Development, production)* Web UI and HTTP API
 - **Entity Framework Core** *(Development, production)* Database access and migrations
-- **PostgreSQL** *(Development, CI/CD, production)* Primary data store (managed in DigitalOcean)
+- **PostgreSQL** *(Development, testing, production)* Primary data store (managed in DigitalOcean)
 - **Docker** *(Development, CI/CD, production)* Container images and runtime isolation
 - **Docker Hub** *(CI/CD, production)* Registry for built application images
 - **Docker Compose** *(Development, testing)* Local and test multi-container setups
