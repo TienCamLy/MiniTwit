@@ -299,7 +299,7 @@ The most prominent maintenance issue was arguably the Loki logging instance that
 
 It was also sometimes the case that a functionality developed by one member reported errors with their source not immediatelly clear, to find out later that it was triggered by a new functionality developed by another group member. One example of such case was when API tests suddenly started failing due to a security measure allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
 
-As preventive maintenance, at one point we updated the workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24, which issued depracation warnings.
+As preventive maintenance, we updated the workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24, which issued depracation warnings.
 
 ### 3.4 DevOps Approach
 
