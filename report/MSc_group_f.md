@@ -176,15 +176,12 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 ![HTTP Requests](images/monitor_grafana_dash_4.png)
 
 ### 2.3 Aggregated logs
-All assignment completions for each week have been aggregated in [View project log](https://github.com/TienCamLy/MiniTwit/blob/main/log.md). It was standard practice for everyone to document which tasks they completed.
-A type of "Meta" log used is the [README file](https://github.com/TienCamLy/MiniTwit/blob/main/README.md); it serves as how we ought to implement the assignments as well as principles on how work as a group.
-Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
-All live logs are shipped to Grafana 
+We log EF Core's queries and collect them through the built-in Docker functionality `docker logs` for each container. These logs are scraped from all running containers by `promtail`, and then indexed and prepared for presentation in Grafana by `loki`.
 
-![alt text](images/imageGrafanaLogging.png)
+The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate replica used to validate pull requests. All logs are visible side by side in a dedicated logging segment in the Drilldown section.
 
-dedicated logging section of grafana
-![alt text](images/DedicatedLogging.png)
+![alt text](images/minitwit_replicas_logging.png)
+
 ### 2.4 Security Hardening
 For the security hardening of our system a security assessment was made showing an overview of assets/threats/risks:
 
