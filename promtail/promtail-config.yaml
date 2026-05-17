@@ -26,4 +26,4 @@ scrape_configs:
       - regex:
           expression: '.*(?P<level>info|warn|error).*'
       - labels:
-          level:
+          detected_level:
