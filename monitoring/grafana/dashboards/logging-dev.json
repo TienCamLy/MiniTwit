@@ -23,8 +23,9 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "PBF41DC559F5EECD3"
+        "uid": "P8E80F9AEF21F6940"
       },
+      "description": "vagrant-razor-pages-1 in docker ps",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -49,21 +50,21 @@
         "unwrappedColumns": false,
         "wrapLogMessage": false
       },
-      "pluginVersion": "12.4.1",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
             "type": "loki",
-            "uid": "PBF41DC559F5EECD3"
+            "uid": "P8E80F9AEF21F6940"
           },
           "direction": "backward",
           "editorMode": "builder",
-          "expr": "{service_name=\"razor-pages\"} |= ``",
+          "expr": "{container=\"vagrant-razor-pages-1\"} |= ``",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Logging from Docker (DEV)",
+      "title": "QA_container",
       "type": "logs"
     }
   ],
@@ -79,8 +80,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Logging DEV ",
+  "title": "Logging DEV",
   "uid": "ad8t4bq",
-  "version": 8,
+  "version": 9,
   "weekStart": ""
 }
