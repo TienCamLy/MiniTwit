@@ -310,6 +310,10 @@ The Grafana alert fired at some points, but it was during expected down-time per
 
 ![Discord Alert Message from Grafana](images/monitor_discord_alert.png)
 
+We could also see the data outage afterwards within the Grafana dashboard:
+
+![System Downtime Data Outage](images/monitor_grafana_outage.png)
+
 ### 3.3 Maintenance
 
 ## 4. Use of Generative AI
