@@ -1,16 +1,25 @@
+---
+colorlinks: true
+linkcolor: blue
+urlcolor: blue
+---
+
 # DevOps, Software Evolution and Software Maintenance, MSc
+\vspace{1cm}
 
 \begin{center}
 \textbf{Course Code: KSDSESM1KU}
 \end{center}
-\vspace{1cm}
+
+
+\begin{center}
+\textbf{Assignment By:}
+\end{center}
 
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
-\multicolumn{2}{|c|}{\textbf{Assignment By}} \\
-\hline
-\textbf{Student} & \textbf{Email} \\
+\textbf{Name} & \textbf{Email} \\
 \hline
 Daniel Ring Hansen & darh@itu.dk \\
 Krzysztof Michal Parocki & krpa@itu.dk \\
@@ -22,11 +31,11 @@ Tien Cam Ly & tily@itu.dk \\
 \end{tabular}
 \end{center}
 
----
-colorlinks: true
-linkcolor: blue
-urlcolor: blue
----
+\begin{center}
+\textbf{18 May 2026}
+\end{center}
+
+\newpage
 
 ## 1. System's Perspective
 
