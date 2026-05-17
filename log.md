@@ -104,3 +104,6 @@
 * Add compilation from markdown -> pdf in a separate build
 * Rescale resources using Terraform to fit current processing requirements (i.e. reduce or increase such that all our services are available but not blown out of proportion)
 * Changing Terraform configuration files to match having three manager nodes in Docker Swarm.
+
+### Week 15 (May 15 - 18)
+* Update logging dashboards to show up-to-date information
