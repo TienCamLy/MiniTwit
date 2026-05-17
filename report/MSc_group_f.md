@@ -40,19 +40,19 @@ Tien Cam Ly & tily@itu.dk \\
 ## 1. System's Perspective
 
 ### 1.1 Design and Architecture
-When tasked with switching to another language for the system, C# was chosen. The project was built with Razor Pages ([Documentation](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-10.0&tabs=visual-studio)) and Entity Framework Core (EF Core) ([Documentation](https://learn.microsoft.com/en-us/ef/core/)).
+We chose C# as the programming language for refactoring. The project was built with Razor Pages ([Documentation](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-10.0&tabs=visual-studio)) and Entity Framework Core (EF Core) ([Documentation](https://learn.microsoft.com/en-us/ef/core/)).
 The choice of C# was made due to part of the group's pre-existing familiarity with the language, which streamlined the development process, especially when it came to the architecture.
 
-The architecture of the project follows a layered Onion Architecture split into three parts: Core, Infrastructure, and Web. The below visualization shows the responsibilities of each layer:
+The project follows Onion Architecture in three layers: Core, Infrastructure, and Web. The visualization below shows each layer's responsibilities:
 
 ![System Architecture](images/system-architecture.png)
 
-- The **Core layer** of the system focuses on handling Data Transfer Objects (DTOs) and repository interfaces. This layer does not reference any frameworks or libraries, staying independent from the rest of the system.
-- The **Infrastructure layer** focuses on the database context, migrations, and the implementation of repository interfaces. This layer depends only on the Core, whilst having no reference to the Web layer.
-- The **Web layer** handles the UI through Razor Pages along with the API. It also acts as the base of the system, handling the dependency injection and referencing both the Core and Infrastructure layers of the application.
+- The **Core layer** handles Data Transfer Objects (DTOs) and repository interfaces. It does not reference frameworks or libraries, staying independent from the rest of the system.
+- The **Infrastructure layer** handles the database context, migrations, and repository implementations. It depends only on Core and does not reference Web.
+- The **Web layer** handles the UI through Razor Pages and the API. It acts as the system entry point, handling dependency injection and referencing Core and Infrastructure.
 
 #### 1.1.1 Choice of Final Infrastructure-as-Code Architecture
-We ended up migrating to Terraform towards the end of the project, as it allowed for easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined documentation for DigitalOcean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources, therefore, did not have much extra overhead.
+We migrated to Terraform late in the project for easier maintenance and resource control via defined interfaces. Terraform documents DigitalOcean resources well, so defining existing Vagrant deployments and "Click-Ops" resources added little overhead.
 
 ### 1.2 Dependencies of MiniTwit
 
@@ -118,64 +118,63 @@ NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-p
 - **selenium** *(tests/selenium)* WebDriver client driving the remote Chrome grid
 
 ### 1.3 Current State of Our Systems
-Our system is steadily functional across performance, scalability, code quality, security, and testing. However, there are some limiting factors that should be considered prior to it being a complete product. 
+Our system is steadily functional across performance, scalability, code quality, security, and testing. However, some limiting factors remain before it is production-ready.
 
-In regards to performance and scalability, the primary issue we encountered was the resources available to the server being insufficient for exceptionally high traffic.
-In a real production case, with more funds, we would have increased availability by upgrading the account plan in DigitalOcean and scaling the application horizontally.
+For performance and scalability, the main issue was insufficient server resources under high traffic.
+With more funding, we would upgrade the DigitalOcean plan and scale the application horizontally.
 
 The test coverage is fairly extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
 
 #### Static Analysis and Code Quality Tools
-- **SonarQube** indicates a few potential reliability and maintainability issues, as well as some security hotspots, but still gives it an A-rating in the main issue categories. 
-- **Codacy** gives the application as a whole an A-rating, but also indicates a few potential security hotspots.
-- **CodeQL** passes on all its vulnerability checks.
+- **SonarQube** reports a few reliability, maintainability, and security hotspot issues, but still rates the main issue categories A.
+- **Codacy** rates the application A but also flags a few security hotspots.
+- **CodeQL** passes all vulnerability checks.
 - **Hadolint** and **Roslynator** show no issues.
 
 **SonarQube's Quality Assessment:**
 
 ![SonarQube Quality Assessment](images/SonarQubeAnalysis.png)
 
-The issues mainly consist of maintainability and style problems, such as inconsistent naming, improper exception handling, and potential accessibility and configuration problems. Additionally, there are a few issues involving some incomplete implementations and asynchronicity handling. 
+The issues are mainly maintainability and style problems, such as inconsistent naming, improper exception handling, and potential accessibility and configuration problems. There are also a few incomplete implementations and asynchronicity issues. 
 
 ## 2. Process' Perspective
 
 ### 2.1 CI/CD Pipelines, Deployment, and Release
 
-All development work is done on branches and requires a pull request to be merged into the main branch. We made sure all tasks were tracked in Trello (see below).
+All development work is done on branches and requires a pull request to merge into main. All tasks were tracked in Trello (see below).
 
 ![Snapshot of Trello Backlog During Project Work](images/trello_backlog_management.png)
 
-Pull requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, deployment, and test. 
-Note that due to limitations on number of allowed droplets in our Digital Ocean account level, the dedicated QA Droplet was later included in the production Swarm as well.
+Pull requests are checked with code scanning tools and trigger a QA build that runs a full build, deployment, and test.
+Due to droplet limits on our DigitalOcean account, the dedicated QA Droplet was later included in the production Swarm.
 
 After merging a pull request into main, the report pdf is built if changed.
-Application code changes are not immediately pushed to production, as we wanted our releases to contain more than a single small change and have more control over when releases to production were made.
-The control of timing was important to ensure stability of the application and timely action given a failure/bug.
+Application code changes are not immediately pushed to production. Instead, we bundled releases and controlled production timing to keep the application stable and allow timely response to failures.
 
 We used an automated deployment pipeline to deploy our production services, which automatically triggers when a tag is pushed to the repository.
 We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag names in order to have a consistent format and a notion of how big each release was.
 
-Monitoring is deployed manually in a separate workflow. The monitoring Droplet was initially a stand-alone Droplet, but given the DigitalOcean limitation on Droplets, this Droplet was also later included in the Swarm.
+Monitoring is deployed manually in a separate workflow. The monitoring Droplet was initially a stand-alone Droplet, but was later included in the Swarm due to DigitalOcean droplet limits.
 
 ![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
 
-Above is an overview of the different stages from development towards operationalization. In the following sections, we will describe the QA deployment workflow, continuous deployment release workflow, and the monitoring deployment workflow.
+The following sections describe the QA, production release, and monitoring deployment workflows.
 
 #### Pull Request Pipeline (QA Deployment)
 
-The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch. The workflow runs at the same time as the static code analysis tools: `CodeQL`, `SonarCube`, and `Codacy`.
+The QA deployment is in [.github/workflows/continous-QA-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-QA-deployment.yaml) and runs on pull requests to main alongside `CodeQL`, `SonarCube`, and `Codacy`.
 
 ![Complete QA Build Workflow](images/mermaid_qa_flow.svg)
 
 #### Production Release (Continuous Deployment)
 
-The continuous deployment to production is defined in [.github/workflows/continous-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-deployment.yaml) and is automatically run on tags pushed to the main branch.
+Production deployment is in [.github/workflows/continous-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-deployment.yaml) and runs on tags pushed to main.
 
 ![Complete Production Build Workflow](images/mermaid_prod_flow.svg)
 
 #### Monitoring Deployment
 
-The monitoring stack deployment is defined in [.github/workflows/monitor-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/monitor-deployment.yaml) and runs only when someone manually triggers it.
+The monitoring stack is in [.github/workflows/monitor-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/monitor-deployment.yaml) and runs only when triggered manually.
 
 ![Complete Monitoring Build Workflow](images/mermaid_monitor_flow.svg)
 
@@ -187,11 +186,10 @@ The monitoring stack deployment is defined in [.github/workflows/monitor-deploym
 - **Monitoring** *(manual Deploy Monitoring workflow)* Using Swarm stack `monitoring`
 
 ### 2.2 Monitoring
-The monitoring of our application is done through Prometheus and Grafana. 
+We monitor the application using Prometheus and Grafana.
 
-The data collection is handled by Prometheus' .NET client library, `prometheus-net`, with `UseMetricServer` collecting and exposing metrics. 
-Additional http request metrics are collected through the use of the `UseHttpMetrics` middleware provided by Prometheus.
-Custom metric gatherers were also implemented to retrieve metrics from the application's database. 
+Prometheus collects data via the .NET client `prometheus-net`: `UseMetricServer` exposes metrics, and `UseHttpMetrics` adds HTTP request metrics.
+Custom gatherers also pull metrics from the database.
 
 Grafana then retrieves the metrics from Prometheus and allows for constructing visualization dashboards. We also implemented a Grafana alert based on the up-time metric to inform us when the server was down.
 
@@ -206,7 +204,7 @@ Grafana then retrieves the metrics from Prometheus and allows for constructing v
 - Http request latency by their action
 - Http GET and POST request rates over time by their status codes
 
-The following images are examples:
+Examples:
 
 ![General Statistics](images/monitor_grafana_dash_0.png)
 
@@ -215,7 +213,7 @@ The following images are examples:
 \newpage
 
 ### 2.3 Aggregated logs
-We log EF Core's queries and collect them through the built-in Docker functionality `docker logs` for each container. These logs are scraped from all running containers by Promtail, and then indexed and prepared for presentation in Grafana by Loki.
+EF Core's queries and app outputs are retrieved from `docker logs` for each container. These logs are scraped from all running containers by Promtail, and then indexed and prepared for presentation in Grafana by Loki.
 
 The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate QA build replica. All logs are visible side by side in a dedicated logging segment in the Drilldown section, as shown in the image below.
 
@@ -254,8 +252,8 @@ For each of the risk scenarios, the following measures were taken:
 - **DDoS Attack:** Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
 
 **Other Security Measures**
-- Setting up inbound firewall rules on DigitalOcean and utilizing `ufw` on the server only allowing specific traffic through on specified ports. Docker does not bypass DigitalOcean's firewalls. 
-The production application has firewall rules:
+- Inbound firewall rules on DigitalOcean and `ufw` on the server allow only specific ports. Docker does not bypass DigitalOcean firewalls.
+Production firewall rules:
   - Standard internet and access ports (TCP 22, TCP 80, TCP 443)
   - Docker port (TCP 2376)
   - Docker Swarm infrastructure ports (TCP 2377, UDP 4789, TCP/UDP 7946)
@@ -273,8 +271,7 @@ The production application has firewall rules:
 - A Docker image vulnerability scanner, Docker Scout, has been added to the QA workflow to ensure any image vulnerabilities are detected before merging. 
 
 ### 2.5 Availability and Scaling
-Availability and scaling is managed by Docker Swarm. A Swarm cluster of DigitalOcean Droplets is joined into a single Swarm cluster,
-which continuously monitors and enforces the declared desired state.
+Docker Swarm manages availability and scaling across DigitalOcean Droplets joined into one cluster that enforces the declared desired state.
 
 **High availability** is handled by having manager redundancy, three production container replicas, and automatic self-healing. 
 All three nodes in the cluster are given the `manager` role to prevent a single point of failure if a manager nodes crashes. 
@@ -290,23 +287,23 @@ This is achieved by configuring the deployment settings within the Docker Compos
 a delay parameter that dictates how long Docker Swarm should wait after starting an updated container before terminating an old one, 
 allowing the new container to initialize.
 
-As a result, the services remain available during deployment. By default, Docker Swarm uses the rolling update strategy which terminates the old container before starting a new one. This is called `stop-first`.
+Services therefore stay available during deployment. By default, Swarm uses `stop-first` rolling updates that terminate the old container before starting a new one.
 
-Despite this strategy, migration and deployment debugging still caused brief production outages; see Section 3.2.
+Despite this strategy, migration and deployment debugging still caused brief production outages; see Section 3.1.
 
 
 ## 3. Reflection Perspective
 
 ### 3.1 Evolution and Refactoring
-On the first refactoring from Python Flask to C# RazorPages, we ran into unforeseen issues with the methods not working as intended, which slowed us down and required further fixes before making a release.
-We had no issues refactoring to the Onion Architecture. It was time-consuming, but with half of the group being familiar with the framework, the process was relatively smooth.
+Refactoring from Python Flask to C# Razor Pages, we ran into unforeseen issues with the methods not working as intended, which slowed us down and required further fixes before making a release.
+We had no issues refactoring to the Onion Architecture. It was time-consuming, but with half of the group being familiar with the pattern, the process was relatively smooth.
 
-We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led us to have less "Click-Ops" during the project (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
+We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led to having less "Click-Ops" during the project (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
 
 #### Docker Swarm Migration
-While our strategy should have ensured low downtime during the transition to Docker Swarm, the production application still experienced downtime due to overlooked human errors.
+Despite the low-downtime strategy in Section 2.5, migration debugging caused production outages through human error.
 Specifically, the Swarm Ingress routing mesh overwrote the port of the development environment on one of our DigitalOcean Droplets, and the Loki logs failed to display on our Grafana dashboards. 
-During the debugging process, accidental downtime of the application was introduced when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, which prevented the simulator from reaching it. 
+During the debugging process, accidental downtime was introduced when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, which prevented the simulator from reaching it. 
 
 To avoid these issues in the future, a solution would be to replicate the Docker Swarm infrastructure within an isolated development environment, so any configuration changes during the transition does not affect live production.
 This approach was considered, but not possible to do in practice due to the DigitalOcean account level.
@@ -318,8 +315,8 @@ In early April, we started receiving warnings from the built-in resource alert s
 
 ![Email CPU Utilization Alert from Digital Ocean](images/operations_do_alert.png)
 
-We investigated the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
-We chose to resize the cluster such that it had an extra virtual CPU after a cost-benefit analysis, concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time-consuming versus the cost of upgrading the database cluster.
+Traffic had outgrown what the database could handle.
+After a cost-benefit analysis, we added a virtual CPU to the cluster rather than spending developer time optimizing the ORM to send fewer queries.
 The database was resized with no downtime.
 
 Once we had fully migrated to Swarm, the Droplet containing the monitoring application ended up being overloaded making it unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
@@ -333,35 +330,36 @@ The Grafana app alert fired at some points, but it was during expected downtime 
 
 ![Discord Alert Message from Grafana](images/monitor_discord_alert.png)
 
-We could also see the data outage afterwards within the Grafana dashboard:
+The outage was visible in Grafana afterward:
 
 ![System Downtime Data Outage](images/monitor_grafana_outage.png)
 
 ### 3.3 Maintenance
 
-The most prominent maintenance issue was the Loki logging instance that repeatedly stopped working for no apparent reason, not affecting operations but hindering operational insights. It was fixed multiple times and seemed to be working for a while, only to crash again at some point. This was a long-lasting debugging task that stretched into weeks as the cause was not immediately clear, with it being a mix of network communication issues, misconfigured ports and an environment name mismatch.
+The most prominent maintenance issue was the Loki logging instance that repeatedly stopped working for no apparent reason, not affecting operations but hindering operational insights. It was fixed multiple times, only to crash again. This was a long-lasting debugging task as the cause was not immediately clear, as it was a mix of network communication issues, misconfigured ports and an environment name mismatch.
 
 Another hiccup we encountered was related to a fluke in the connection between Prometheus and Grafana, causing an alert to be fired repeatedly. The issue went away after redeployment, and we couldn't definitively arrive at the underlying cause.
 
-There were cases where a functionality developed by one member experienced errors with no clear explanation, only for it to be discovered later that it was caused by a new functionality developed by another group member. One example of such case was when API tests started failing due to a security measure, allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
+Sometimes, functionality developed by one member experienced errors with no clear explanation, only to discover that it was caused by a new functionality developed by another group member.
+One example was when API tests started failing due to a security measure, allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
 
-As preventive maintenance, we updated the workflow action versions to be compatible with the upcoming GitHub Actions runtime upgrade to Node.js 24, which issued deprecation warnings.
+As preventive maintenance, we updated workflow action versions for the GitHub Actions Node.js 24 runtime upgrade, which had issued deprecation warnings.
 
 ### 3.4 DevOps Approach
 
-We described the "DevOps" style of our work in the project's `README.md`. Overall, we were more structured and organized in this work compared to previous projects. We made use of the Trello board to track our progress, made sure the sizing of tasks made them self-contained, added a `log.md` to track our work, extensively tested our code through workflows, and insisted on rigorous code reviews as well as a self-check checklist to follow for each pull request, providing continuous feedback to group members. We didn't blame anyone for mistakes, but rather offered help and treated each doubt as an opportunity for growth.
+We described our DevOps style in the project's `README.md`. We were more structured than in previous projects.
+We made use of Trello for progress tracking, self-contained task sizing, a `log.md` for work tracking, extensive workflow testing, code reviews, and a per-pull-request self-check checklist.
+We didn't blame anyone for mistakes, but rather offered help and treated each doubt as an opportunity for growth.
 
 ## 4. Use of Generative AI
 
-The use of generative AI tools varied among group members, and so we decided to include separate passages of its use, written by each group member. During groupwork, when we shared the screen and worked on code together, the tool preferred by the person leading the session was used.
+The use of generative AI tools varied among group members, which are described individually below. During group work, the tool preferred by the person leading the session was used.
 
-Mie consulted the generative AI tool Cursor ([https://cursor.com/](https://cursor.com/)) to discuss issues throughout the project and brainstorm possible solutions. This was beneficial to the development process as it unblocked progress, resulting in time savings.
-Cursor was helpful in improving the code by standardizing its format and structure. It worked well together with industry standard formatting / linting tools for improving the code quality in the project.
-Lastly, Cursor was used to summarizing branch work in our log.md and other documentation, ensuring that the chore tasks were actually being done rather than neglected.
+Mie used Cursor ([https://cursor.com/](https://cursor.com/)) to discuss issues, brainstorm solutions, standardize code format and structure (alongside linting tools), and summarize branch work in `log.md` and other documentation. This was beneficial to the development process as it unblocked progress, resulting in time savings.
 
 Daniel used Claude ([https://claude.ai](https://claude.ai)) and ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) to bounce ideas off and help identify the pros and cons of specified development options. Additionally, both tools were very useful in quickly parsing large error logs. 
 
-Mads used ChatGPT to debug GitHub Actions, Docker, and DevOps setup issues. He found that it often hindered the work on the deployment workflows, yet helped significantly with commands used in the terminal.
+Mads used ChatGPT for GitHub Actions, Docker, and DevOps debugging. It sometimes hindered workflow work but helped significantly with commands used in the terminal.
 
 Chris mainly employed GitHub Copilot ([https://github.com/features/copilot](https://github.com/features/copilot)) as interactive documentation to assist in programming. It was also used to propose code changes for very specific improvement cases such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions faster.
 
