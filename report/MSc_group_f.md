@@ -165,6 +165,8 @@ Custom metric gatherers were also implemented to retrieve metrics from the appli
 Grafana is used to build dashboard visualizing data collected by Prometheus and allows for setting up alerts on metrics.
 We implemented a Grafana alert based on the up-time metric to inform us when the server is down.
 
+![Grafana Alert Configuration](images/monitor_grafana_alert.png)
+
 #### Monitoring Panels
 - Current and uptime of container status
 - CPU utilization
