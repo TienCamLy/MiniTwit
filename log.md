@@ -106,6 +106,4 @@
 * Changing Terraform configuration files to match having three manager nodes in Docker Swarm.
 
 ### Week 15 (May 15 - 18)
-* Update the logging setup by adding a way to detect and filter log levels
 * Update logging dashboards to show up-to-date information
-* Remove redundant instances of loki and promtail
