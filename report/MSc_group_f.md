@@ -110,7 +110,10 @@ The issues mainly consist of code quality and maintainability problems, such as 
 
 ### 2.1 CI/CD pipelines, deployment, and release
 
-All development work is done on branches and requires a pull request to be merged into the main branch.
+All development work is done on branches and requires a pull request to be merged into the main branch. We tried making sure all tasks were tracked in Trello (see below).
+
+![Snapshot of Trello Backlog During Project Work](images/trello_backlog_management.png)
+
 Pull Requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, deployment and test. 
 Note, that due to limitations on number of allowed droplets in our Digital Ocean account level, the dedicated QA droplet was later included in the production swarm as well.
 
