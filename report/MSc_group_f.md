@@ -171,7 +171,8 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 - Http request response latency by their action
 - Http GET and POST request rates over time by their response status codes
 
-#### Example Visuals:
+The following images are examples:
+
 ![General Statistics](images/monitor_grafana_dash_0.png)
 ![HTTP Requests](images/monitor_grafana_dash_4.png)
 
@@ -183,8 +184,10 @@ All live logs are shipped to Grafana
 
 ![alt text](images/imageGrafanaLogging.png)
 
-dedicated logging section of grafana
+A dedicated logging section in Grafana can be found as shown on the image below:
+
 ![alt text](images/DedicatedLogging.png)
+
 ### 2.4 Security Hardening
 For the security hardening of our system a security assessment was made showing an overview of assets/threats/risks:
 
