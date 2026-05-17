@@ -287,7 +287,7 @@ Once we had fully migrated to Swarm, including log shipping from all our Droplet
 The monitoring Droplet was resized using Terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
-At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment was to trigger it on changes to the monitoring folder instead of relying on a manual trigger.
+At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment can be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger, which was the case for most of the project.
 
 In early April we started receiving warnings from the built-in resource alert system in Digital Ocean that our Database Cluster was above 90% CPU utilization. We started investigating the issue and realized that the amount of requests coming in had ramped up so much that our database could not follow along.
 We chose to resize the cluster such that it had an extra virtual CPU after a cost-benefit analysis concluding that the developer time it would take to improve the ORM system to send fewer requests would be too time consuming versus the cost of upgrading the database cluster.
