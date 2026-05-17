@@ -171,14 +171,15 @@ Grafana is then used to retrieve these exposed metrics provided by Prometheus an
 - Http request response latency by their action
 - Http GET and POST request rates over time by their response status codes
 
-#### Example Visuals:
+The following images are examples:
+
 ![General Statistics](images/monitor_grafana_dash_0.png)
 ![HTTP Requests](images/monitor_grafana_dash_4.png)
 
 ### 2.3 Aggregated logs
 We log EF Core's queries and collect them through the built-in Docker functionality `docker logs` for each container. These logs are scraped from all running containers by `promtail`, and then indexed and prepared for presentation in Grafana by `loki`.
 
-The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate replica used to validate pull requests. All logs are visible side by side in a dedicated logging segment in the Drilldown section.
+The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate replica used to validate pull requests. All logs are visible side by side in a dedicated logging segment in the Drilldown section, as shown in the image below.
 
 ![alt text](images/minitwit_replicas_logging.png)
 
