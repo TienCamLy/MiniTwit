@@ -233,8 +233,8 @@ We made a security assessment showing an overview of assets/threats/risks:
 
 For each risk scenario, the following measures were taken:
 - **SQL Injection:** All inputs are sanitized to avoid script injection. This is handled automatically by EF Core.
-- **Cross-Site Scripting (XSS):** This gains from the input sanitation but still needs an output encoding to ensure data is rendered as text, which is handled by Razor Pages rendering all posts as plain text.
-- **DDoS Attack:** Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
+- **Cross-Site Scripting (XSS):** Input sanitation and output encoding to ensure data is rendered as text, which is handled by Razor Pages.
+- **DDoS Attack:** Access is restricted to only allow a certain amount of requests per/minute, to minimize DDoS attacks.
 
 **Other Security Measures**
 - Inbound firewall rules on DigitalOcean and `ufw` on the server allow only specific ports. Docker does not bypass DigitalOcean firewalls.
@@ -246,14 +246,14 @@ Production firewall rules:
   - Grafana Loki log aggregation port (TCP 3100)
   - Prometheus ports (TCP 9090, TCP 9095, TCP 9096, TCP 9100)
 
-- Ensuring the application runs on HTTPS with a TLS certificate
-- Setting up `nginx` for a reverse proxy in front of the application.
-- Docker images were hardened for security by ensuring only user privileges.
-- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool discovers source code languages in the repository. CodeQL analyzes the following files:
+- Using HTTPS with a TLS certificate.
+- `nginx` as a reverse proxy.
+- Docker images only having user privileges.
+- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool discovers source code languages in the repository, hereunder:
   - C# files
   - Python files
   - GitHub Action files
-- A Docker image vulnerability scanner, Docker Scout, has been added to the QA workflow to ensure image vulnerabilities are detected before merging. 
+- Docker Scout has been added to the QA workflow to ensure image vulnerabilities are detected before merging. 
 
 ### 2.5 Availability and Scaling
 Docker Swarm manages availability and scaling across DigitalOcean Droplets joined into one cluster that enforces the declared desired state.
