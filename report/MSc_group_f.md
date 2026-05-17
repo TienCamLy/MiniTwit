@@ -41,7 +41,7 @@ Tien Cam Ly & tily@itu.dk \\
 
 ### 1.1 Design and Architecture
 We chose C# as the programming language for refactoring. The project was built with Razor Pages ([Documentation](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-10.0&tabs=visual-studio)) and Entity Framework Core (EF Core) ([Documentation](https://learn.microsoft.com/en-us/ef/core/)).
-The choice of C# was made due to part of the group's pre-existing familiarity with the language, which streamlined the development process, especially when it came to the architecture.
+The choice of C# was made due to part of the group's existing familiarity with the language, which streamlined development, especially when it came to the architecture.
 
 The project follows Onion Architecture in three layers: Core, Infrastructure, and Web. The visualization below shows each layer's responsibilities:
 
@@ -92,8 +92,8 @@ We migrated to Terraform late in the project for easier maintenance and resource
 - **Docker Scout** *(CI/CD)* Container image vulnerability scanning on QA builds
 - **OpenAPI Generator** *(Development)* Generating the API simulator stub from the OpenAPI description
 - **Pandoc** *(Report CI/CD)* Converting the report Markdown to PDF in automation
-- **LaTeX (pdflatex / TeX Live)** *(Report CI/CD)* PDF engine used by Pandoc for report builds
-- **librsvg (rsvg-convert)** *(Report CI/CD)* Converting committed SVG figures (for example Mermaid diagrams) for inclusion in the PDF
+- **LaTeX (pdflatex / TeX Live)** *(Report CI/CD)* PDF engine used by Pandoc
+- **librsvg (rsvg-convert)** *(Report CI/CD)* Converting committed SVG figures in Pandoc
 - **GNU Make** *(Development, CI/CD)* Task automation (local and in workflows)
 
 #### Libraries
@@ -123,11 +123,11 @@ Our system is steadily functional across performance, scalability, code quality,
 For performance and scalability, the main issue was insufficient server resources under high traffic.
 With more funding, we would upgrade the DigitalOcean plan and scale the application horizontally.
 
-The test coverage is fairly extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
+The test coverage is extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
 
 #### Static Analysis and Code Quality Tools
 - **SonarQube** reports a few reliability, maintainability, and security hotspot issues, but still rates the main issue categories A.
-- **Codacy** rates the application A but also flags a few security hotspots.
+- **Codacy** rates the application A but flags a few security hotspots.
 - **CodeQL** passes all vulnerability checks.
 - **Hadolint** and **Roslynator** show no issues.
 
@@ -151,8 +151,8 @@ Due to droplet limits on our DigitalOcean account, the dedicated QA Droplet was 
 After merging a pull request into main, the report pdf is built if changed.
 Application code changes are not immediately pushed to production. Instead, we bundled releases and controlled production timing to keep the application stable and allow timely response to failures.
 
-We used an automated deployment pipeline to deploy our production services, which automatically triggers when a tag is pushed to the repository.
-We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag names in order to have a consistent format and a notion of how big each release was.
+We used an automated deployment pipeline to deploy our production services, which triggers when a tag is pushed to the repository.
+We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag names to have a consistent format and a notion of how big each release was.
 
 Monitoring is deployed manually in a separate workflow. The monitoring Droplet was initially a stand-alone Droplet, but was later included in the Swarm due to DigitalOcean droplet limits.
 
@@ -180,18 +180,18 @@ The monitoring stack is in [.github/workflows/monitor-deployment.yaml](https://g
 
 #### Deployment & Release Summary
 
-- **Local** *(via `make app-build` — `compose-test.yaml`, port 8081)* Using Local Docker Compose
-- **QA (pre-merge)** *(QA Deployment workflow on pull request)* With Docker Hub image `testminitwit:latest`, Using Compose on test Droplet
-- **Production** *(tag triggering Continuous Deployment)* With Docker Hub image `minitwitimage:<sha>`, Using Docker Swarm (3 replicas)
-- **Monitoring** *(manual Deploy Monitoring workflow)* Using Swarm stack `monitoring`
+- **Local** *(via `make app-build` — `compose-test.yaml`, port 8081)* Local Docker Compose
+- **QA (pre-merge)** *(QA Deployment workflow on pull request)* Docker Hub image `testminitwit:latest`, Compose on test Droplet
+- **Production** *(tag triggering Continuous Deployment)* Docker Hub image `minitwitimage:<sha>`, Docker Swarm (3 replicas)
+- **Monitoring** *(manual Deploy Monitoring workflow)* Swarm stack `monitoring`
 
 ### 2.2 Monitoring
 We monitor the application using Prometheus and Grafana.
 
 Prometheus collects data via the .NET client `prometheus-net`: `UseMetricServer` exposes metrics, and `UseHttpMetrics` adds HTTP request metrics.
-Custom gatherers also pull metrics from the database.
+Custom gatherers pull metrics from the database.
 
-Grafana then retrieves the metrics from Prometheus and allows for constructing visualization dashboards. We also implemented a Grafana alert based on the up-time metric to inform us when the server was down.
+Grafana retrieves the metrics from Prometheus and allows constructing visualization dashboards. We implemented a Grafana alert based on the up-time metric to inform us when the server was down.
 
 ![Grafana Alert Configuration](images/monitor_grafana_alert.png)
 
@@ -213,7 +213,7 @@ Examples:
 \newpage
 
 ### 2.3 Aggregated logs
-EF Core's queries and app outputs are retrieved from `docker logs` for each container. These logs are scraped from all running containers by Promtail, and then indexed and prepared for presentation in Grafana by Loki.
+EF Core's queries and app outputs are retrieved from `docker logs` for each container. These logs are scraped from all running containers by Promtail, and indexed and prepared for presentation in Grafana by Loki.
 
 The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate QA build replica. All logs are visible side by side in a dedicated logging segment in the Drilldown section, as shown in the image below.
 
@@ -246,7 +246,7 @@ We made a security assessment showing an overview of assets/threats/risks:
 | Cross-Site Scripting (XSS) | High/Common     | High   | High     |
 | DDoS Attack                | Medium/Uncommon | Medium | Medium   |
 
-For each of the risk scenarios, the following measures were taken:
+For each risk scenario, the following measures were taken:
 - **SQL Injection:** All inputs are sanitized to avoid script injection. This is handled automatically by EF Core.
 - **Cross-Site Scripting (XSS):** This gains from the input sanitation but still needs an output encoding to ensure data is rendered as text, which is handled by Razor Pages rendering all posts as plain text.
 - **DDoS Attack:** Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
@@ -264,11 +264,11 @@ Production firewall rules:
 - Ensuring the application runs on HTTPS with a TLS certificate
 - Setting up `nginx` for a reverse proxy in front of the application.
 - Docker images were hardened for security by ensuring only user privileges.
-- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool automatically discovers source code languages in the repository. CodeQL analyzes the following files in the repository:
+- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool discovers source code languages in the repository. CodeQL analyzes the following files:
   - C# files
   - Python files
   - GitHub Action files
-- A Docker image vulnerability scanner, Docker Scout, has been added to the QA workflow to ensure any image vulnerabilities are detected before merging. 
+- A Docker image vulnerability scanner, Docker Scout, has been added to the QA workflow to ensure image vulnerabilities are detected before merging. 
 
 ### 2.5 Availability and Scaling
 Docker Swarm manages availability and scaling across DigitalOcean Droplets joined into one cluster that enforces the declared desired state.
@@ -278,7 +278,7 @@ All three nodes in the cluster are given the `manager` role to prevent a single 
 When a node in the cluster crashes, the Swarm detects a difference between the actual state and the declared desired state, which triggers *self-healing* to restore the third replica. 
 
 **Scaling** is handled by Docker Swarm's built-in Ingress Routing Mesh, which functions as a load balancer. 
-Swarm evenly distributes incoming user requests across all three healthy replicas of the production container to handle high amounts of concurrent requests. 
+The Swarm evenly distributes incoming user requests across all three healthy replicas of the production container to handle high amounts of concurrent requests. 
 This parallelizes the workload across the nodes, such that a container does not consume all the resources of a single node.
 
 To ensure low downtime during both the transition from the standalone containers to a Docker Swarm cluster and during re-deployments,
@@ -298,15 +298,15 @@ Despite this strategy, migration and deployment debugging still caused brief pro
 Refactoring from Python Flask to C# Razor Pages, we ran into unforeseen issues with the methods not working as intended, which slowed us down and required further fixes before making a release.
 We had no issues refactoring to the Onion Architecture. It was time-consuming, but with half of the group being familiar with the pattern, the process was relatively smooth.
 
-We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led to having less "Click-Ops" during the project (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
+We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led to less "Click-Ops" (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
 
 #### Docker Swarm Migration
 Despite the low-downtime strategy in Section 2.5, migration debugging caused production outages through human error.
 Specifically, the Swarm Ingress routing mesh overwrote the port of the development environment on one of our DigitalOcean Droplets, and the Loki logs failed to display on our Grafana dashboards. 
 During the debugging process, accidental downtime was introduced when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, which prevented the simulator from reaching it. 
 
-To avoid these issues in the future, a solution would be to replicate the Docker Swarm infrastructure within an isolated development environment, so any configuration changes during the transition does not affect live production.
-This approach was considered, but not possible to do in practice due to the DigitalOcean account level.
+To avoid these issues, a solution would be to replicate the Docker Swarm infrastructure within an isolated development environment, so any configuration changes during the transition does not affect live production.
+This approach was considered, but not possible in practice due to the DigitalOcean account level.
 
 ### 3.2 Operation
 Our system ran without errors most of the time from when the simulator started. For robustness, we set up a QA deployment on pull requests, reducing bugs and operational work making it to the production application.
@@ -319,14 +319,14 @@ Traffic had outgrown what the database could handle.
 After a cost-benefit analysis, we added a virtual CPU to the cluster rather than spending developer time optimizing the ORM to send fewer queries.
 The database was resized with no downtime.
 
-Once we had fully migrated to Swarm, the Droplet containing the monitoring application ended up being overloaded making it unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
-The monitoring Droplet was resized using Terraform and therefore had minimal possible downtime. The full process took ~6 minutes:
+Once we had migrated to Swarm, the Droplet containing the monitoring application ended up overloaded making it unreachable. This warranted an upgrade of the Droplet containing the monitoring application. If we had access to spin up more Droplets, we may have considered horizontal scaling instead of vertical.
+The monitoring Droplet was resized using Terraform and had minimal downtime. The process took ~6 minutes:
 
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
-At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment could be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
+At one point, an unintended flag reset the volumes for Loki and Prometheus. After realizing the issue, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment could be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
 
-The Grafana app alert fired at some points, but it was during expected downtime periods while doing various migrations. This confirmed that our alerting system worked as intended.
+The Grafana app alert fired at some points during expected downtime while doing migrations. This confirmed that our alerting system worked as intended.
 
 ![Discord Alert Message from Grafana](images/monitor_discord_alert.png)
 
@@ -336,9 +336,9 @@ The outage was visible in Grafana afterward:
 
 ### 3.3 Maintenance
 
-The most prominent maintenance issue was the Loki logging instance that repeatedly stopped working for no apparent reason, not affecting operations but hindering operational insights. It was fixed multiple times, only to crash again. This was a long-lasting debugging task as the cause was not immediately clear, as it was a mix of network communication issues, misconfigured ports and an environment name mismatch.
+The most prominent maintenance issue was the Loki logging instance that repeatedly stopped working, not affecting operations but hindering operational insights. It was fixed multiple times, only to crash again. This was a long-lasting debugging task as it was a mix of network communication issues, misconfigured ports and an environment name mismatch.
 
-Another hiccup we encountered was related to a fluke in the connection between Prometheus and Grafana, causing an alert to be fired repeatedly. The issue went away after redeployment, and we couldn't definitively arrive at the underlying cause.
+Another hiccup we encountered was related to a fluke in the connection between Prometheus and Grafana, causing an alert to be fired repeatedly. The issue went away after redeployment, and we couldn't arrive at the underlying cause.
 
 Sometimes, functionality developed by one member experienced errors with no clear explanation, only to discover that it was caused by a new functionality developed by another group member.
 One example was when API tests started failing due to a security measure, allowing only a certain amount of requests to reach the server from a single IP, preventing DDoS attacks. 
@@ -349,21 +349,21 @@ As preventive maintenance, we updated workflow action versions for the GitHub Ac
 
 We described our DevOps style in the project's `README.md`. We were more structured than in previous projects.
 We made use of Trello for progress tracking, self-contained task sizing, a `log.md` for work tracking, extensive workflow testing, code reviews, and a per-pull-request self-check checklist.
-We didn't blame anyone for mistakes, but rather offered help and treated each doubt as an opportunity for growth.
+We didn't blame anyone for mistakes, but offered help and treated each doubt as an opportunity for growth.
 
 ## 4. Use of Generative AI
 
-The use of generative AI tools varied among group members, which are described individually below. During group work, the tool preferred by the person leading the session was used.
+Generative AI tool use varied among group members, which are described individually below. During group work, the tool preferred by the person leading the session was used.
 
 Mie used Cursor ([https://cursor.com/](https://cursor.com/)) to discuss issues, brainstorm solutions, standardize code format and structure (alongside linting tools), and summarize branch work in `log.md` and other documentation. This was beneficial to the development process as it unblocked progress, resulting in time savings.
 
-Daniel used Claude ([https://claude.ai](https://claude.ai)) and ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) to bounce ideas off and help identify the pros and cons of specified development options. Additionally, both tools were very useful in quickly parsing large error logs. 
+Daniel used Claude ([https://claude.ai](https://claude.ai)) and ChatGPT ([https://chatgpt.com/](https://chatgpt.com/)) to bounce ideas off and help identify the pros and cons of specified development options. Both tools were useful in quickly parsing large error logs. 
 
 Mads used ChatGPT for GitHub Actions, Docker, and DevOps debugging. It sometimes hindered workflow work but helped significantly with commands used in the terminal.
 
-Chris mainly employed GitHub Copilot ([https://github.com/features/copilot](https://github.com/features/copilot)) as interactive documentation to assist in programming. It was also used to propose code changes for very specific improvement cases such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions faster.
+Chris employed GitHub Copilot ([https://github.com/features/copilot](https://github.com/features/copilot)) as interactive documentation to assist in programming. It was used to propose code changes for specific improvement cases such as `b6f71cf3242a25a0c03cd0c0763040417532838f - add wheel hashes to the requirements file`. This made it possible to implement security and maintainability solutions faster.
 
-For Patrick, ChatGPT and GitHub Copilot were used to aid the understanding of code errors and thereby helped in solving them. Generative AI was consulted about writing specific things in different languages, for example: *"How do I write inline code in .md?"* or *"How do I change the rejection status code on the rate limiter?"*
+For Patrick, ChatGPT and GitHub Copilot were used to aid the understanding of code errors and helped in solving them. Generative AI was consulted about writing specific things in different languages, for example: *"How do I write inline code in .md?"* or *"How do I change the rejection status code on the rate limiter?"*
 
-Finally for Tien, Google Gemini ([https://gemini.google.com/](https://gemini.google.com/)) was the primary consultation source used for debugging and resolving technical uncertainty during development. 
+For Tien, Google Gemini ([https://gemini.google.com/](https://gemini.google.com/)) was the primary consultation source for debugging and resolving technical uncertainty during development. 
 Generative AI was used to find fixes for errors and explaining how and why they appeared, provide an overview of important features and commands of new tools and technologies, review developer decisions to ensure that changes to the application are correct and checking grammar and phrasings when writing documentation or the report.
