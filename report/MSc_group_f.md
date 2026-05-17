@@ -40,7 +40,7 @@ Tien Cam Ly & tily@itu.dk \\
 ## 1. System's Perspective
 
 ### 1.1 Design and Architecture
-When tasked with switching to another language for the system, C# was chosen. The project was built with Razor Pages ([Documentation](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-10.0&tabs=visual-studio)) and Entity Framework Core ([Documentation](https://learn.microsoft.com/en-us/ef/core/)).
+When tasked with switching to another language for the system, C# was chosen. The project was built with Razor Pages ([Documentation](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-10.0&tabs=visual-studio)) and Entity Framework Core (EF Core) ([Documentation](https://learn.microsoft.com/en-us/ef/core/)).
 The choice of C# was made due to part of the group's pre-existing familiarity with the language, which streamlined the development process, especially when it came to the architecture.
 
 The architecture of the project follows a layered Onion Architecture split into three parts: Core, Infrastructure, and Web. The below visualization shows the responsibilities of each layer:
@@ -148,27 +148,24 @@ All development work is done on branches and requires a pull request to be merge
 Pull requests are automatically checked with code scanning tools and also triggers a QA build which runs a full build, deployment, and test. 
 Note that due to limitations on number of allowed droplets in our Digital Ocean account level, the dedicated QA Droplet was later included in the production Swarm as well.
 
-After merging a pull request into main, the report pdf is built if changes have been made in the relevant files.
-Application code changes are not immediately pushed to production, as we deemed that we wanted our releases to contain more than a single small change, as well as to have more control of when releases to production were made.
+After merging a pull request into main, the report pdf is built if changed.
+Application code changes are not immediately pushed to production, as we wanted our releases to contain more than a single small change and have more control over when releases to production were made.
 The control of timing was important to ensure stability of the application and timely action given a failure/bug.
 
 We used an automated deployment pipeline to deploy our production services, which automatically triggers when a tag is pushed to the repository.
 We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag names in order to have a consistent format and a notion of how big each release was.
 
 Monitoring is deployed manually in a separate workflow. The monitoring Droplet was initially a stand-alone Droplet, but given the DigitalOcean limitation on Droplets, this Droplet was also later included in the Swarm.
-The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare, and therefore, we did not find it necessary.
 
 ![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
 
-Above is an overview of the different stages of development towards operationalization. In the following sections, we will deep dive into the QA deployment workflow, continuous deployment release workflow, and the monitoring deployment workflow.
+Above is an overview of the different stages from development towards operationalization. In the following sections, we will describe the QA deployment workflow, continuous deployment release workflow, and the monitoring deployment workflow.
 
 #### Pull Request Pipeline (QA Deployment)
 
-The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch.
+The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml](https://github.com/TienCamLy/MiniTwit/blob/main/.github/workflows/continous-QA-deployment.yaml) and is automatically run on pull requests towards the main branch. The workflow runs at the same time as the static code analysis tools: `CodeQL`, `SonarCube`, and `Codacy`.
 
 ![Complete QA Build Workflow](images/mermaid_qa_flow.svg)
-
-The above flowchart shows the various steps and interactions between systems happening during the QA Deployment and test workflow. The workflow runs at the same time as the static code analysis tools: `CodeQL`, `SonarCube`, and `Codacy`. 
 
 #### Production Release (Continuous Deployment)
 
@@ -190,24 +187,24 @@ The monitoring stack deployment is defined in [.github/workflows/monitor-deploym
 - **Monitoring** *(manual Deploy Monitoring workflow)* Using Swarm stack `monitoring`
 
 ### 2.2 Monitoring
-The monitoring of our application is done through the use of Prometheus and Grafana. 
+The monitoring of our application is done through Prometheus and Grafana. 
 
-The data collection is handled by Prometheus' .NET client library, prometheus-net, with UseMetricServer collecting and exposing metrics. 
-Additional http request metrics are collected through the use of the UseHttpMetrics middleware provided by Prometheus.
+The data collection is handled by Prometheus' .NET client library, `prometheus-net`, with `UseMetricServer` collecting and exposing metrics. 
+Additional http request metrics are collected through the use of the `UseHttpMetrics` middleware provided by Prometheus.
 Custom metric gatherers were also implemented to retrieve metrics from the application's database. 
 
-Grafana then retrieves these exposed metrics provided by Prometheus and allows for the construction of various visualizations. We also implemented a Grafana alert based on the up-time metric to inform us when the server was down.
+Grafana then retrieves the metrics from Prometheus and allows for constructing visualization dashboards. We also implemented a Grafana alert based on the up-time metric to inform us when the server was down.
 
 ![Grafana Alert Configuration](images/monitor_grafana_alert.png)
 
 #### Monitoring Panels
 - Current and uptime of container status
 - CPU utilization
-- Memory utilized by dotnet processes, as well as total physical allocated memory
+- Memory utilized by dotnet processes & total physical allocated memory
 - Total tweets and tweet rate
 - Total users and registration rate
-- Http request response latency by their action
-- Http GET and POST request rates over time by their response status codes
+- Http request latency by their action
+- Http GET and POST request rates over time by their status codes
 
 The following images are examples:
 
@@ -218,9 +215,9 @@ The following images are examples:
 \newpage
 
 ### 2.3 Aggregated logs
-We log EF Core's queries and collect them through the built-in Docker functionality `docker logs` for each container. These logs are scraped from all running containers by `promtail`, and then indexed and prepared for presentation in Grafana by `loki`.
+We log EF Core's queries and collect them through the built-in Docker functionality `docker logs` for each container. These logs are scraped from all running containers by Promtail, and then indexed and prepared for presentation in Grafana by Loki.
 
-The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate replica used to validate pull requests. All logs are visible side by side in a dedicated logging segment in the Drilldown section, as shown in the image below.
+The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate QA build replica. All logs are visible side by side in a dedicated logging segment in the Drilldown section, as shown in the image below.
 
 ![Drilldown Logging Segment](images/minitwit_replicas_logging.png)
 
@@ -252,30 +249,28 @@ We made a security assessment showing an overview of assets/threats/risks:
 | DDoS Attack                | Medium/Uncommon | Medium | Medium   |
 
 For each of the risk scenarios, the following measures were taken:
-- **SQL Injection:** All inputs are sanitized to avoid script injection. This is handled automatically by Entity Framework Core.
+- **SQL Injection:** All inputs are sanitized to avoid script injection. This is handled automatically by EF Core.
 - **Cross-Site Scripting (XSS):** This gains from the input sanitation but still needs an output encoding to ensure data is rendered as text, which is handled by Razor Pages rendering all posts as plain text.
 - **DDoS Attack:** Access is restricted to only allow a certain amount of requests per/minute, to minimize the effect of DDoS attacks.
 
 **Other Security Measures**
 - Setting up inbound firewall rules on DigitalOcean and utilizing `ufw` on the server only allowing specific traffic through on specified ports. Docker does not bypass DigitalOcean's firewalls. 
+The production application has firewall rules:
+  - Standard internet and access ports (TCP 22, TCP 80, TCP 443)
+  - Docker port (TCP 2376)
+  - Docker Swarm infrastructure ports (TCP 2377, UDP 4789, TCP/UDP 7946)
+  - Application ports (TCP 8080)
+  - Grafana Loki log aggregation port (TCP 3100)
+  - Prometheus ports (TCP 9090, TCP 9095, TCP 9096, TCP 9100)
 
-The production application was given firewall rules for:
-- Standard internet and access ports (TCP 22, TCP 80, TCP 443)
-- Docker port (TCP 2376)
-- Docker Swarm infrastructure ports (TCP 2377, UDP 4789, TCP/UDP 7946)
-- Application ports (TCP 8080)
-- Grafana Loki log aggregation port (TCP 3100)
-- Prometheus ports (TCP 9090, TCP 9095, TCP 9096, TCP 9100)
-
-Other security measures were also taken such as:
-
-- Ensuring the application runs on HTTPS with a TLS certificate and setting up `nginx` for a reverse proxy in front of the application.
-- Docker images were also hardened for security by ensuring only user privileges.
-- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool automatically discovers source code languages in the repository and dynamically adjusts the scan based on the languages present. CodeQL analyzes the following files in the repository:
+- Ensuring the application runs on HTTPS with a TLS certificate
+- Setting up `nginx` for a reverse proxy in front of the application.
+- Docker images were hardened for security by ensuring only user privileges.
+- Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool automatically discovers source code languages in the repository. CodeQL analyzes the following files in the repository:
   - C# files
   - Python files
   - GitHub Action files
-- A Docker image vulnerability scanner, Docker Scout, has been added to the CI workflow to ensure any image vulnerabilities are detected before deployment. 
+- A Docker image vulnerability scanner, Docker Scout, has been added to the QA workflow to ensure any image vulnerabilities are detected before merging. 
 
 ### 2.5 Availability and Scaling
 Availability and scaling is managed by Docker Swarm. A Swarm cluster of DigitalOcean Droplets is joined into a single Swarm cluster,
@@ -283,15 +278,14 @@ which continuously monitors and enforces the declared desired state.
 
 **High availability** is handled by having manager redundancy, three production container replicas, and automatic self-healing. 
 All three nodes in the cluster are given the `manager` role to prevent a single point of failure if a manager nodes crashes. 
-When a node in the cluster crashes, the Swarm detects a difference between the actual state and the declared desired state, such that 
-the number of actual running replicas is lower than three, which triggers *self-healing* to restore the third replica. 
+When a node in the cluster crashes, the Swarm detects a difference between the actual state and the declared desired state, which triggers *self-healing* to restore the third replica. 
 
 **Scaling** is handled by Docker Swarm's built-in Ingress Routing Mesh, which functions as a load balancer. 
 Swarm evenly distributes incoming user requests across all three healthy replicas of the production container to handle high amounts of concurrent requests. 
 This parallelizes the workload across the nodes, such that a container does not consume all the resources of a single node.
 
-To ensure low downtime during the transition from the standalone containers to a Docker Swarm cluster, 
-the stack was deployed with a **blue-green service deployment** strategy from the start, such that the running containers were gradually replaced by the updated ones. 
+To ensure low downtime during the transition from the standalone containers to a Docker Swarm cluster,
+the stack was deployed with a **blue-green service deployment** strategy from the start, such that the running containers were gradually replaced by the updated ones.
 This is achieved by configuring the deployment settings within the Docker Compose file to set the update order to `start-first` and 
 a delay parameter that dictates how long Docker Swarm should wait after starting an updated container before terminating an old one, 
 allowing the new container to initialize.
