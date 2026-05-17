@@ -292,16 +292,7 @@ allowing the new container to initialize.
 
 As a result, the services remain available during deployment. By default, Docker Swarm uses the rolling update strategy which terminates the old container before starting a new one. This is called `stop-first`.
 
-While our strategy should have ensured low downtime during the transition to Docker Swarm, the production application still experienced downtime 
-due to overlooked human errors. These errors came as a result of debugging separate Docker Swarm migration issues. 
-Specifically, the Swarm Ingress routing mesh overwrote the port of the development environment on one of our DigitalOcean Droplets, 
-and the Loki logs failed to display on our Grafana dashboards. During the debugging process, accidental downtime of the application was introduced 
-when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, 
-which prevented the simulator from reaching it. 
-
-To avoid these issues in the future, a solution could be to replicate the Docker Swarm infrastructure 
-within an isolated development environment, so any configuration changes during the transition does not affect live production.
-This approach was considered, but not possible to do in practice due to the DigitalOcean account level.
+Despite this strategy, migration and deployment debugging still caused brief production outages; see Section 3.2.
 
 
 ## 3. Reflection Perspective
@@ -312,8 +303,16 @@ We had no issues refactoring to the Onion Architecture. It was time-consuming, b
 
 We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led us to have less "Click-Ops" during the project (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
 
+#### Docker Swarm Migration
+While our strategy should have ensured low downtime during the transition to Docker Swarm, the production application still experienced downtime due to overlooked human errors.
+Specifically, the Swarm Ingress routing mesh overwrote the port of the development environment on one of our DigitalOcean Droplets, and the Loki logs failed to display on our Grafana dashboards. 
+During the debugging process, accidental downtime of the application was introduced when pulling the wrong container image due to misconfigured environment secrets, or changing the application to use another port, which prevented the simulator from reaching it. 
+
+To avoid these issues in the future, a solution would be to replicate the Docker Swarm infrastructure within an isolated development environment, so any configuration changes during the transition does not affect live production.
+This approach was considered, but not possible to do in practice due to the DigitalOcean account level.
+
 ### 3.2 Operation
-Our system ran without errors most of the time from when the simulator started. For robustness, we set up a QA deployment on pull requests, requiring the application to be built, pushed and having its tests pass before merging it into the main branch. This allowed us to test all features fully before releasing them, thereby decreased the amount of bugs and operational work. The experienced downtime was rather due to the deployment of new functionality that didn't go as planned, such as with Docker Swarm or Terraform.
+Our system ran without errors most of the time from when the simulator started. For robustness, we set up a QA deployment on pull requests, reducing bugs and operational work making it to the production application.
 
 In early April, we started receiving warnings from the built-in resource alert system in DigitalOcean that our database cluster was above 90% CPU utilization.
 
