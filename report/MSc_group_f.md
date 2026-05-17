@@ -10,18 +10,18 @@ urlcolor: blue
 
 ### 1.1 Design and Architecture
 When tasked with switching to another language for the system, C# was chosen. The project was built with Razor Pages ([Documentation](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-10.0&tabs=visual-studio)) and Entity Framework Core ([Documentation](https://learn.microsoft.com/en-us/ef/core/)).
-The choice of C# was made due to part of the group being familiar with the language, which streamlined the development process especially when it came to the architecture.
+The choice of C# was made due to part of the group's pre-existing familiarity with the language, which streamlined the development process, especially when it came to the architecture.
 
-The architecture of the project follows a layered onion architecture split into the three parts: Core, Infrastructure and Web. The below visualization shows the responsibilities of each layer:
+The architecture of the project follows a layered onion architecture split into three parts: Core, Infrastructure, and Web. The below visualization shows the responsibilities of each layer:
 
 ![System Architecture](./images/system-architecture.png)
 
-- The **Core** part of the system handles DTOs and repository interfaces. This layer does not reference any frameworks or libraries, staying independent from the rest of the system.
-- The **Infrastructure** defines the database context, migrations and the implementation of repository interfaces. This layer depends only on the Core.
-- The **Web** handles the UI through Razor Pages along with the API. It also acts as the base of the system handling the dependency injection and referencing both the Core and Infrastructure layers of the application.
+- The **Core layer** of the system focuses on handling DTOs and repository interfaces. This layer does not reference any frameworks or libraries, staying independent from the rest of the system.
+- The **Infrastructure layer** focuses on the database context, migrations, and the implementation of repository interfaces. This layer depends only on the Core, whilst having no reference to the Web layer.
+- The **Web layer** handles the UI through Razor Pages along with the API. It also acts as the base of the system, handling the dependency injection and referencing both the Core and Infrastructure layers of the application.
 
 #### 1.1.1 Choice of Final Infrastructure-as-Code Architecture
-We ended up migrating to Terraform towards the end of the project as it allows easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined Documentation for Digital Ocean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources therefore did not have much extra overhead.
+We ended up migrating to Terraform towards the end of the project as it allowed for easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined Documentation for Digital Ocean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources therefore did not have much extra overhead.
 
 ### 1.2 Dependencies of MiniTwit
 
@@ -90,9 +90,9 @@ NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-p
 Our system is steadily functional across performance, scalability, code quality, security, and testing. However, there are some limiting factors that should be considered prior to it being a complete product. 
 
 In regards to performance and scalability, the primary issue we encountered was the resources available to the server being insufficient for exceptionally high traffic.
-In a real production case, with larger funds, we would have increased availability by upgrading the account plan in Digital Ocean and scaling the application horizontally.
+In a real production case, with more funds, we would have increased availability by upgrading the account plan in Digital Ocean and scaling the application horizontally.
 
-The test coverage is extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
+The test coverage is fairly extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
 
 #### Static Analysis and Code Quality Tools
 - **SonarQube** indicates a few potential reliability and maintainability issues, as well as some security hotspots, but still gives it an A-rating in the main issue categories. 
@@ -104,7 +104,7 @@ The test coverage is extensive across the API and browser-based UI levels, but t
 
 ![SonarQubeQuality](images/SonarQubeAnalysis.png)
 
-The issues mainly consist of code quality and maintainability problems, such as inconsistent naming, improper exception handling, and minor potential accessibility and configuration problems.
+The issues mainly consist of maintainability and style problems, such as inconsistent naming, improper exception handling, and potential accessibility and configuration problems. Additionally, there are a few issues involving some incomplete implementations and asynchronicity handling. 
 
 ## 2. Process' perspective
 
@@ -118,11 +118,11 @@ Pull Requests are automatically checked with code scanning tools and also trigge
 Note, that due to limitations on number of allowed droplets in our Digital Ocean account level, the dedicated QA droplet was later included in the production swarm as well.
 
 After merging a pull request into main, the report pdf is built if changes have been made in the relevant files.
-Application code changes are immediately pushed to production as we deemed that we wanted our releases to contain more than a single small change and have more control of when releases to production were made.
+Application code changes are not immediately pushed to production as we deemed that we wanted our releases to contain more than a single small change, as well as to have more control of when releases to production were made.
 The control of timing was important to ensure stability of the application and timely action given a failure/bug.
 
 We used an automated deployment pipeline to deploy our production services which automatically triggers when a tag is pushed to the repository.
-We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag names, to have a consistent format and a notion of how big each release is.
+We follow semantic versioning ([https://semver.org/](https://semver.org/)) for tag namesin order to have a consistent format and a notion of how big each release was.
 
 Monitoring is deployed manually in a separate workflow. The monitoring droplet was initially a stand-alone droplet, but given the Digital Ocean limitation on droplets, this droplet was also later included in the swarm.
 The monitoring deployment could have been automatically deployed if changes appeared in the relevant root folder, yet changes to the configurations were rather rare and we therefore did not find it necessary.
@@ -137,7 +137,7 @@ The QA deployment is defined in [.github/workflows/continous-QA-deployment.yaml]
 
 ![Complete QA Build Workflow](images/mermaid_qa_flow.svg)
 
-Above flow chart shows the various steps and interactions between systems happening during the QA Deployment and test workflow. The workflow runs at the same time as the static code analysis tools `CodeQL`, `SonarCube` and `Codacy`. 
+The above flowchart shows the various steps and interactions between systems happening during the QA Deployment and test workflow. The workflow runs at the same time as the static code analysis tools: `CodeQL`, `SonarCube`, and `Codacy`. 
 
 #### Production release (Continuous Deployment)
 
@@ -165,8 +165,7 @@ The data collection is handled by Prometheus' .NET client library, prometheus-ne
 Additional http request metrics are collected through the use of the UseHttpMetrics middleware provided by Prometheus.
 Custom metric gatherers were also implemented to retrieve metrics from the application's database. 
 
-Grafana is used to build dashboard visualizing data collected by Prometheus and allows for setting up alerts on metrics.
-We implemented a Grafana alert based on the up-time metric to inform us when the server is down.
+Grafana then retrieves these exposed metrics provided by Prometheus and allows for the construction of various visualizations. We also implemented a Grafana alert based on the up-time metric to inform us when the server was down.
 
 ![Grafana Alert Configuration](images/monitor_grafana_alert.png)
 
@@ -179,20 +178,18 @@ We implemented a Grafana alert based on the up-time metric to inform us when the
 - Http request response latency by their action
 - Http GET and POST request rates over time by their response status codes
 
-#### Example Visuals:
+The following images are examples:
+
 ![General Statistics](images/monitor_grafana_dash_0.png)
 ![HTTP Requests](images/monitor_grafana_dash_4.png)
 
 ### 2.3 Aggregated logs
-All assignment completions for each week have been aggregated in [View project log](https://github.com/TienCamLy/MiniTwit/blob/main/log.md). It was standard practice for everyone to document which tasks they completed.
-A type of "Meta" log used is the [README file](https://github.com/TienCamLy/MiniTwit/blob/main/README.md); it serves as how we ought to implement the assignments as well as principles on how work as a group.
-Docker has a built-in log system for each droplet. This logging system was rarely used except for some debugging cases.
-All live logs are shipped to Grafana 
+We log EF Core's queries and collect them through the built-in Docker functionality `docker logs` for each container. These logs are scraped from all running containers by `promtail`, and then indexed and prepared for presentation in Grafana by `loki`.
 
-![alt text](images/imageGrafanaLogging.png)
+The logs are aggregated in Grafana in two dashboards — [PROD](http://209.38.255.154:3000/public-dashboards/ead6c8dd2a124167bfff1d4ee7da5452) displaying data from three deployment replicas and [DEV](http://209.38.255.154:3000/d/ad8t4bq/logging-dev?orgId=1&from=now-15m&to=now&timezone=browser) providing insight into a separate replica used to validate pull requests. All logs are visible side by side in a dedicated logging segment in the Drilldown section, as shown in the image below.
 
-dedicated logging section of grafana
-![alt text](images/DedicatedLogging.png)
+![alt text](images/minitwit_replicas_logging.png)
+
 ### 2.4 Security Hardening
 We made a security assessment showing an overview of assets/threats/risks:
 
@@ -228,7 +225,7 @@ For each of the risk scenarios the following measures were taken:
 **Other Security Measures**
 - Setting up inbound firewall rules on DigitalOcean and utilizing `ufw` on the server only allowing specific traffic through on specified ports. Docker does not bypass DigitalOcean's firewalls. 
 
-The production application were given firewall rules for:
+The production application was given firewall rules for:
 - Standard internet and access ports (TCP 22, TCP 80, TCP 443)
 - Docker port (TCP 2376)
 - Docker Swarm infrastructure ports (TCP 2377, UDP 4789, TCP/UDP 7946)
@@ -239,12 +236,12 @@ The production application were given firewall rules for:
 Other security measures were also taken such as:
 
 - Ensuring the application runs on HTTPS with a TLS certificate and setting up `Nginx` for a reverse proxy in front of the application.
-- Docker images were also security hardened by ensuring only user privileges
+- Docker images were also hardened for security by ensuring only user privileges.
 - Setting CodeQL up in the repository to scan the code for security vulnerabilities. The static analysis tool automatically discovers source code languages in the repository and dynamically adjusts the scan based on the languages present. CodeQL analyzes the following files in the repository:
   - C# files
   - Python files
-  - Github action files
-- A Docker image vulnerability scanner Docker Scout has been added to CI workflow to ensure any image vulnerabilities are detected before deployment. 
+  - GitHub Action files
+- A Docker image vulnerability scanner, Docker Scout, has been added to the CI workflow to ensure any image vulnerabilities are detected before deployment. 
 
 ### 2.5 Availability and Scaling
 Availability and scaling is managed by Docker Swarm. A Swarm cluster of DigitalOcean Droplets is joined into a single Swarm cluster,
@@ -255,7 +252,7 @@ All three nodes in the cluster are given the `manager` role to prevent a single 
 When a node in the cluster crashes, the Swarm detects a difference between the actual state and the declared desired state, such that 
 the number of actual running replicas is lower than three, which triggers *self-healing* to restore the third replica. 
 
-**Scaling** is handled by Docker Swarm's built-in Ingress Routing Mesh which functions as a load balancer. 
+**Scaling** is handled by Docker Swarm's built-in Ingress Routing Mesh, which functions as a load balancer. 
 Swarm evenly distributes incoming user requests across all three healthy replicas of the production container to handle high amounts of concurrent requests. 
 This parallelizes the workload across the nodes, such that a container does not consume all the resources of a single node.
 
@@ -282,8 +279,8 @@ This approach was considered, but not possible to do in practice, due to the Dig
 ## 3. Reflection Perspective
 
 ### 3.1 Evolution and Refactoring
-On the first refactoring from Python Flask to C# RazorPages we ran into unforeseen issues with the methods not working as intended, which slowed us down and required more than expected bug-fixing before making the release.
-We had no issues Refactoring to Onion Architecture. It was time-consuming but with half of the group being familiar with the framework the process was relatively smooth.
+On the first refactoring from Python Flask to C# RazorPages we ran into unforeseen issues with the methods not working as intended, which slowed us down and required further unexpected bug-fixing before making the release.
+We had no issues Refactoring to the Onion Architecture. It was time-consuming, but with half of the group being familiar with the framework, the process was relatively smooth.
 
 We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led us to avoiding the amount of "Click-Ops" we had during the project (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
 
@@ -305,7 +302,7 @@ The monitoring Droplet was resized using Terraform and therefore had minimal pos
 
 ![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
-At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment can be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
+At one point, an unintended addition of a flag reset the volumes for Loki and Prometheus. After realizing the issue and looking at a few different combinations of flags, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment could be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
 
 The Grafana alert fired at some points, but it was during expected down-time periods while doing various migrations. This confirmed that our alerting system worked as intended even as it was alerting us of a known down-time.
 
