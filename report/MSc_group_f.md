@@ -9,15 +9,16 @@ urlcolor: blue
 ## 1. System's Perspective
 
 ### 1.1 Design and Architecture
-When tasked with switching to another language for the system, C# was chosen. In correlation the project was built with Razor Pages and Entity Framework Core. The choice of C# was due to the groups already existing knowledge of the language, which streamlined the development process especially when it came to the architecture.
+When tasked with switching to another language for the system, C# was chosen. The project was built with Razor Pages ([Documentation](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-10.0&tabs=visual-studio)) and Entity Framework Core ([Documentation](https://learn.microsoft.com/en-us/ef/core/)).
+The choice of C# was made due to part of the group being familiar with the language, which streamlined the development process especially when it came to the architecture.
 
 The architecture of the project follows a layered onion architecture split into the three parts: Core, Infrastructure and Web. The below visualization shows the responsibilities of each layer:
 
 ![System Architecture](./images/system-architecture.png)
 
-- The Core part of the system focuses on handling DTOs and repository interfaces. This layer does not reference any frameworks or libraries staying independent from the rest of the system.
-- The Infrastructure focuses on the database context, migrations and the implementation of repository interfaces. This layer depends only on the Core, whilst having no reference to the Web layer.
-- The Web handles the UI through razor pages along with the API. It also acts as the base of the system handling the dependency injection and referencing both the Core and Infrastructure layers of the application.
+- The **Core** part of the system handles DTOs and repository interfaces. This layer does not reference any frameworks or libraries, staying independent from the rest of the system.
+- The **Infrastructure** defines the database context, migrations and the implementation of repository interfaces. This layer depends only on the Core.
+- The **Web** handles the UI through Razor Pages along with the API. It also acts as the base of the system handling the dependency injection and referencing both the Core and Infrastructure layers of the application.
 
 #### 1.1.1 Choice of Final Infrastructure-as-Code Architecture
 We ended up migrating to Terraform towards the end of the project as it allows easy maintenance and resource control through defined interfaces. Terraform has a thoroughly defined Documentation for Digital Ocean resources, and the migration to defining existing Vagrant deployments along with "Click-Ops" resources therefore did not have much extra overhead.
@@ -31,7 +32,7 @@ We ended up migrating to Terraform towards the end of the project as it allows e
 - **NuGet** *(Development, CI/CD)* Package restore and feeds for .NET dependencies
 - **ASP.NET Core (Razor Pages)** *(Development, production)* Web UI and HTTP API
 - **Entity Framework Core** *(Development, production)* Database access and migrations
-- **PostgreSQL** *(Development, testing, production)* Primary data store (managed in DigitalOcean)
+- **PostgreSQL** *(Development, CI/CD, production)* Primary data store (managed in DigitalOcean)
 - **Docker** *(Development, CI/CD, production)* Container images and runtime isolation
 - **Docker Hub** *(CI/CD, production)* Registry for built application images
 - **Docker Compose** *(Development, testing)* Local and test multi-container setups
