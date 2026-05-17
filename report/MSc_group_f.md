@@ -121,6 +121,8 @@ With more funding, we would upgrade the DigitalOcean plan and scale the applicat
 
 The test coverage is extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
 
+\newpage
+
 #### Static Analysis and Code Quality Tools
 - **SonarQube** reports a few reliability, maintainability, and security hotspot issues, but still rates the main issue categories A.
 - **Codacy** rates the application A but flags a few security hotspots.
@@ -132,6 +134,8 @@ The test coverage is extensive across the API and browser-based UI levels, but t
 ![SonarQube Quality Assessment](images/SonarQubeAnalysis.png)
 
 The issues are mainly maintainability and style problems, such as inconsistent naming, improper exception handling, and potential accessibility and configuration problems. There are also a few incomplete implementations and asynchronicity issues. 
+
+\newpage
 
 ## 2. Process' Perspective
 
@@ -152,19 +156,13 @@ We follow semantic versioning ([https://semver.org/](https://semver.org/)) for t
 
 Monitoring is deployed manually in a separate workflow. The monitoring Droplet was initially a stand-alone Droplet, but was later included in the Swarm due to DigitalOcean droplet limits.
 
+Figure 4 shows the full flow while Figures 5-7 show the QA, production release, and monitoring deployment workflows.
+
 ![End-to-end flow chart for CI/CD](images/mermaid_end_to_end.png)
-
-The following sections show the QA, production release, and monitoring deployment workflows.
-
-#### Pull Request Pipeline (QA Deployment)
 
 ![Complete QA Build Workflow](images/mermaid_qa_flow.svg)
 
-#### Production Release (Continuous Deployment)
-
 ![Complete Production Build Workflow](images/mermaid_prod_flow.svg)
-
-#### Monitoring Deployment
 
 ![Complete Monitoring Build Workflow](images/mermaid_monitor_flow.svg)
 
@@ -225,11 +223,13 @@ We made a security assessment showing an overview of assets/threats/risks:
 | DDoS Attack                | Medium/Uncommon | Medium | Medium   |
 
 For each risk scenario, the following measures were taken:
+
 - **SQL Injection:** All inputs are sanitized to avoid script injection. This is handled automatically by EF Core.
 - **Cross-Site Scripting (XSS):** Input sanitation and output encoding to ensure data is rendered as text, which is handled by Razor Pages.
 - **DDoS Attack:** Access is restricted to only allow a certain amount of requests per/minute, to minimize DDoS attacks.
 
 **Other Security Measures**
+
 - Inbound firewall rules on DigitalOcean and `ufw` on the server allow only specific ports. Docker does not bypass DigitalOcean firewalls.
 Production firewall rules:
   - Standard internet and access ports (TCP 22, TCP 80, TCP 443)
