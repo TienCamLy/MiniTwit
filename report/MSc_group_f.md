@@ -67,7 +67,7 @@ We ended up migrating to Terraform towards the end of the project as it allows e
 
 #### Libraries
 
-NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-pages/Infrastructure`). Direct Python libraries for automated tests are listed below; the UI test lockfile also pins transitive versions (see `tests/selenium/requirements.txt`).
+NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-pages/Infrastructure`). Python libraries for automated tests are listed below as well with the UI test requirements file having pinned versions (see `tests/selenium/requirements.txt`).
 
 - **Microsoft.AspNetCore.Identity.EntityFrameworkCore** *(Web, Infrastructure)* ASP.NET Core Identity integrated with EF Core
 - **Microsoft.EntityFrameworkCore.Design** *(Web, Infrastructure)* EF Core design-time support and migrations
@@ -87,11 +87,12 @@ NuGet references come from the Razor Pages solution (`razor-pages/Web`, `razor-p
 - **selenium** *(tests/selenium)* WebDriver client driving the remote Chrome grid
 
 ### 1.3 Current State of Our Systems
-The current state of our system leaves it steadily functional across performance, scalability, code quality, security, and testing. However, there are still some limiting factors that should be dealt with prior to considering it a complete product. 
+Our system is steadily functional across performance, scalability, code quality, security, and testing. However, there are some limiting factors that should be considered prior to it being a complete product. 
 
-In regards to performance and scalability, the primary issue we encountered is the resources available to the server being insufficient for exceptionally high traffic. However, this was mainly attributed to the tier of DigitalOcean server plan we used rather than a structural limitation of the application itself. 
+In regards to performance and scalability, the primary issue we encountered was the resources available to the server being insufficient for exceptionally high traffic.
+In a real production case, with larger funds, we would have increased availability by upgrading the account plan in Digital Ocean and scaling the application horizontally.
 
-The test coverage is quite extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
+The test coverage is extensive across the API and browser-based UI levels, but there could be more explicit tests for base application logic, as well as error and edge-case interactions and security behavior. 
 
 #### Static Analysis and Code Quality Tools
 - **SonarQube** indicates a few potential reliability and maintainability issues, as well as some security hotspots, but still gives it an A-rating in the main issue categories. 
@@ -104,7 +105,6 @@ The test coverage is quite extensive across the API and browser-based UI levels,
 ![SonarQubeQuality](images/SonarQubeAnalysis.png)
 
 The issues mainly consist of code quality and maintainability problems, such as inconsistent naming, improper exception handling, and minor potential accessibility and configuration problems.
-
 
 ## 2. Process' perspective
 
