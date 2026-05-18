@@ -323,9 +323,9 @@ We didn't blame anyone for mistakes, but offered help and support.
 
 \newpage
 
-# Appendix
+# A. Appendix
 
-## 1. Use of Generative AI
+## A.1 Use of Generative AI
 
 Generative AI tool use varied among group members, which are described individually below. During group work, the tool preferred by the person leading the session was used.
 
