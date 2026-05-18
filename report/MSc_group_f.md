@@ -72,7 +72,7 @@ We migrated to Terraform late in the project for easier maintenance and resource
 - **Terraform** *(Infrastructure, CI/CD)* Infrastructure as code for DigitalOcean
 - **GitHub Actions** *(CI/CD)* CI/CD pipelines
 - **Third-party GitHub Actions** *(CI/CD)* Marketplace workflow steps (e.g. checkout, Docker login, Terraform, PR comments, GitHub App token)
-- **Ubuntu** *(CI/CD, production)* OS on runners and droplets
+- **Ubuntu** *(CI/CD, production)* OS on runners and Droplets
 - **SSH (OpenSSH)** *(CI/CD, production)* Remote deploy and server access
 - **Prometheus** *(Monitoring)* Metrics Data Gatherer
 - **Grafana** *(Monitoring)* Dashboards and alerts
@@ -146,9 +146,9 @@ All development work is done on branches and requires a pull request to merge in
 ![Snapshot of Trello Backlog During Project Work](images/trello_backlog_management.png)
 
 Pull requests are checked with code scanning tools and trigger a QA build that runs a full build, deployment, and test.
-Due to droplet limits on our DigitalOcean account, the dedicated QA Droplet was later included in the production Swarm.
+Due to Droplet limits on our DigitalOcean account, the dedicated QA Droplet was later included in the production Swarm.
 
-After merging a pull request into main, the report pdf is built if changed.
+After merging a pull request into main, the report PDF is built if changed.
 Application code changes are not immediately pushed to production. Instead, we bundled releases and controlled production timing to keep the application stable and allow timely response to failures.
 
 We used an automated deployment pipeline to deploy our production services, which triggers when a tag is pushed to the repository.
@@ -268,7 +268,7 @@ Despite this strategy, migration and deployment debugging still caused brief pro
 Refactoring from Python Flask to C# Razor Pages, we ran into unforeseen issues with the methods not working as intended, which slowed us down and required further fixes before making a release.
 We had no issues refactoring to the Onion Architecture. It was time-consuming, but with half of the group being familiar with the pattern, the process was relatively smooth.
 
-We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led to less "Click-Ops" (setting up a managed database, modifying network rules for droplets, etc.), resulting in better reproducibility and version history.
+We discussed defining the infrastructure in Terraform at the beginning of the project, which might have led to less "Click-Ops" (setting up a managed database, modifying network rules for Droplets, etc.), resulting in better reproducibility and version history.
 
 #### Docker Swarm Migration
 Despite the low-downtime strategy in Section 2.5, migration debugging caused production outages through human error.
@@ -283,7 +283,7 @@ Our system ran without errors most of the time from when the simulator started. 
 
 In early April, we started receiving warnings from the built-in resource alert system in DigitalOcean that our database cluster was above 90% CPU utilization.
 
-![Email CPU Utilization Alert from Digital Ocean](images/operations_do_alert.png)
+![Email CPU Utilization Alert from DigitalOcean](images/operations_do_alert.png)
 
 Traffic had outgrown what the database could handle.
 After a cost-benefit analysis, we added a virtual CPU to the cluster rather than spending developer time optimizing the ORM to send fewer queries.
@@ -292,15 +292,13 @@ The database was resized with no downtime.
 Once we had migrated to Swarm, the Droplet containing the monitoring application ended up overloaded making it unreachable. This warranted an upgrade of the Droplet containing the monitoring application. Given funds, we would have opted for horizontal scaling.
 The monitoring Droplet was resized using Terraform and had minimal downtime.
 
-![DigitalOcean monitoring droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
+![DigitalOcean monitoring Droplet resize (duration ~6 minutes)](images/monitor_droplet_resize.png)
 
 At one point, an unintended flag reset the volumes for Loki and Prometheus. After realizing the issue, we fixed the problem and accepted the loss of earlier metrics & logs. An improvement of the monitoring deployment could be to automatically trigger it on changes to the monitoring folder instead of relying on a manual trigger.
 
-The Grafana app alert fired at some points during expected downtime while doing migrations. This confirmed that our alerting system worked as intended.
+The Grafana app alert fired at some points during expected downtime while doing migrations. This confirmed that our alerting system worked as intended. The outage was visible in Grafana afterward. See figures 14 and 15 below. 
 
 ![Discord Alert Message from Grafana](images/monitor_discord_alert.png)
-
-The outage was visible in Grafana afterward:
 
 ![System Downtime Data Outage](images/monitor_grafana_outage.png)
 
@@ -310,7 +308,7 @@ The most prominent maintenance issue was the Loki logging instance that repeated
 
 Another hiccup we encountered was related to a fluke in the connection between Prometheus and Grafana, causing an alert to be fired repeatedly. The issue went away after redeployment, and we couldn't arrive at the underlying cause.
 
-Sometimes, functionality developed by one member experienced errors with no clear explanation, only to discover that it was caused by a new functionality developed by another group member.
+Sometimes functionality developed by one member experienced errors with no clear explanation, only to discover that it was caused by a new functionality developed by another group member.
 One example was when API tests once failed when a new per-IP rate limit blocked the simulator. 
 
 As preventive maintenance, we updated workflow action versions for the GitHub Actions Node.js 24 runtime upgrade, which had issued deprecation warnings.
