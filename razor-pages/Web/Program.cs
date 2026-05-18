@@ -105,3 +105,5 @@ app.MapRazorPages().WithStaticAssets();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
