@@ -321,7 +321,7 @@ We described our DevOps style in the project's `README.md`. We were more structu
 We made use of Trello for progress tracking, self-contained task sizing, a `log.md` for work tracking, extensive workflow testing, code reviews, and a per-pull-request self-check checklist.
 We didn't blame anyone for mistakes, but offered help and support.
 
-## 4. Use of Generative AI
+## Appendix: Use of Generative AI
 
 Generative AI tool use varied among group members, which are described individually below. During group work, the tool preferred by the person leading the session was used.
 
