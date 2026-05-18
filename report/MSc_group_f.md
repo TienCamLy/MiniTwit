@@ -323,7 +323,7 @@ We didn't blame anyone for mistakes, but offered help and support.
 
 \newpage
 
-# A. Appendix
+# Appendix
 
 ## A.1 Use of Generative AI
 
